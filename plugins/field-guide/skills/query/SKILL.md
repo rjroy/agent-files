@@ -1,0 +1,52 @@
+---
+name: query
+description: Use when asking questions about the project wiki, querying accumulated knowledge, searching project decisions or lessons. Triggers include "query the wiki", "what does the wiki say about", "search project knowledge", and natural language questions directed at the field-guide wiki.
+---
+
+# Query
+
+Answer a question using the project wiki and work artifacts. Cite every source. Offer to persist the answer as a synthesis page.
+
+## Gathering sources
+
+Read the field-guide index first. Prefer `.lore/reference/index.md`; if it does not exist, read `.lore/reference/index.html`. Scan all listed pages to identify which are relevant to the question. Relevance is broad — include any page whose subject could bear on the answer, even indirectly.
+
+Read every candidate page in full. Candidate pages may be Markdown or HTML. For HTML pages, use meta tags as metadata and visible body content as the page body. Then scan `.lore/work/` for supported source documents (`.md` and `.html` specs, designs, retros, plans, research) that may contain context not yet extracted into the wiki. Use judgment: if the question is about a decision, check plans and specs. If it's about what broke, check retros. If it's about how something works, check architecture and research documents.
+
+If no relevant material exists, say so. Don't synthesize an answer from general knowledge when the question is asking what this project specifically decided or learned.
+
+## Answering
+
+Give a direct answer, then the supporting evidence. If sources conflict, name the conflict and both positions — don't arbitrate silently.
+
+After the answer, list every file cited. Use the file path as the identifier. Example:
+
+> Sources: `.lore/reference/auth-flow-decision.md`, `.lore/work/specs/auth-spec.md`
+
+## Saving as synthesis
+
+After delivering the answer, ask whether to save it as a synthesis wiki page. If the user accepts:
+
+Write a Markdown page at `.lore/reference/[descriptive-kebab-name].md`. If the wiki is stratified into category directories (the index will have a "Layout" section), write the page into the best-fitting existing category directory instead of the root. Use YAML frontmatter:
+
+```markdown
+---
+title: Precise noun-first description of what the synthesis answers
+date: YYYY-MM-DD
+status: current
+tags: [kebab-case, terms, subject, domain, question-type]
+fg-type: synthesis
+fg-sources: [relative/path/to/source1.md, relative/path/to/source2.md]
+fg-status: current
+---
+
+# Precise noun-first description of what the synthesis answers
+
+<!-- body in Markdown -->
+```
+
+`fg-sources` lists every source cited in the answer as a YAML list. Sources may be Markdown or HTML files.
+
+The body must be self-contained in Markdown. A reader with no access to the original question or sources should understand what the page is saying and why it exists. Reach for embedded inline HTML only when a visual carries meaning Markdown cannot — color-coded status, inline `<svg>` diagram, side-by-side comparison. When you do, write it raw and inline; never in a fenced code block.
+
+After writing the page, update the field-guide index. Prefer `.lore/reference/index.md`; if only `.lore/reference/index.html` exists, update it in place. Add the new page to the `synthesis` group, or, in a stratified category-organized index, under its category heading. If the group doesn't exist yet, create it. The entry must use the page's `title` as link text, matching the existing index format. Preserve all other groups and entries.

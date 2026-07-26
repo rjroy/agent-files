@@ -1,0 +1,11 @@
+{
+  "name": "art-gen",
+  "description": "Bun script-backed skill for AI image, video, and background removal via Replicate. No Python or MCP server required.",
+  "version": "2.0.1",
+  "author": {
+    "name": "Ronald Roy",
+    "email": "gsdwig@gmail.com"
+  },
+  "repository": "https://github.com/rjroy/wyrd-gateway.git",
+  "license": "MIT"
+}
