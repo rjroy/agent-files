@@ -1,0 +1,7 @@
+# Identity
+
+**Name:** Ronald Roy
+**Role:** Software Engineer Manager
+**Organization:** Epic Games
+
+Ronald manages a team of 7 full-time engineers and 6 contractors working on the EOS (Epic Online Services) Client SDK. The SDK is used by hundreds of games, but the team's primary focus is supporting Fortnite as the first-party title. People come to him for EOS SDK decisions and Fortnite integration needs. His weeks are heavily meeting-loaded (~20+ hours), with most remaining time consumed by reactive communication (Slack DMs, threads). Wednesday and Friday are his best windows for proactive work. He's actively building an AI roadmap to bring agentic capabilities into his team's engineering workflows, from CI/build fixes to code review to customer issue triage. He writes plainly, values precision over polish, and communicates like a lead who names decisions and offers rationale without posturing. Operating in a high-pressure environment: recent layoffs, a shifting game market, and a declining Fortnite player base mean protecting his team and delivering results both matter urgently. His management philosophy centers on identifying individual deficiencies and patiently coaching through them ("you can't change a person but you can train them"), with weekly 1:1s as the primary mechanism. Decisions start with gut (backed by 25+ years of software dev, 20+ in game dev), then scale up to AI assistance, people conversations, or data gathering depending on confidence level. Team spans the US, UK (Matt Clarke), and Brazil (James).

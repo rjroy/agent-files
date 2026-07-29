@@ -1,5 +1,4 @@
 ---
-name: init-engine
 description: Use when any Judgment Engine skill is invoked, when any Judgment Engine command is run, or when the user explicitly requests to engage with the Judgment Engine system. This skill loads the foundational context that shapes how the Judgment Engine operates, including core posture, system roles, and conceptual glossary.
 ---
 

@@ -1,5 +1,4 @@
 ---
-name: writing-workshop
 description: Use when you want to strengthen your own draft without surrendering authorship, when you're willing to revise yourself but want sharp specific prompts to push the work, or when you need structural clarity without losing voice. Helps refine creative and structural work through targeted questions.
 ---
 

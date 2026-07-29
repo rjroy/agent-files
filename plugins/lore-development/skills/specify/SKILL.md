@@ -25,6 +25,6 @@ Every spec needs an AI Validation section. It answers: how will the AI verify th
 
 ## Saving
 
-Save to `.lore/work/specs/[feature-name].md` using kebab-case. Load `${PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. The document body is freeform — what matters is that requirements are numbered and validation is explicit.
+Save to `.lore/work/specs/[feature-name].md` using kebab-case. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. The document body is freeform — what matters is that requirements are numbered and validation is explicit.
 
-Write the body Markdown-first per the "Body Format" section of `${PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML only where scannability needs it — per-requirement status badges and anchor links per requirement ID so cross-references work.
+Write the body Markdown-first per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML only where scannability needs it — per-requirement status badges and anchor links per requirement ID so cross-references work.

@@ -1,5 +1,4 @@
 ---
-name: coherence-pass
 description: Use when you have rich notes but no throughline, sharp insights but no structure, suspect patterns but can't name them, or want to integrate without manufacturing coherence. Finds genuine patterns or honestly acknowledges fragmentation.
 ---
 

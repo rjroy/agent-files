@@ -1,8 +1,3 @@
----
-name: music-engine-reference
-description: Repository of reference materials for the Suno AI 5.0 songwriting system. Provides access to themed universes, lens transformations, theory modules, and image generation guidance for the music-engine-rowan plugin. Invoked by music engine commands to access reference materials.
----
-
 # Music Engine Reference
 
 Repository of reference materials for the Suno AI 5.0 songwriting system. This skill provides access to themed universes, lens transformations, theory modules, and image generation guidance for the music-engine-rowan plugin.

@@ -1,0 +1,10 @@
+{
+  "name": "audio-analysis",
+  "version": "1.0.0",
+  "author": {
+    "name": "Ronald Roy",
+    "email": "gsdwig@gmail.com"
+  },
+  "description": "Audio and MIDI file analysis capabilities for Claude Code. Provides scripts for extracting tempo, key, chords, structure, and other musical information from audio files (WAV, MP3, FLAC, OGG, M4A) and MIDI files.",
+  "repository": "https://github.com/rjroy/wyrd-gateway"
+}

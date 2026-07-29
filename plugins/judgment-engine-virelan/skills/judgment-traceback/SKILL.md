@@ -1,5 +1,4 @@
 ---
-name: judgment-traceback
 description: Use when you want to understand why you got a particular response, when something feels off and you need to diagnose the system's logic, when you're curious what influenced specific advice or framing, or when you want to learn how the Judgment Engine makes decisions. Provides transparency into reasoning.
 ---
 

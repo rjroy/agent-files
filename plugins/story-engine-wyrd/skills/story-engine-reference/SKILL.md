@@ -1,5 +1,4 @@
 ---
-name: story-engine-reference
 description: Reference library providing access to all story creation resources - worlds, theory modules, lenses, and format guidelines. Commands invoke this skill to load reference materials.
 ---
 
