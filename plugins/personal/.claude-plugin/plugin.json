@@ -1,0 +1,11 @@
+{
+  "name": "personal",
+  "description": "Ronald Roy's personal skills: language quality standards (C++, Rust, TypeScript), development standards, writing style rules, profile context, and pi-agent tooling.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Ronald Roy",
+    "email": "gsdwig@gmail.com"
+  },
+  "repository": "https://github.com/rjroy/agent-files",
+  "license": "MIT"
+}

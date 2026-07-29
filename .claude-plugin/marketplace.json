@@ -1,0 +1,55 @@
+{
+  "name": "agent-files",
+  "description": "Ronald Roy's personal Claude Code plugin collection: creative engines, quality standards, and workflow tooling.",
+  "owner": {
+    "name": "Ronald Roy",
+    "email": "gsdwig@gmail.com"
+  },
+  "plugins": [
+    {
+      "name": "art-gen",
+      "source": "./plugins/art-gen",
+      "description": "Bun script-backed skill for AI image, video, and background removal via Replicate. No Python or MCP server required."
+    },
+    {
+      "name": "audio-analysis",
+      "source": "./plugins/audio-analysis",
+      "description": "Audio and MIDI file analysis capabilities for Claude Code. Provides scripts for extracting tempo, key, chords, structure, and other musical information from audio files (WAV, MP3, FLAC, OGG, M4A) and MIDI files."
+    },
+    {
+      "name": "field-guide",
+      "source": "./plugins/field-guide",
+      "description": "Compiles .lore/ artifacts into a persistent, query-able HTML wiki stored in .lore/reference/. Sibling to lore-development."
+    },
+    {
+      "name": "judgment-engine-virelan",
+      "source": "./plugins/judgment-engine-virelan",
+      "description": "The Judgment Engine of Virelan - A strategic thinking partner that surfaces tensions, challenges assumptions, and shapes judgment through reflective pressure rather than prescriptive solutions."
+    },
+    {
+      "name": "lore-development",
+      "source": "./plugins/lore-development",
+      "description": "A lightweight plugin for building project context. Skills for research, brainstorming, specifications, planning, implementation, and retrospectives."
+    },
+    {
+      "name": "music-engine-rowan",
+      "source": "./plugins/music-engine-rowan",
+      "description": "The Music Engine of Rowan - A creative songwriting and image prompt generation system for Suno AI, featuring thematic worlds with distinct visual and musical identities."
+    },
+    {
+      "name": "notify-hook",
+      "source": "./plugins/notify-hook",
+      "description": "Desktop/mobile notifications when Claude needs user attention"
+    },
+    {
+      "name": "personal",
+      "source": "./plugins/personal",
+      "description": "Ronald Roy's personal skills: language quality standards (C++, Rust, TypeScript), development standards, writing style rules, profile context, and pi-agent tooling."
+    },
+    {
+      "name": "story-engine-wyrd",
+      "source": "./plugins/story-engine-wyrd",
+      "description": "Story creation system with multiple fictional worlds, genre lenses, and format support for flash fiction through epic narratives"
+    }
+  ]
+}
