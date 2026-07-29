@@ -106,12 +106,9 @@ Only assumptions that held under pressure become proto-requirements.
 
 ---
 
-## Guards
+## Guard
 
-- **Never skip the pressure test**: Every assumption must be challenged
-- **Require genuine unknowns**: If there are none, you're not being honest
-- **One fragile assumption minimum**: If everything holds perfectly, you're not pushing hard enough
-- **Don't resolve tensions prematurely**: Some contradictions are structural features, not bugs
+Steps 3-6 aren't optional: skipping the pressure test, or finding zero fragile assumptions, means the idea wasn't actually tested — it was just described.
 
 ---
 

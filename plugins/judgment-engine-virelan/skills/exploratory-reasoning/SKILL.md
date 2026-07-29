@@ -118,15 +118,6 @@ Path 3: **Team Capacity First**
 
 ---
 
-## Guards
-
-- **Truly distinct paths**: Not just variations
-- **Honest about assumptions**: Every path rests on something
-- **Explicit about risks**: Every approach has fracture points
-- **Conditional validity**: No path is universally right
-
----
-
 ## Example Invocation
 
 "Run Exploratory Reasoning on: How should we structure our testing strategy?"

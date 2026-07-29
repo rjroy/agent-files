@@ -97,22 +97,12 @@ Not resolution—but questions that guide judgment:
 
 ---
 
-## Example Debates
+## Example Debate
 
 **Tech debt vs. feature velocity**
 - Position A: Engineering sustainability
 - Position B: Product delivery speed
-- Cross-exam reveals both depend on same resource pool
-
-**Clarity vs. nuance in communication**
-- Position A: Directness and action-orientation
-- Position B: Contextual depth and subtlety
-- Cross-exam surfaces when each approach creates different failures
-
-**Standardization vs. flexibility**
-- Position A: Consistent patterns, lower cognitive load
-- Position B: Context-specific optimization
-- Cross-exam reveals hidden cost of either extreme
+- Cross-exam reveals both depend on the same resource pool
 
 ---
 
@@ -125,12 +115,9 @@ Not resolution—but questions that guide judgment:
 
 ---
 
-## Guards
+## Guard
 
-- **Don't force synthesis**: If the tension is real, hold it
-- **Equal treatment**: Both positions get equal rigor
-- **Cross-exam matters most**: The examination often reveals more than the positions
-- **Watch for false binaries**: Sometimes the debate itself is the wrong frame
+Both positions get equal rigor, and the cross-examination matters more than either position — that's usually where a false binary reveals itself.
 
 ---
 

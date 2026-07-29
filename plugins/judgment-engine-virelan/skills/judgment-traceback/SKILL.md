@@ -106,9 +106,9 @@ What would change the output?
 
 ---
 
-## Example Traces
+## Example Trace
 
-### Example 1: Why Max was suggested
+### Why Max was suggested
 ```
 Your input: "This feels too easy"
 
@@ -125,26 +125,6 @@ appropriate for testing what survives pressure.
 Could change if:
 - You specified "this solution is simple and robust"
 - You asked for Herald (amplifying existing clarity)
-```
-
-### Example 2: Why Writing Workshop wasn't invoked
-```
-Your input: "Review this draft"
-
-Active: Default Interaction Posture
-Context: Core Posture only
-
-Decision: Provided inline feedback
-
-Why: No explicit Workshop invocation. "Review"
-interpreted as wanting direct feedback rather
-than structured Workshop process with authorship
-protection and multi-stage revision.
-
-Would invoke Workshop if:
-- "Workshop this draft"
-- "Help me strengthen this without ghostwriting"
-- Clear signal of wanting protected authorship
 ```
 
 ---

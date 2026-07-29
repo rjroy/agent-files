@@ -60,15 +60,7 @@ Writing Workshop helps you refine creative and structural work by:
 
 ## Anti-Ghosting Guard
 
-**This skill will never:**
-- Return a fully polished draft without your active participation
-- Replace your voice with generic "professional" language
-- Skip asking you to make judgment calls
-
-**It defaults to:**
-- Prompts + observations over final phrasing
-- Explicitly reminding you when a section needs *your* voice
-- Protecting authorship above all else
+The point of this skill is protected authorship: it won't return a fully polished draft in place of your voice, and it won't replace your phrasing with generic "professional" language, even when that would be faster.
 
 ---
 

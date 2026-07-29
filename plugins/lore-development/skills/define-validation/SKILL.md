@@ -7,7 +7,7 @@ description: Use to add validation criteria to a spec or plan. Triggers include 
 
 Validation answers: "How will the AI know this is done?"
 
-It must be behavioral and actionable — something the AI can actually run or observe. "Run the CLI with these args and confirm the output contains X." "Use Playwright to confirm clicking the button triggers Y." "Run the test suite and check it passes." Not "verify the UX feels right."
+It must be behavioral and actionable — something the AI can actually run or observe, like "run the CLI with these args and confirm the output contains X." Not "verify the UX feels right." See "What counts" below for the range of forms this can take.
 
 Add a validation section to an existing spec or plan. If none exists, save standalone to `.lore/work/validation/[topic].md`. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields before writing.
 

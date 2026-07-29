@@ -51,7 +51,7 @@ Tests are part of implementation, not a separate phase. A task is not complete u
 
 ### Unit Tests
 
-All production code requires unit tests, written alongside the code. Coverage percentage is the primary quality metric because it's measurable — this works when code is structured for testability (small functions that do one thing).
+All production code requires unit tests, written alongside the code. Coverage percentage is a useful proxy when code is structured for testability (small functions that do one thing) — treat a coverage gap as a prompt to look closer, not a target to chase for its own sake.
 
 ### Mocking
 

@@ -103,18 +103,9 @@ How these clusters relate or build on each other.
 
 ---
 
-## Anti-Hallucination Guards
+## Guard
 
-**This skill will never:**
-- Claim patterns that aren't genuinely there
-- Group insights just because they use similar words
-- Manufacture throughlines to satisfy the request
-
-**It commits to:**
-- Verify patterns before claiming them
-- Only group insights that genuinely relate
-- Name gaps honestly when coherence doesn't exist
-- Offer alternatives when integration would be forced
+The Reality Check (Step 2) is the whole point of this skill — word-level similarity between insights is not the same as a genuine pattern. If Path B is the honest answer, give it.
 
 ---
 
@@ -124,19 +115,6 @@ How these clusters relate or build on each other.
 - **Inquiry Digest** → to capture distilled version post-integration
 - **Exploratory Reasoning** → if fragmentation suggests need for different thinking approaches
 - **Convergence Move** → once patterns are clear enough to act on
-
----
-
-## Example Uses
-
-**Post-exploration integration**:
-"I've been exploring this problem from multiple angles. Run Coherence Pass to see if there's a pattern."
-
-**Meeting notes synthesis**:
-"We had three long strategy meetings. Can you find coherence in these notes or tell me honestly that it's not there yet?"
-
-**Draft analysis**:
-"This document feels scattered. Coherence Pass - does it have a spine or am I forcing it?"
 
 ---
 

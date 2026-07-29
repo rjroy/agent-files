@@ -35,7 +35,7 @@ Use `Result<T, E>` for failures the caller might handle. Use `Option<T>` for abs
 
 - `unwrap()` in production code is a bug waiting to be filed. Allow it only in tests, examples, and `const` contexts.
 - `expect("msg")` is acceptable when the message is "this cannot fail because X" and X is a genuine invariant.
-- `unreachable!()` and `todo!()` are both panics. `todo!()` must never ship.
+- `unreachable!()` and `todo!()` are both panics — see Debug Code below on shipping `todo!()`.
 - Do not swallow errors with `let _ = ...` without a comment explaining why the failure is safely ignored.
 
 ## Pattern Matching
