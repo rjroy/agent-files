@@ -1,0 +1,11 @@
+{
+  "name": "judgment-engine-virelan",
+  "version": "1.0.0",
+  "author": {
+    "name": "Ronald Roy",
+    "email": "gsdwig@gmail.com"
+  },
+  "description": "The Judgment Engine of Virelan - A strategic thinking partner that surfaces tensions, challenges assumptions, and shapes judgment through reflective pressure rather than prescriptive solutions.",
+  "repository": "https://github.com/rjroy/wyrd-gateway.git",
+  "license": "MIT"
+}

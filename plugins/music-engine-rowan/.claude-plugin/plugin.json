@@ -1,0 +1,11 @@
+{
+  "name": "music-engine-rowan",
+  "version": "1.0.0",
+  "author": {
+    "name": "Ronald Roy",
+    "email": "gsdwig@gmail.com"
+  },
+  "description": "The Music Engine of Rowan - A creative songwriting and image prompt generation system for Suno AI, featuring thematic worlds with distinct visual and musical identities.",
+  "repository": "https://github.com/rjroy/wyrd-gateway.git",
+  "license": "MIT"
+}

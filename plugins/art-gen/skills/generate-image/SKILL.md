@@ -1,5 +1,4 @@
 ---
-name: generate-image
 description: Use when the user asks to generate, create, edit, animate, or process images. Covers text-to-image generation, image editing (img2img), video generation from images, and background removal.
 ---
 
@@ -9,10 +8,10 @@ description: Use when the user asks to generate, create, edit, animate, or proce
 
 Read the appropriate catalog before selecting a model:
 
-${PLUGIN_ROOT}/reference/image-models.md
-${PLUGIN_ROOT}/reference/video-models.md
-${PLUGIN_ROOT}/reference/img2img-models.md
-${PLUGIN_ROOT}/reference/remove-bg-models.md
+${CLAUDE_PLUGIN_ROOT}/reference/image-models.md
+${CLAUDE_PLUGIN_ROOT}/reference/video-models.md
+${CLAUDE_PLUGIN_ROOT}/reference/img2img-models.md
+${CLAUDE_PLUGIN_ROOT}/reference/remove-bg-models.md
 
 ## Prerequisites
 
@@ -23,7 +22,7 @@ All scripts require `REPLICATE_API_TOKEN` in the environment. If unset, the scri
 ### Text-to-image
 
 ```
-bun ${PLUGIN_ROOT}/src/generate-image.ts --prompt <string> --output <path> [--model <string>] [--aspect-ratio <string>] [--width <number>] [--height <number>] [--num-outputs <number>] [--seed <number>] [--params <json>]
+bun ${CLAUDE_PLUGIN_ROOT}/src/generate-image.ts --prompt <string> --output <path> [--model <string>] [--aspect-ratio <string>] [--width <number>] [--height <number>] [--num-outputs <number>] [--seed <number>] [--params <json>]
 ```
 
 Flags:
@@ -39,7 +38,7 @@ Flags:
 ### Image editing (img2img)
 
 ```
-bun ${PLUGIN_ROOT}/src/edit-image.ts --image <path> --prompt <string> --model <string> --output <path> [--strength <number>] [--params <json>]
+bun ${CLAUDE_PLUGIN_ROOT}/src/edit-image.ts --image <path> --prompt <string> --model <string> --output <path> [--strength <number>] [--params <json>]
 ```
 
 Flags:
@@ -55,7 +54,7 @@ Flags:
 > **Cost and time warning:** Video generation costs $0.10–$1.50+ per video and takes 2–5 minutes. Always confirm with the user before running video generation.
 
 ```
-bun ${PLUGIN_ROOT}/src/generate-video.ts --image <path> --prompt <string> --model <string> --output <path> [--params <json>]
+bun ${CLAUDE_PLUGIN_ROOT}/src/generate-video.ts --image <path> --prompt <string> --model <string> --output <path> [--params <json>]
 ```
 
 Flags:
@@ -68,7 +67,7 @@ Flags:
 ### Background removal
 
 ```
-bun ${PLUGIN_ROOT}/src/remove-background.ts --image <path> --model <string> --output <path> [--params <json>]
+bun ${CLAUDE_PLUGIN_ROOT}/src/remove-background.ts --image <path> --model <string> --output <path> [--params <json>]
 ```
 
 Flags:

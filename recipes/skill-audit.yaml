@@ -1,0 +1,90 @@
+version: "1.0.0"
+title: "Skill Quality Audit"
+description: >-
+  Audits a goose skill file against modern context engineering principles.
+  Removes code examples (a stated principle is sufficient) and eliminates
+  duplication (each rule stated once, in its natural home section). Never
+  removes standards, opinions, or gotchas — only examples and restatements.
+  Produces a before/after report of what changed and why.
+instructions: |
+  You are auditing a goose skill file for quality and context engineering best
+  practices. The skill file is at: {{ skill_path }}
+
+  ## The Policy
+
+  Apply these principles from modern context engineering research. The goal is
+  to tighten the skill without weakening it. Standards stay. Examples and
+  duplication go.
+
+  ### 1. Remove code examples — a stated principle is sufficient
+
+  Once a principle is stated in prose, the model can follow it. Code example
+  blocks that merely illustrate an already-stated rule should be removed. They
+  constrain the exploration space and add tokens without adding information.
+
+  Exception: keep an example if it encodes a specific opinion or non-obvious
+  decision that the prose alone does not convey. If removing the example would
+  leave ambiguity about what the rule means in practice, keep it.
+
+  ### 2. Eliminate duplication — each rule stated once
+
+  Audit for the same guidance appearing in multiple places. Common patterns:
+  - A "What Not To Do" section that restates rules from other sections in
+    negative form. Fold each item into the section where the positive rule
+    already lives, then delete the section.
+  - The same rule appearing in two sections (e.g., "avoid raw new/delete" in
+    both Resource Management and Lifetime). Keep it in the section where it
+    fits most naturally, remove the duplicate.
+  - A rule stated as a bullet, then restated as a code smell or gotcha
+    elsewhere. Pick one location.
+
+  ### 3. Never remove standards
+
+  This is critical. The following are NOT examples or duplication and must be
+  preserved:
+  - Naming conventions (these encode project-specific taste)
+  - Error handling strategy preferences
+  - Ownership and lifetime rules
+  - Performance gotchas
+  - Tooling requirements (clippy, rustfmt, etc.)
+  - Testing and documentation standards
+  - Any rule that a human reviewer would need to be told
+
+  When in doubt about whether something is a "standard" or an "example,"
+  treat it as a standard and keep it.
+
+  ## Process
+
+  1. Read the skill file at {{ skill_path }}.
+  2. Catalog every code example block. For each, decide: does it encode an
+     opinion that the prose doesn't, or does it merely illustrate a stated
+     rule? Mark for removal or retention.
+  3. Catalog every section. Identify duplication: rules that appear in more
+     than one place, or a "What Not To Do" section that restates positive
+     rules. Plan where each duplicated rule should live (its most natural
+     home section).
+  4. Make the edits. Remove examples marked for removal. Fold duplicated
+     rules into their home sections. Delete now-empty sections.
+  5. Do NOT rewrite prose that isn't duplicated. Do NOT rephrase rules to be
+     shorter. Do NOT remove sections. Do NOT merge sections. Only remove
+     examples and duplication.
+  6. Produce a report listing every change made, with the principle applied
+     (example removal vs. duplication elimination) and the reason.
+
+  ## Constraints
+
+  - The frontmatter (YAML between --- markers) must not be modified.
+  - The file must remain valid Markdown.
+  - Every section heading from the original must still exist after editing,
+    unless the section was purely a "What Not To Do" duplicate that has been
+  folded into other sections.
+  - If the skill has no code examples and no duplication, say so and make no
+    changes.
+prompt: "Audit the skill file at {{ skill_path }} for code examples and duplication. Apply the policy in the instructions. Report what you changed."
+parameters:
+  - key: skill_path
+    input_type: string
+    requirement: required
+    description: "Path to the SKILL.md file to audit"
+settings:
+  max_turns: 30

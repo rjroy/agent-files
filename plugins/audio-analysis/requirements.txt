@@ -1,0 +1,27 @@
+# Audio and MIDI analysis dependencies for audio-analysis-plugin
+# Python 3.9+ required
+
+# Audio analysis - librosa with optimized audio processing
+librosa>=0.10.0,<0.12
+
+# MIDI analysis - music21 for music theory and analysis
+music21>=9.1,<10
+
+# Audio I/O - soundfile for reading audio files
+soundfile>=0.12,<1
+
+# Numerical processing - numpy for array operations
+numpy>=1.20,<3
+
+# Scientific computing - scipy for advanced signal processing
+scipy>=1.7,<2
+
+# Visualization - matplotlib for spectrogram generation
+matplotlib>=3.5,<4
+
+# Machine learning - scikit-learn for clustering in structure analysis
+scikit-learn>=1.0,<2
+
+# Development dependencies (optional)
+# Install with: pip install -r requirements.txt -r requirements-dev.txt
+# or: pip install -e ".[dev]"

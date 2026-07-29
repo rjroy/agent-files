@@ -1,5 +1,4 @@
 ---
-name: exploratory-reasoning
 description: Use when the question is too big to solve but too important to guess, when you need thinking space that sharpens structure, when answers feel fluent but hollow, or when each thought adds complexity without traction. Generates multiple distinct reasoning paths with assumptions and risks visible.
 ---
 

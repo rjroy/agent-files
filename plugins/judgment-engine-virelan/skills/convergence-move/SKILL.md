@@ -1,5 +1,4 @@
 ---
-name: convergence-move
 description: Use when thinking is stretched but nothing fully resolves yet you need to move forward, when multiple viable paths exist with real tension, when you can't hold the open loop anymore but won't force false clarity. Helps you act with judgment when full resolution isn't possible.
 ---
 

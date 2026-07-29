@@ -1,5 +1,4 @@
 ---
-name: story-compiler
 description: Compile multi-chapter story into single full novel document with title page, TOC, and all chapters
 ---
 

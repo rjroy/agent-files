@@ -27,9 +27,9 @@ Invoked as `/simplify` with optional arguments:
 
 ## Output
 
-Record what happened in a notes file at `.lore/work/notes/simplify-<identifier>.md`. Load `${PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. The body is freeform — capture which files were processed, what was simplified, any failures and how they were resolved.
+Record what happened in a notes file at `.lore/work/notes/simplify-<identifier>.md`. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. The body is freeform — capture which files were processed, what was simplified, any failures and how they were resolved.
 
-Write the body in Markdown per the "Body Format" section of `${PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML only when a visual carries meaning prose can't, such as a color-coded per-file outcome table.
+Write the body in Markdown per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML only when a visual carries meaning prose can't, such as a color-coded per-file outcome table.
 
 ## Escalation
 

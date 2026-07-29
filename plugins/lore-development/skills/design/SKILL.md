@@ -11,6 +11,6 @@ End with a decision. A design without one is just research.
 
 ## Saving
 
-Save to `.lore/work/design/[topic].md` using kebab-case. Load `${PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields before writing.
+Save to `.lore/work/design/[topic].md` using kebab-case. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields before writing.
 
-Write the body Markdown-first per the "Body Format" section of `${PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML when topology or trade-offs need it — inline-SVG architecture or flow diagrams that beat prose, and side-by-side visual comparison of competing options.
+Write the body Markdown-first per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML when topology or trade-offs need it — inline-SVG architecture or flow diagrams that beat prose, and side-by-side visual comparison of competing options.

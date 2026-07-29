@@ -1,5 +1,4 @@
 ---
-name: qa-runner
 description: Use when you want to interrogate a concept, system, or plan systematically, when you need to force judgment through structured questioning, when you want one question at a time (not all at once), or when preparing for a review, planning session, or decision point. Conducts interactive interrogation.
 ---
 

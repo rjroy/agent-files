@@ -23,6 +23,6 @@ Build an implementation plan the user can review and approve before any code is 
 
 ## Saving
 
-Save to `.lore/work/plans/[feature-name].md` using kebab-case. Load `${PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. The document body is freeform — what matters is that steps are concrete (files, functions, changes) and the source artifact or goal is clearly referenced so validation has something to check against.
+Save to `.lore/work/plans/[feature-name].md` using kebab-case. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. The document body is freeform — what matters is that steps are concrete (files, functions, changes) and the source artifact or goal is clearly referenced so validation has something to check against.
 
-Write the body Markdown-first per the "Body Format" section of `${PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML when the step flow needs it — a visual step sequence with dependency indicators, and validation gates distinguished visually from the step description.
+Write the body Markdown-first per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML when the step flow needs it — a visual step sequence with dependency indicators, and validation gates distinguished visually from the step description.

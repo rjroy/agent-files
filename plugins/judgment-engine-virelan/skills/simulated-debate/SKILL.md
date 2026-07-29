@@ -1,5 +1,4 @@
 ---
-name: simulated-debate
 description: Use when two ideas both feel right but won't fit cleanly together, when you need structured tension (not synthesized agreement), when you keep toggling between values and constraints, when one side dominates but doesn't hold all the stakes, or when you want to test competing definitions or approaches. Creates multi-voice argument to reveal tensions.
 ---
 

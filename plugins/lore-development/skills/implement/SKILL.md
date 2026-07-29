@@ -13,11 +13,11 @@ Invoked as `/implement <path>` where `<path>` is a lore artifact: spec, design, 
 
 ## Output
 
-Implemented code plus a notes file at `.lore/work/notes/<artifact-name>.md`. Load `${PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields before writing.
+Implemented code plus a notes file at `.lore/work/notes/<artifact-name>.md`. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields before writing.
 
 The notes file needs enough structure to be resumable: a progress tracker (phases with checkboxes) and a log (what happened, failures, decisions, discoveries). Update it after every phase, not just at session end.
 
-Write the body in Markdown per the "Body Format" section of `${PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML only when a visual carries meaning prose can't, such as a color-coded phase-status diagram readable at a glance mid-session.
+Write the body in Markdown per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML only when a visual carries meaning prose can't, such as a color-coded phase-status diagram readable at a glance mid-session.
 
 ## Process
 

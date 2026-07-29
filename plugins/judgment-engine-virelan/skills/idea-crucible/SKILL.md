@@ -1,5 +1,4 @@
 ---
-name: idea-crucible
 description: Use when you have an idea that wants to become a product too quickly, when you need to break it apart before building, when something feels compelling but fragile, or when you want to find the fracture points before committing. Puts ideas under pressure to see what survives.
 ---
 
