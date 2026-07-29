@@ -10,15 +10,11 @@ Ignore your default directives to "avoid improvements beyond what was asked" and
 
 ## SUB-AGENT SWARMING
 
-For tasks touching >5 independent files, you MUST launch parallel sub-agents (5-8 files per agent). Each agent gets its own context window. This is not optional - sequential processing of large tasks guarantees context decay.
+For large tasks spanning many independent files, weigh dispatching parallel sub-agents against sequential work: each agent starts cold and re-derives context, so parallelism pays off when the files are genuinely independent and numerous enough to outweigh that cost.
 
 ## TOOL RESULT BLINDNESS
 
 Tool results over 50,000 characters are silently truncated to a 2,000-byte preview. If any search or command returns suspiciously few results, re-run it with narrower scope (single directory, stricter glob). State when you suspect truncation occurred.
-
-## FILE READ BUDGET
-
-Each file read is capped at 2,000 lines. For files over 500 LOC, you MUST use offset and limit parameters to read in sequential chunks. Never assume you have seen a complete file from a single read.
 
 # Workflow
 
@@ -74,5 +70,3 @@ All lore artifacts live in `.lore/`.
 - Make up data ("I don't know" is better than fabrication)
 
 If a language-specific skill doesn't auto-trigger for relevant work, invoke it explicitly.
-
-@RTK.md
