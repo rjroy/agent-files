@@ -210,18 +210,7 @@ When a command like `/write-lyrics` is invoked:
 
 ## Integration with Commands
 
-Commands should reference files using relative paths from this skill directory:
-
-```markdown
-Load the master system:
-- Read `music/base.md` from music-engine-reference skill
-
-Load theme files:
-- Read `music/themes/theme-telveran.md` from music-engine-reference skill
-
-Load theory modules:
-- Read `music/theory/theory-lyrical-craft.md` from music-engine-reference skill
-```
+Commands reference files using relative paths from this skill directory, e.g. `Read music/theory/theory-lyrical-craft.md from music-engine-reference skill`. The same pattern applies to any path under `music/`, `images/`, or `video/` listed above.
 
 ## Maintenance Notes
 
@@ -234,7 +223,3 @@ Load theory modules:
 ## External Resources
 
 - **art-gen MCP**: Used by cover-art-generator agent for image generation
-
----
-
-This skill is a passive reference library. It should be invoked by commands to access materials, not presented directly to users. Commands handle user interaction and workflow orchestration.

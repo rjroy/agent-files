@@ -16,11 +16,7 @@ Combined with **theory-grounded craft** and **multi-phase workflow**, this syste
 
 ## Three-Phase Workflow
 
-### Mandatory Process
-
-**NEVER CREATE STORIES WITHOUT FOLLOWING THIS WORKFLOW**
-
-The three-phase approach ensures stories develop from strong conceptual foundations through to polished execution.
+The three-phase approach (concept → character → execution) ensures stories develop from strong conceptual foundations through to polished execution. Skipping phases risks structurally weak stories — follow the full sequence unless the user explicitly asks for a faster, lighter-touch pass.
 
 ---
 

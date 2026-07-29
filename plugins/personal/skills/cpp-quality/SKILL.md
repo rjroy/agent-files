@@ -42,13 +42,11 @@ When you see non-const where const would work, treat it as a code smell.
 
 ## Error Handling
 
-Pick one strategy per project and stick to it:
+Pick one strategy per project and stay consistent — a codebase that mixes exceptions and error codes ad hoc forces every caller to guess which convention applies:
 
-- **Exceptions:** Use for truly exceptional conditions. Never use for control flow. If a function can throw, document it. If performance is critical, measure before assuming exceptions are the bottleneck.
+- **Exceptions:** Use for truly exceptional conditions, not as a control-flow mechanism — reaching for them to skip a branch instead of throwing on genuine failure makes call sites hard to reason about. If a function can throw, document it. If performance is critical, measure before assuming exceptions are the bottleneck.
 - **Error codes/std::expected:** Use when failure is routine or exceptions are prohibited. Always check return values (use `[[nodiscard]]`).
 - **Assertions:** Use for invariants that should never be violated. `assert` is for programmer errors, not runtime conditions.
-
-Never mix strategies inconsistently within a codebase.
 
 ## Initialization
 

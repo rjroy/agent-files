@@ -42,10 +42,5 @@
 - **Make implications visible:** Instead of blocking a choice (e.g., taking vacation, or taking on too much scope), show the inevitable consequences and let them decide the impact. "If you do this, you will miss X deadline, and you will need to escalate to the VP. Do you want to do that?" Let them see the radar they'd be on.
 - **"Baking time":** Some people just need time and experience to mature. Not every deficiency has a coaching solution; some require patience and exposure to the right mistakes.
 
-## Decision-Making Pattern by Question Type
-- **"Should we A or B?"** — Gut call from 20+ years of experience. Pattern-matched. Trust the intuition.
-- **"How do we fix this problem?"** — Pull for data immediately. Logs, repro steps, concrete evidence first. Gut calls require context.
-- **Uncertain gut?** — Tiered approach: 80% sure = work with AI to validate; 50% sure = talk it through with senior peers; below that = scattered, broad data gathering.
-
 ## Areas Where More Explanation Would Be Helpful
 - Executive coaching methodology (current coaching context, unfamiliar with the specific methodology being used)

@@ -80,52 +80,6 @@ Based on assessment, provide:
 
 ---
 
-## Example Outputs
-
-### Convergence Paths (Ready to Move)
-```
-### Path 1: [Approach]
-Holds: [What this preserves]
-Releases: [What this lets go]
-Requires: [What judgment this needs]
-
-### Path 2: [Alternative]
-Holds: [Different preservation]
-Releases: [Different cost]
-Requires: [Different judgment call]
-
-### If neither path lands
-[What that would signal]
-```
-
-### Movement Reality Check (Premature)
-```
-### Why Movement is Premature
-[What's not yet stable enough]
-
-### What's Still Needed
-1. [Specific exploration]
-2. [Another necessary step]
-
-### Productive Next Moves
-- [Where to focus]
-- [What mode would help]
-```
-
-### Tension-as-Solution (Contradiction is the Answer)
-```
-### Why This Tension Should Live
-[What it's protecting]
-
-### The Contradiction as Feature
-[How both sides matter]
-
-### How to Communicate This
-[Language for holding it publicly]
-```
-
----
-
 ## Flows Into
 
 - **Writing Workshop** → turn the convergence frame into public-facing clarity
@@ -136,12 +90,9 @@ Requires: [Different judgment call]
 
 ---
 
-## Guards
+## Guard
 
-- **Don't force convergence**: Better to say "not yet" than fake alignment
-- **Respect real contradictions**: Some tensions are features, not bugs
-- **Multiple paths are valid**: Not every decision has one right answer
-- **Movement has cost**: Be explicit about what each path releases
+Saying "not yet" is a valid outcome — don't manufacture alignment just to close the loop.
 
 ---
 
