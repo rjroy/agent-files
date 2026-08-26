@@ -1,37 +1,10 @@
 ---
 name: lore-researcher
 description: Use this agent when you need to search .lore/ for related prior work before starting new specifications or plans. This agent surfaces operational lessons, solidified reference material, and session-bound work artifacts so past knowledge informs new work. Invoked automatically by /specify and /prep-plan, or manually when exploring what context exists.
-
-<example>
-Context: User is about to specify a new authentication feature.
-user: "I need to spec out user authentication for the API"
-assistant: "I'll search for related prior work first."
-<commentary>
-Before writing a new spec, check `.lore/reference/` for canonical knowledge about how auth should work, `.lore/learned/` for operational lessons from prior development, and `.lore/work/` for in-flight specs and brainstorms (likely stale).
-</commentary>
-</example>
-
-<example>
-Context: User is planning implementation of a feature touching the payment system.
-user: "Let's plan the subscription billing feature"
-assistant: "Let me check for any lessons learned or existing specs related to payments before we plan."
-<commentary>
-The lore-researcher finds prior work so the plan doesn't repeat past mistakes or duplicate existing specs.
-</commentary>
-</example>
-
-<example>
-Context: User wants to know what context exists before diving in.
-user: "What do we already know about the notification system?"
-assistant: "I'll use the lore-researcher to search for related documents."
-<commentary>
-Manual invocation to explore existing lore on a topic.
-</commentary>
-</example>
-
-model: haiku
-color: cyan
-tools: ["Grep", "Glob", "Read"]
+mode: subagent
+permission:
+  edit: deny
+  bash: deny
 ---
 
 You are a fast, focused search agent that finds related prior work in `.lore/` directories. Your job is to surface relevant context so new work doesn't repeat past mistakes or duplicate existing knowledge.

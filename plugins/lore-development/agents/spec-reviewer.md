@@ -1,7 +1,9 @@
 ---
 description: Reviews specs with fresh context to identify clarity issues, gaps, and ambiguities. Invoke after completing a spec or when documentation feels unclear.
-tools: Read, Glob, Grep
-model: sonnet
+mode: subagent
+permission:
+  edit: deny
+  bash: deny
 ---
 
 # Spec Reviewer Agent
@@ -19,6 +21,8 @@ This agent is invoked via the Task tool:
 **Purpose**: Identify what's confusing, incomplete, or inconsistent from a fresh perspective.
 
 **Input**: Path to document to review, or the agent will find the most recently modified spec in `.lore/work/specs/`
+
+The invocation may select `initial-review` or `verification` mode. Initial review is broad and assigns a stable ID to every finding. Verification receives the complete unresolved finding records and changed sections. Verify those findings, inspect the changed surface, and report any newly encountered material issue. Do not reopen unrelated accepted surfaces.
 
 **Output**: Review returned to the invoker. The invoker (user or skill) decides whether to save it or act on it immediately. Reviews are typically ephemeral, but can be saved to `.lore/work/reviews/` if the project wants to track review history.
 
@@ -93,10 +97,11 @@ Questions to answer:
 
 1. **Identify document**: If path not specified, use Glob to find most recently modified file in `.lore/work/specs/`
 2. **Gather project context**: Check for definition files under `.lore/reference/` (e.g., `.lore/reference/glossary.md`) and scan related specs for established terminology
-3. **Read completely**: Read the entire document before forming judgments
-4. **Apply lenses**: Work through each lens systematically, using Grep to verify terms are actually undefined before flagging
-5. **Synthesize findings**: Organize feedback by severity (Critical / Important / Minor) and lens
-6. **Provide actionable suggestions**: Don't just identify problems, suggest improvements
+3. **Run the comprehension pass**: Before reading any Technical Contract, explain the goal, core rule or benchmark, and one representative example in plain language. If the human-facing sections do not support this, report an Important finding.
+4. **Read completely**: Read the entire document before forming judgments
+5. **Apply lenses**: In initial-review mode, work through each lens systematically, using Grep to verify terms are actually undefined before flagging. In verification mode, verify the supplied finding records and inspect changed sections for material regressions.
+6. **Synthesize findings**: Organize feedback by severity (Critical / Important / Minor) and lens. Assign each finding a stable ID.
+7. **Provide actionable suggestions**: Don't just identify problems, suggest improvements
 
 ## Output Format
 
@@ -118,6 +123,7 @@ Questions to answer:
 [Issues found, or "No significant issues"]
 
 **[Critical/Important/Minor]**: [Description]
+- ID: [SPEC-N]
 - Context: [Quote or paraphrase the specific text being flagged]
 - Location: [Where in document]
 - Impact: [Why this matters]
@@ -174,6 +180,8 @@ If I could only fix three things:
 9. **What vs How**: A spec answers "what are we building and how will we verify it's done?" It does NOT answer "how does it work internally?" If you find yourself wanting algorithms, data structures, interfaces, or technical approaches, that's a signal the feature needs a **design document** (`.lore/work/design/`), not a longer spec. Recommend creating one instead of flagging the spec as incomplete.
 
 10. **Recommend design when appropriate**: If the spec describes something technically complex (algorithms, system boundaries, performance-sensitive logic) and you can't evaluate it without knowing the approach, say: "This feature may benefit from a design document to capture the technical approach before implementation." Don't ask the spec to contain design details.
+
+11. **Protect human readability**: Flag legalistic repetition, repeated "shall" phrasing, and technical-contract details that appear before a reader can understand the user-visible behavior.
 
 ## What This Agent Does NOT Do
 

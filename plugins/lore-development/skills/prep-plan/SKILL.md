@@ -11,15 +11,15 @@ Build an implementation plan the user can review and approve before any code is 
 
 ## Process
 
-**Gather context.** Invoke the `lore-researcher` agent via Task tool with the topic description — wait for the result. Read any relevant lore artifacts (spec, design, brainstorm, research). Explore the codebase with an Explore subagent to understand what exists and where changes will land.
+**Gather context.** Invoke the `lore-researcher` subagent via Task tool with the topic description and wait for the result. If unavailable, dispatch the host's general-purpose subagent with the research role from `agents/lore-researcher.md`. Read relevant lore artifacts (spec, design, brainstorm, research). Explore the codebase with the host's exploration subagent to understand what exists and where changes will land.
 
 **Surface gaps before drafting.** If the input has ambiguous requirements, contradictions, or unstated assumptions that would force guesses, list them and ask the user to resolve them first. A plan built on unreviewed assumptions fails during implementation.
 
-**Draft collaboratively.** Map the goal or requirements to concrete implementation steps. Order by dependency. Flag steps that need specialized expertise. Include a final validation step that checks the implementation against the source artifact.
+**Draft collaboratively.** Map the goal or requirements to concrete implementation steps and executable evidence. Order by dependency. Flag steps that need specialized expertise. Distribute requirement checks into the steps that implement them, then include a final validation step for cross-cutting behavior and evidence reconciliation.
 
 **Save.** The saved file is the review vehicle — don't present the plan in chat before saving.
 
-**Fresh-eyes review.** After saving, invoke the `plan-reviewer` agent via Task tool on the saved plan. Present findings and offer to address issues before implementation begins.
+**Fresh-eyes review.** After saving, invoke the `plan-reviewer` subagent via Task tool in initial-review mode on the saved plan. If unavailable, dispatch the host's general-purpose subagent with the role from `agents/plan-reviewer.md`. If findings are corrected, invoke verification mode with the complete unresolved finding records and changed sections. After those findings close, run one terminal broad acceptance review. Corrections from that review receive targeted verification with their complete finding records; do not run another broad review unless accepted scope changed.
 
 ## Saving
 
