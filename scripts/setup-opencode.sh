@@ -4,9 +4,11 @@ set -euo pipefail
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 plugins_dir="$repo_dir/plugins"
+lore_agents_dir="$plugins_dir/lore-development/agents"
 config_home="${XDG_CONFIG_HOME:-$HOME/.config}"
 config_dir="$config_home/opencode"
 config_file="$config_dir/opencode.json"
+opencode_agents_dir="$config_dir/agents"
 
 if ! command -v node >/dev/null 2>&1; then
 	printf 'Error: Node.js is required to update %s.\n' "$config_file" >&2
@@ -69,5 +71,24 @@ const skillCount = fs.readdirSync(resolvedPluginsDir, { recursive: true })
 console.log(`${alreadyRegistered ? "Verified" : "Added"} ${resolvedPluginsDir} in ${configFile}.`);
 console.log(`OpenCode will discover ${skillCount} skill definition(s) from this directory.`);
 NODE
+
+if [ -d "$lore_agents_dir" ]; then
+	mkdir -p "$opencode_agents_dir"
+	agent_count=0
+	for source in "$lore_agents_dir"/*.md; do
+		target="$opencode_agents_dir/$(basename "$source")"
+		if [ -e "$target" ] || [ -L "$target" ]; then
+			if [ "$(readlink -f "$target")" != "$(readlink -f "$source")" ]; then
+				printf 'Warning: preserving existing OpenCode agent: %s\n' "$target" >&2
+				continue
+			fi
+		else
+			ln -s "$source" "$target"
+		fi
+		agent_count=$((agent_count + 1))
+	done
+	printf 'Registered %d lore-development agent definition(s) in %s.\n' \
+		"$agent_count" "$opencode_agents_dir"
+fi
 
 printf 'Quit and restart OpenCode for the updated configuration to take effect.\n'

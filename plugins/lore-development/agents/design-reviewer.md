@@ -1,7 +1,9 @@
 ---
 description: Reviews design documents with fresh context to identify weak decisions, missing trade-offs, and implementation gaps. Invoke after completing a design or when technical approach feels uncertain.
-tools: Read, Glob, Grep
-model: sonnet
+mode: subagent
+permission:
+  edit: deny
+  bash: deny
 ---
 
 # Design Reviewer Agent

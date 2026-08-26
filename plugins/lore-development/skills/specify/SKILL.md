@@ -5,13 +5,32 @@ description: This skill should be used when the user wants to define the require
 
 # Specify
 
-Define what to build and how to know it's done. Requirements, numbered. Validation, explicit. Not how to build it — that's the plan.
+Define what to build and how to know it's done. Write first for the person who must
+decide whether the behavior is right, then add the contract an agent needs to build
+it. Not how to build it; that is the plan.
 
 ## Process
 
-Search for related prior work: invoke the `lore-researcher` agent via Task tool with the topic description — wait for the result. Review any relevant lore context. Ask clarifying questions. Draft. Save. Then run a fresh-eyes review.
+Search for related prior work: invoke the `lore-researcher` subagent via Task tool with the topic description and wait for the result. If unavailable, dispatch the host's general-purpose subagent with the research role from `agents/lore-researcher.md`. Review relevant lore context. Ask clarifying questions. Draft. Save. Then run a fresh-eyes review.
 
-After saving, invoke the `spec-reviewer` agent via Task tool on the saved spec. Present findings and offer to address issues before moving on.
+After saving, invoke the `spec-reviewer` subagent via Task tool in initial-review mode on the saved spec. If unavailable, dispatch the host's general-purpose subagent with the role from `agents/spec-reviewer.md`. If findings are corrected, invoke verification mode with the complete unresolved finding records and changed sections. After those findings close, run one terminal broad acceptance review. Corrections from that review receive targeted verification with their complete finding records; do not run another broad review unless accepted scope changed.
+
+## Document Order
+
+Use this default reading order unless the feature clearly needs another:
+
+1. Goal and user problem
+2. Two or three representative user-visible examples
+3. Plain-language explanation of any model, benchmark, or core rule
+4. Visible behavior and important product choices
+5. Special cases and scope boundaries
+6. Numbered requirements
+7. AI Validation
+8. Optional Technical Contract
+
+Keep implementation detail in the Technical Contract rather than forcing readers
+through it to understand the feature. Requirements should state observable outcomes,
+not repeat contract prose. Avoid legalistic repetition and repeated "shall" wording.
 
 ## Requirements
 
@@ -25,6 +44,6 @@ Every spec needs an AI Validation section. It answers: how will the AI verify th
 
 ## Saving
 
-Save to `.lore/work/specs/[feature-name].md` using kebab-case. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. The document body is freeform — what matters is that requirements are numbered and validation is explicit.
+Save to `.lore/work/specs/[feature-name].md` using kebab-case. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. Adapt the default order when useful, but preserve its human-first progression. Requirements must be numbered and validation explicit.
 
 Write the body Markdown-first per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML only where scannability needs it — per-requirement status badges and anchor links per requirement ID so cross-references work.

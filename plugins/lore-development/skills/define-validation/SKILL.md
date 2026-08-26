@@ -22,3 +22,9 @@ When saving standalone, write the body in Markdown per the "Body Format" section
 - Lint and type checks when behavior depends on them
 
 Structural assertions ("verify this function appears only once") don't count. If a regression must not recur, write a test that fails when the behavior regresses, not when lines move.
+
+Map every source requirement to at least one executable check and name the evidence
+the check will produce. Discover affected consumers, state transitions, and system
+boundaries from the feature rather than applying a fixed checklist. Use realistic
+interfaces and persistence where mocks could hide behavior. A broad suite command
+complements these checks but does not replace them.

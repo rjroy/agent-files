@@ -1,7 +1,9 @@
 ---
 description: Reviews implementation plans with fresh context to identify gaps, infeasible steps, and scope creep. Invoke after completing a plan. Works with or without a spec -- checks requirement coverage when a spec exists, checks goal alignment when it doesn't.
-tools: Read, Glob, Grep
-model: sonnet
+mode: subagent
+permission:
+  edit: deny
+  bash: deny
 ---
 
 # Plan Reviewer Agent
@@ -19,6 +21,8 @@ This agent is invoked via the Task tool:
 **Purpose**: Identify gaps between plan and its target (spec or stated goal), infeasible steps, scope creep, and steps too vague to act on.
 
 **Input**: Path to plan to review, or the agent will find the most recently modified plan in `.lore/work/plans/`
+
+The invocation may select `initial-review` or `verification` mode. Initial review is broad and assigns stable finding IDs. Verification receives the complete unresolved finding records and changed sections. Verify those findings, inspect the changed surface, and report any newly encountered material issue. Do not reopen unrelated accepted surfaces.
 
 **Output**: Review returned to the invoker. The invoker (user or skill) decides whether to save it or act on it immediately. Reviews are typically ephemeral, but can be saved to `.lore/work/reviews/` if the project wants to track review history.
 
@@ -43,6 +47,8 @@ This is the most important lens. The entire point of a plan is to deliver a defi
 - Are there spec requirements with no corresponding plan step?
 - Are there plan steps that don't trace back to any requirement? (Potential scope creep.)
 - Does the validation step actually check against the spec?
+- Does each requirement map to an executable check and expected evidence?
+- Are all named consumers and relevant system boundaries covered?
 
 **Process**: Read the referenced spec. List every REQ-XX-N. Check each one against the plan's requirement mapping and implementation steps. Report any that are missing or only partially addressed.
 
@@ -111,8 +117,8 @@ Red flags:
    - **Goal section**: Read carefully. Assess whether the goal is clear enough to verify against.
 4. **Check alignment**: Compare every requirement (from spec) or objective (from goal) against the plan's steps
 5. **Spot-check codebase references**: Use Grep/Glob to verify a sample of file paths and module names mentioned in the plan
-6. **Apply all four lenses**: Work through each systematically
-7. **Synthesize findings**: Organize by severity
+6. **Apply all four lenses**: In initial-review mode, work through each systematically. In verification mode, verify the supplied finding records and inspect changed sections for material regressions.
+7. **Synthesize findings**: Organize by severity and assign each finding a stable ID
 8. **Provide actionable suggestions**: Don't just identify problems, suggest fixes
 
 ## Output Format
@@ -155,6 +161,7 @@ Goal: [quoted or paraphrased]
 [Issues found, or "All requirements are mapped to implementation steps"]
 
 **[Critical/Important/Minor]**: [Description]
+- ID: [PLAN-N]
 - Requirement: [REQ-XX-N]
 - Impact: [What won't get built]
 - Suggestion: [What step to add or modify]

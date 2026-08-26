@@ -21,9 +21,20 @@ For each plan step, define:
 - **Why**: the requirement or goal this step satisfies, with a reference back to the source
 - **Files**: affected files (guidance, not a constraint)
 
+Build a requirement-to-task-to-evidence matrix before saving. Every source
+requirement must map to an executable check. Discover affected consumers, state
+transitions, and system boundaries from the feature. Use realistic interfaces and
+persistence where mocks could hide behavior.
+
 Split a step only when it bundles genuinely different concerns with different validation needs. Resist over-decomposition — the value is the validation gates, not artificial granularity.
 
 Save the task list. The saved files are the review vehicle.
+
+If the project mirrors tasks into an external tracker, list and reconcile existing
+children before creating any. Reuse tasks by source plan and step identity. Inspect
+the tracker's hierarchy and dependency propagation before adding edges, never make a
+parent depend on its own descendant to represent completion, and verify ready and
+blocked state after mutation.
 
 ## Output
 
