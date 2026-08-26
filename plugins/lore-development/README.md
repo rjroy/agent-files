@@ -28,6 +28,7 @@ Skills write into a three-directory `.lore/` tree (`work/`, `reference/`, `learn
 | `/lore-development:distill` | Promote what the code cannot say into reference docs (two seed modes: `code`, `work`) |
 | `/lore-development:ddp` | **Draw the Damn Picture** - visualize flows and relationships with Mermaid |
 | `/lore-development:define-validation` | Define AI validation criteria for work in progress |
+| `/lore-development:install-formula` | Install the reusable Beads workflow formula in a project |
 | `/lore-development:tend` | Periodic hygiene to maintain document status accuracy |
 | `/lore-development:stratify` | Reorganize a stable lore directory into layered subdirectories with a navigational index |
 | `/lore-development:update-stubs` | Scan specs for stubs and generate an outstanding stub index |
