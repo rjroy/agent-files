@@ -49,6 +49,7 @@ def test_implementation_requires_mapped_behavioral_evidence() -> None:
 def test_review_workflows_distinguish_initial_and_verification_modes() -> None:
     prompts = [
         _read("skills/implement/SKILL.md"),
+        _read("agents/design-reviewer.md"),
         _read("agents/spec-reviewer.md"),
         _read("agents/plan-reviewer.md"),
     ]
@@ -58,10 +59,42 @@ def test_review_workflows_distinguish_initial_and_verification_modes() -> None:
         assert "verification" in prompt
         assert "stable ID" in prompt
 
-    for path in ["agents/spec-reviewer.md", "agents/plan-reviewer.md"]:
+    for path in [
+        "agents/design-reviewer.md",
+        "agents/spec-reviewer.md",
+        "agents/plan-reviewer.md",
+    ]:
         prompt = _normalized(path)
         assert "complete unresolved finding records" in prompt
         assert "newly encountered material issue" in prompt
+        assert "do not populate a fixed template" in prompt
+
+
+def test_document_reviewers_do_not_force_ceremonial_output() -> None:
+    for path in [
+        "agents/design-reviewer.md",
+        "agents/spec-reviewer.md",
+        "agents/plan-reviewer.md",
+    ]:
+        prompt = _normalized(path)
+        assert "guessing which file is newest" in prompt
+        assert "force one finding per lens" in prompt
+        assert "Reviewed: [timestamp]" not in prompt
+        assert "## Strengths" not in prompt
+
+
+def test_lore_researcher_uses_lifecycle_aware_authority() -> None:
+    prompt = _normalized("agents/lore-researcher.md")
+
+    assert "shared/frontmatter-schema.md" in prompt
+    assert "schema owns document types and lifecycle statuses" in prompt
+    assert "check frontmatter status" in prompt
+    assert "not as proof that a document is authoritative" in prompt
+    assert "authoritative status or explicit supersession evidence" in prompt
+    assert "links could establish authority" not in prompt
+    assert "Do not silently resolve conflicts" in prompt
+    assert "Search all three zones even after finding a strong match" in prompt
+    assert "Frontmatter improves ranking but is not a prerequisite" in prompt
 
 
 def test_bun_typescript_reviewer_requires_material_traceable_findings() -> None:
@@ -100,7 +133,27 @@ def test_specification_prompt_is_human_first() -> None:
 
     assert positions == sorted(positions)
     assert "Run the comprehension pass" in reviewer
-    assert "legalistic repetition" in reviewer
+    assert "legalistic repetition" in reviewer.lower()
+
+
+def test_design_skill_runs_fresh_context_review() -> None:
+    prompt = _normalized("skills/design/SKILL.md")
+
+    assert "invoke the `design-reviewer` subagent" in prompt
+    assert "`initial-review` mode" in prompt
+    assert "complete unresolved finding records" in prompt
+    assert "`verification` mode" in prompt
+    assert "terminal broad acceptance review" in prompt
+    assert "do not run another broad review unless accepted scope changed" in prompt
+
+
+def test_lore_search_contract_includes_lower_confidence_body_matches() -> None:
+    schema = _normalized("shared/frontmatter-schema.md")
+    readme = _normalized("README.md")
+
+    for document in (schema, readme):
+        assert "body" in document
+        assert "lower-confidence legacy material" in document
 
 
 def test_tracker_rules_prevent_duplicates_and_parent_dependency_cycles() -> None:
@@ -181,6 +234,8 @@ def test_setup_registers_lore_agents_without_overwriting(tmp_path: Path) -> None
     assert [path.name for path in registered] == [path.name for path in source_agents]
     assert conflicting_agent.read_text(encoding="utf-8") == "user-owned\n"
     assert all(path.is_symlink() for path in registered if path != conflicting_agent)
-    assert "Registered 4 lore-development agent definition(s)" in first.stdout
-    assert "Registered 4 lore-development agent definition(s)" in second.stdout
+    registered_count = sum(path.is_symlink() for path in registered)
+    expected = f"Registered {registered_count} lore-development agent definition(s)"
+    assert expected in first.stdout
+    assert expected in second.stdout
     assert "preserving existing OpenCode agent" in first.stderr
