@@ -386,9 +386,11 @@ modules: [lore-development]
 
 ## Search Behavior
 
-The `lore-researcher` agent greps these fields to find related prior work:
+The `lore-researcher` agent uses these fields to rank related prior work:
 - `title:` for topic matches
 - `tags:` for keyword matches
 - `modules:` for codebase area matches
 
-Documents without frontmatter won't be found by search.
+It also searches document bodies. A document without frontmatter can therefore
+be found by body text, but it is lower-confidence legacy material because its
+type, lifecycle status, and module scope cannot be established from metadata.

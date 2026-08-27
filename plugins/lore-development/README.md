@@ -181,7 +181,10 @@ modules: [affected-modules]
 ---
 ```
 
-Documents without frontmatter won't be found by `lore-researcher`. Use `/tend` to retrofit old documents, and `/tend migrate` to move a flat-layout `.lore/` into the three-directory model.
+The `lore-researcher` can find documents without frontmatter through body-text
+search, but treats them as lower-confidence legacy material because lifecycle
+and module metadata are unavailable. Use `/tend` to retrofit old documents, and
+`/tend migrate` to move a flat-layout `.lore/` into the three-directory model.
 
 Document bodies are Markdown by default. Embed raw inline HTML only where a visual carries meaning Markdown cannot (color-coding, inline-`<svg>` charts, side-by-side comparison) — never inside a fenced code block, and with no `<script>` or external resources. See the "Body Format" section of `shared/frontmatter-schema.md`.
 

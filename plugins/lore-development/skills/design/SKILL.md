@@ -14,3 +14,12 @@ End with a decision. A design without one is just research.
 Save to `.lore/work/design/[topic].md` using kebab-case. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields before writing.
 
 Write the body Markdown-first per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML when topology or trade-offs need it — inline-SVG architecture or flow diagrams that beat prose, and side-by-side visual comparison of competing options.
+
+After saving, invoke the `design-reviewer` subagent via Task tool in
+`initial-review` mode on the saved design. If unavailable, dispatch the host's
+general-purpose subagent with the role from `agents/design-reviewer.md`. If
+findings are corrected, invoke `verification` mode with the complete unresolved
+finding records and changed sections. After those findings close, run one
+terminal broad acceptance review. Corrections from that review receive targeted
+verification with their complete finding records; do not run another broad
+review unless accepted scope changed.
