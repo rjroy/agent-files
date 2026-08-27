@@ -64,6 +64,26 @@ def test_review_workflows_distinguish_initial_and_verification_modes() -> None:
         assert "newly encountered material issue" in prompt
 
 
+def test_bun_typescript_reviewer_requires_material_traceable_findings() -> None:
+    reviewer = _normalized("agents/bun-typescript-reviewer.md")
+    implementation = _normalized("skills/implement/SKILL.md")
+
+    assert "A review that finds no material non-conformance is successful" in reviewer
+    assert "Architecture concerns are investigative lenses, not a quota" in reviewer
+    assert "Judge validation by whether it proves the requested outcome" in reviewer
+    assert "Do not request a test merely because production code lacks" in reviewer
+    assert "Raise a new finding only for a material defect introduced" in reviewer
+    assert "If the implementation is adequate, say `Accept`" in reviewer
+    assert "do not populate a fixed template" in reviewer
+    assert "## Requirement Evidence" not in reviewer
+    assert "## Findings" not in reviewer
+    assert "use the bundled `bun-typescript-reviewer`" in implementation
+    assert (
+        "The reviewer may return a concise acceptance" in implementation
+    )
+    assert "A request for another test is not a finding unless" in implementation
+
+
 def test_specification_prompt_is_human_first() -> None:
     prompt = _read("skills/specify/SKILL.md")
     reviewer = _read("agents/spec-reviewer.md")
@@ -120,6 +140,7 @@ def test_design_inputs_map_decisions_to_evidence() -> None:
 
 def test_opencode_agent_frontmatter_is_read_only_and_model_agnostic() -> None:
     agent_paths = [
+        "agents/bun-typescript-reviewer.md",
         "agents/design-reviewer.md",
         "agents/lore-researcher.md",
         "agents/plan-reviewer.md",
@@ -160,6 +181,6 @@ def test_setup_registers_lore_agents_without_overwriting(tmp_path: Path) -> None
     assert [path.name for path in registered] == [path.name for path in source_agents]
     assert conflicting_agent.read_text(encoding="utf-8") == "user-owned\n"
     assert all(path.is_symlink() for path in registered if path != conflicting_agent)
-    assert "Registered 3 lore-development agent definition(s)" in first.stdout
-    assert "Registered 3 lore-development agent definition(s)" in second.stdout
+    assert "Registered 4 lore-development agent definition(s)" in first.stdout
+    assert "Registered 4 lore-development agent definition(s)" in second.stdout
     assert "preserving existing OpenCode agent" in first.stderr

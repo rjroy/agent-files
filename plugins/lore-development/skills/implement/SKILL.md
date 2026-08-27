@@ -35,7 +35,13 @@ Break the input into implementable phases. If the input is a plan, phases are it
 |------|-------------------|----------|
 | Implementation | Implementation | Host general-purpose subagent |
 | Testing | Testing | Host general-purpose subagent |
-| Review | Code Quality | Host general-purpose subagent |
+| Review | Code Quality | `bun-typescript-reviewer` for matching projects; otherwise host general-purpose subagent |
+
+When the registry has no Code Quality selection, use the bundled
+`bun-typescript-reviewer` if the repository uses Bun and TypeScript and the
+changed surface includes its daemon, Unix-socket, CLI, Next.js, or React
+architecture. Do not use it merely because a repository contains one incidental
+TypeScript file. For other stacks, retain the host general-purpose fallback.
 
 **Establish evidence.** Extract the source's obligations: requirements from a spec,
 decisions and interface commitments from a design, or goals and validation from a
@@ -56,7 +62,7 @@ evidence or findings and never edit files. Do not test or review a moving worktr
 
 **b. Test.** Dispatch to a testing agent via Task tool. Include: which files changed, the phase-specific validation criteria established during initialization (using the task's exact Validation section when task files exist), the mapped source obligations, and how to run the test suite. Expect back: pass/fail, commands or observations, and evidence for each criterion. The suite passing does not substitute for the phase's behavioral checks.
 
-**c. Review.** Dispatch to a review agent via Task tool in initial-review mode. Include: which files to review, relevant requirements from the source artifact, validation evidence, and affected consumers and boundaries. Expect non-conformances only, each with a stable ID, severity, evidence, and affected surface.
+**c. Review.** Dispatch to a review agent via Task tool in initial-review mode. Include: which files to review, relevant requirements from the source artifact, validation evidence, and affected consumers and boundaries. The reviewer may return a concise acceptance when the implementation is adequate. If changes are required, expect only material problems, each with a stable ID, code evidence, concrete consequence, affected surface, and connection to requested behavior or an important system invariant. A request for another test is not a finding unless it identifies the requested behavior or invariant left unvalidated, the plausible defect current evidence would miss, and the observable assertion needed. Accept the phase when the implementation has proportionate evidence and no material problem; do not require optional hardening or additional coverage.
 
 **d. Handle failures.** Route failures back to an implementation agent for correction and await completion. Re-dispatch only the failed checks and a verification review with the complete unresolved finding records and correction diff. Inspect the changed surface and report any newly encountered material issue, but do not reopen unrelated accepted surfaces. After two failed attempts on one finding, or three correction rounds in a phase, escalate to the user.
 

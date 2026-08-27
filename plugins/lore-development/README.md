@@ -86,6 +86,7 @@ The plugin ships with agents that skills invoke automatically:
 | Agent | Purpose |
 |-------|---------|
 | `lore-researcher` | Search `.lore/` for related prior work before new specs or plans |
+| `bun-typescript-reviewer` | Review Bun/TypeScript daemon, Unix-socket, CLI, Next.js, and React implementations against requested behavior |
 | `design-reviewer` | Review design documents for weak decisions and gaps |
 | `plan-reviewer` | Review plans for infeasible steps and scope creep |
 | `spec-reviewer` | Review specs for clarity issues and ambiguities |
