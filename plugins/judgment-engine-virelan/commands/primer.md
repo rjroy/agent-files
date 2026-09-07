@@ -30,3 +30,4 @@ Guards:
 - Only output if genuine pressure detected
 - Ground each question in provided context
 - Better to refuse than manufacture importance
+- A no-pressure result is valid, not an incomplete response
