@@ -22,12 +22,12 @@ A skill for breaking ideas apart before building them. Tests what deserves to su
 Idea Crucible puts ideas under pressure to see what survives. It:
 
 1. Demands the core claim in one sentence
-2. Extracts 3–5 binary foundational assumptions
-3. For each: identifies fracture points, evidence, and skeptic perspectives
+2. Extracts the foundational assumptions warranted by the idea's scope
+3. For each: identifies fracture points, available evidence, and skeptic perspectives
 4. Surfaces what's being avoided
 5. Documents tensions without resolving them
-6. Requires at least one proven-fragile assumption and three genuine unknowns
-7. Only then compiles surviving assumptions into proto-requirements
+6. Separates evidence-backed failures, testable hypotheses, and genuine unknowns
+7. Compiles conditionally surviving assumptions into proto-requirements
 
 ---
 
@@ -37,13 +37,20 @@ Idea Crucible puts ideas under pressure to see what survives. It:
 State your idea in one sentence. What's the essential claim?
 
 ### Step 2: Extract Assumptions
-What must be true for this to work? Surface 3-5 foundational assumptions.
+What must be true for this to work? Surface the material foundational assumptions. A narrow idea may have only one or two; a rich idea should receive correspondingly broader examination.
 
 ### Step 3: Apply Pressure
 For each assumption:
 - **Fracture points**: Where does it break?
 - **Evidence**: What supports it?
 - **Skeptic view**: What would Max say?
+
+Classify each concern honestly:
+- **Evidence-backed failure**: available evidence shows the assumption fails in a stated context.
+- **Hypothesis to test**: a plausible concern that lacks confirming evidence.
+- **Genuine unknown**: information needed to judge the assumption is unavailable.
+
+Do not relabel a hypothesis or unknown as a confirmed failure.
 
 ### Step 4: Surface Avoidance
 What questions are we not asking? What failure modes are we ignoring?
@@ -52,12 +59,10 @@ What questions are we not asking? What failure modes are we ignoring?
 Hold contradictions without resolving them. Some tensions are the answer.
 
 ### Step 6: Test for Unknowns
-Require at least:
-- One proven-fragile assumption
-- Three genuine unknowns
+Document the material uncertainties the available context supports. Zero confirmed failures is valid when no failure is evidenced. Do not invent failures or unknowns to satisfy a count.
 
 ### Step 7: Extract What Survived
-Only assumptions that held under pressure become proto-requirements.
+Only assumptions that hold conceptually under the stated pressure become proto-requirements. This is a reasoning result, not empirical validation; record what evidence or experiment would validate the requirement.
 
 ---
 
@@ -84,12 +89,16 @@ Only assumptions that held under pressure become proto-requirements.
 - [Trade-off with no clean answer]
 
 ### Genuine Unknowns
-1. [Something we truly don't know]
-2. [Another unknown]
-3. [Third unknown]
+- [Something we truly don't know]
+
+### Evidence-Backed Failures
+- [Failure, supporting evidence, and the context where it fails]
+
+### Hypotheses to Test
+- [Plausible concern and the evidence or experiment needed]
 
 ### What Survived Pressure
-[Proto-requirements from assumptions that held]
+- [Proto-requirement that survived this conceptual stress test, plus validation needed]
 
 ### Next Pressure Point
 [Where to test next]
@@ -108,7 +117,7 @@ Only assumptions that held under pressure become proto-requirements.
 
 ## Guard
 
-Steps 3-6 aren't optional: skipping the pressure test, or finding zero fragile assumptions, means the idea wasn't actually tested — it was just described.
+Steps 3-6 are not optional. Apply real pressure and classify the result from the available context. A test may find zero evidence-backed failures, but it must not manufacture one; conceptual survival must never be presented as empirical validation.
 
 ---
 

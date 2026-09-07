@@ -19,10 +19,10 @@ A skill for breaking open big questions and returning multiple paths with their 
 
 ## What This Does
 
-Exploratory Reasoning generates multiple distinct reasoning paths for complex questions:
+Exploratory Reasoning generates the materially distinct reasoning paths a question supports:
 
 1. Restates the root question to sharpen framing
-2. Returns 3+ distinct reasoning paths (not variations of the same approach)
+2. Returns multiple distinct reasoning paths for rich questions, without padding narrow questions with variations
 3. For each path: names assumptions, surfaces risks, defines when it holds
 4. Closes with cross-path prompts to test thinking
 
@@ -34,7 +34,7 @@ Exploratory Reasoning generates multiple distinct reasoning paths for complex qu
 Take your question and reframe it for clarity. Sometimes the reframing itself reveals assumptions.
 
 ### Step 2: Generate Distinct Paths
-Create 3-5 genuinely different approaches. Not:
+Create as many genuinely different approaches as the question warrants. Rich questions normally merit 3-5; a narrow question may have fewer than three non-duplicative paths. Not:
 - Variations on the same theme
 - Different implementations of the same solution
 - Superficial re-framings
@@ -80,6 +80,8 @@ Questions that test across all paths:
 ### Path 3: [Yet Another Approach]
 [Same structure]
 
+[Include additional paths only when they are materially distinct.]
+
 ### Cross-Path Prompts
 - What breaks first in each path under pressure?
 - What does each path pretend not to care about?
@@ -106,6 +108,14 @@ Path 3: **Team Capacity First**
 - Assumptions: Sustainable pace prevents larger failures
 - Risks: Urgent issues may force unsustainable work anyway
 - Right if: Team morale and retention are at risk
+
+For a narrow question, such as choosing between two already-defined API versions, report only the distinct paths supported by the decision. Do not add a third path that merely renames one of them.
+
+---
+
+## Guard
+
+Path count follows the decision's breadth, not a quota. Never pad an output with superficial reframings; retain multiple genuinely distinct paths when the prompt contains them.
 
 ---
 
