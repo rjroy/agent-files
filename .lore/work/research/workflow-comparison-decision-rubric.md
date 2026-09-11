@@ -11,7 +11,7 @@ tags: [workflow, comparison, rubric, evaluation, opencode]
 
 This is the pre-results evaluation design for `agents-alv.3`. It defines how a later review may compare the unchanged current workflow, a hybrid, and a substantial replacement. It does not form candidates, run trials, change configuration, set a time or cost budget, or select an outcome.
 
-The source baseline and lifecycle comparison are in [workflow-comparison-review.md](workflow-comparison-review.md). Their documented, implemented, tested, and observed labels remain the evidence vocabulary for this rubric. In particular, source presence and checked-in tests are not evidence that OpenCode loaded or effectively ran a workflow.
+The dated source baseline and lifecycle comparison are in [workflow-comparison-baseline-evidence.md](workflow-comparison-baseline-evidence.md). Their documented, implemented, tested, and observed labels remain the evidence vocabulary for this rubric. In particular, source presence and checked-in tests are not evidence that OpenCode loaded or effectively ran a workflow.
 
 ## Evaluation record and fair comparison
 

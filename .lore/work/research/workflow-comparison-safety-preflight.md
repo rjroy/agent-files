@@ -27,7 +27,7 @@ The scoped source-only inspection recorded below has been completed. Directory p
 `/home/rjroy/.agents/tmp/local-marketplace`. Its earlier recorded content
 snapshot is SHA-256
 `70daf1ea1c30e6bfb26fff52396753a62eb82d3e29cd6b5665899716bf94648f` over
-5,773 files ([baseline review](workflow-comparison-review.md), lines 31-54).
+5,773 files ([baseline evidence](workflow-comparison-baseline-evidence.md), lines 31-54).
 It resolves inside the current worktree rather than as an independently
 identified Git checkout (lines 35-42). The snapshot is a content identity, not
 upstream origin, authorship, signature, or supply-chain provenance.

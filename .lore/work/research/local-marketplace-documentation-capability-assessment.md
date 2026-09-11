@@ -3,7 +3,7 @@ title: Local Marketplace documentation capability assessment
 date: 2026-09-11
 status: complete
 tags: [workflow, opencode, forge, factory, documentation]
-related: [workflow-comparison-review.md, workflow-comparison-trial-proposal.md, workflow-comparison-safety-preflight.md]
+related: [workflow-comparison-review.md, workflow-comparison-baseline-evidence.md, workflow-comparison-trial-proposal.md, workflow-comparison-safety-preflight.md]
 ---
 
 # Local Marketplace documentation capability assessment
@@ -51,4 +51,4 @@ The critical unresolved claims are whether the claimed upstream remains availabl
 - [Forge README](../../../tmp/local-marketplace/forge/README.md), graph, validation, replan, A2A, and Pi claims.
 - [Factory README](../../../tmp/local-marketplace/factory-plugin/README.md), contract, read-only gather, pure decision, dry-run, and supervised-handoff claims.
 - [OpenCode portability POC](../../../tmp/local-marketplace/docs/opencode-portability.md), dated 2026-06-28, adapter inventory and runtime risks.
-- [Baseline review](workflow-comparison-review.md), local-tree identity and current-workflow boundary.
+- [Baseline evidence](workflow-comparison-baseline-evidence.md), local-tree identity and dated current-workflow boundary.

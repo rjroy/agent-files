@@ -17,7 +17,7 @@ gates in the [decision rubric](workflow-comparison-decision-rubric.md) govern
 all later work. The [risk register](workflow-comparison-opportunity-risk-register.md)
 establishes that Forge and Factory have inspectable source support for narrow
 mechanisms, while OpenCode registration, actual loading, and effective
-execution remain unknown. The [baseline review](workflow-comparison-review.md)
+execution remain unknown. The [baseline review](workflow-comparison-baseline-evidence.md)
 establishes the current instruction-and-artifact workflow and the Claude-only
 boundary of Teamsters, Test Automation, and Ponytail hooks.
 
