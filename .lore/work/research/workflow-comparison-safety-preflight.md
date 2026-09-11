@@ -1,5 +1,7 @@
 # Workflow-comparison clone safety preflight
 
+> **Superseded for the current assessment:** See [the documentation capability assessment](local-marketplace-documentation-capability-assessment.md). This execution-focused preflight remains historical safety context and does not authorize trials, loading, installation, or configuration changes.
+
 **Issue:** `agents-alv.6`  
 **Status:** partial and unfinished. Source-only inspection completed for the proposed Forge strict-validation and Factory dry-run admission paths; runtime safety and OpenCode loading remain unknown.  
 **Scope:** static inspection only. No clone code was executed, installed, loaded, or imported. No network contact, trial, adapter, configuration change, commit, push, or sync occurred.

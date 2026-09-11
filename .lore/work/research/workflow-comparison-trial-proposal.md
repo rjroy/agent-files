@@ -8,6 +8,8 @@ related: [workflow-comparison-safety-preflight.md, workflow-comparison-candidate
 
 # Draft isolated Forge and Factory comparison trial
 
+> **Superseded for the current assessment:** See [the documentation capability assessment](local-marketplace-documentation-capability-assessment.md). This proposal remains historical planning only; do not prepare or run trials unless a later, explicit scope change authorizes a targeted smoke test.
+
 ## Status and decision boundary
 
 This is a review draft, not a frozen execution protocol, authorization, a

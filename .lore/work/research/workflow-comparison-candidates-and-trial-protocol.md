@@ -191,3 +191,4 @@ risk register; and every authorization input is resolved before `agents-alv.6`
 starts a trial. Independent design review confirmed coverage of the issue's
 acceptance criteria and grounding in the rubric and risk register. Trial
 authorization remains pending the inputs above.
+> **Superseded for the current assessment:** This protocol is historical planning. See [the documentation capability assessment](local-marketplace-documentation-capability-assessment.md); no trial is required unless a later decision identifies a specific critical claim for an explicitly authorized targeted smoke test.
