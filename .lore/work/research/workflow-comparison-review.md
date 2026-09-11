@@ -10,7 +10,10 @@ tags: [workflow, opencode, baseline, evidence]
 ## Key Findings
 
 This is an evidence-gathering baseline for `agents-alv.1`, not an adoption
-recommendation or a workflow trial. Both requested paths exist. The comparison
+recommendation or a workflow trial. The candidate-neutral pre-results
+[decision rubric](workflow-comparison-decision-rubric.md) defines later
+evaluation gates, measures, and intervention counting for `agents-alv.3`.
+Both requested paths exist. The comparison
 tree at `/home/rjroy/.agents/tmp/local-marketplace` is an ordinary directory
 inside the current Git worktree, not an independently identifiable Git clone.
 All claims below distinguish source presence from host loading and observed
@@ -54,7 +57,7 @@ rerun the same command before assuming the comparison tree is unchanged.
 
 `AGENTS.md` exists and carries repository-wide operating constraints, including
 Beads task tracking and the conservative no-commit/no-push policy
-([AGENTS.md](../../../AGENTS.md), lines 1-101). The current workspace has
+([AGENTS.md](../../../AGENTS.md), lines 1-77). The current workspace has
 authored plugin source under `plugins/`, workflow state under `.beads/`, and
 likely generated/cache/runtime directories (`audio_cache/`, `image_cache/`,
 `logs/`, `sessions/`, `memories/`); their exact provenance remains to be
