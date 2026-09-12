@@ -37,7 +37,7 @@ Code should read like the surrounding code: match its density, naming, and idiom
 
 ### Size
 
-If a function or file is too large to understand at a glance, investigate splitting it. Size limits are heuristics, not hard limits — if you exceed one and leave it, explain why.
+Aim for 100 lines per function and 1,000 lines per file. These are guidelines, not hard limits or blockers. Exceeding them should prompt a check for clarity and cohesion; split at natural responsibility boundaries only when doing so improves readability, not solely to satisfy line counts.
 
 ### Self-documenting Code
 
