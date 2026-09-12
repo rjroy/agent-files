@@ -3,7 +3,7 @@ title: Evidence-backed workflow comparison recommendation
 date: 2026-09-11
 status: active
 tags: [workflow, opencode, recommendation, evidence, review]
-related: [workflow-comparison-baseline-evidence.md, local-marketplace-documentation-capability-assessment.md, workflow-comparison-opportunity-risk-register.md, workflow-comparison-decision-rubric.md, workflow-comparison-candidates-and-trial-protocol.md, workflow-comparison-safety-preflight.md]
+related: [workflow-comparison-baseline-evidence.md, local-marketplace-documentation-capability-assessment.md, workflow-comparison-opportunity-risk-register.md, workflow-comparison-decision-rubric.md, workflow-comparison-candidates-and-trial-protocol.md, workflow-comparison-safety-preflight.md, native-bounded-delegation-inventory.md]
 ---
 
 # Evidence-backed workflow comparison recommendation
