@@ -1,0 +1,1 @@
+Read epic agents-9mb and its children. These are discussion topics based on the shelf-judge session investigation. Start with agents-9mb.1: inspect the relevant current skills and harness rules, distinguish historical behavior from what exists now, and discuss the options with me before making changes.
