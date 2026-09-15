@@ -156,7 +156,7 @@ Create `metadata.json`:
 
 ### 4.1 Spawn Concept Developer (VS Mode)
 
-**Agent**: `story-engine-wyrd/agents/concept-developer.md`
+**Agent**: `story-engine-wyrd-concept-developer`
 **Input**: User's original input (natural language or file content)
 **Output**: `.story-state/[Story]/concept-samples.md` (k=5 concept candidates)
 
@@ -192,7 +192,7 @@ After concept-developer completes sample generation:
 
 ### 4.3 Spawn Sampling Curator (Concept Selection)
 
-**Agent**: `story-engine-wyrd/agents/sampling-curator.md`
+**Agent**: `story-engine-wyrd-sampling-curator`
 **Input**:
 - samples_file: `.story-state/[Story]/concept-samples.md`
 - selection_mode: `user-choice`
@@ -232,7 +232,7 @@ After user selects concept and curator writes concept-approved.md:
 
 ### 4.5 Generate Full Plan from Approved Concept
 
-**Agent**: `story-engine-wyrd/agents/concept-developer.md` (expand mode)
+**Agent**: `story-engine-wyrd-concept-developer` (expand mode)
 **Input**: `.story-state/[Story]/concept-approved.md`
 **Output**:
 - `.story-state/[Story]/PLAN.md` (full chapter breakdown)
@@ -334,7 +334,7 @@ Read PLAN.md and identify all named characters needing profiles.
 
 #### 5.2.1 Spawn Character Builder (VS Mode)
 
-**Agent**: `story-engine-wyrd/agents/character-builder.md`
+**Agent**: `story-engine-wyrd-character-builder`
 **Input**: Character name, role, relevant PLAN.md sections
 **Output**: `.story-state/[Story]/character-samples-[name].md` (k=5 character interpretations)
 
@@ -366,7 +366,7 @@ The agent will explore diversity dimensions (arc type, voice style, fear/desire 
 
 #### 5.2.3 Spawn Sampling Curator (Character Selection)
 
-**Agent**: `story-engine-wyrd/agents/sampling-curator.md`
+**Agent**: `story-engine-wyrd-sampling-curator`
 **Input**:
 - samples_file: `.story-state/[Story]/character-samples-[name].md`
 - selection_mode: `user-choice`
@@ -438,7 +438,7 @@ END FOR
 
 ### 6.2 Spawn Prose Writer (VS Mode)
 
-**Agent**: `story-engine-wyrd/agents/prose-writer.md`
+**Agent**: `story-engine-wyrd-prose-writer`
 **Input**:
 - Chapter number
 - Chapter summary from PLAN.md
@@ -475,7 +475,7 @@ The agent will explore diversity dimensions (scene construction, pacing rhythm, 
 
 ### 6.4 Spawn Sampling Curator (Auto-Select Mode)
 
-**Agent**: `story-engine-wyrd/agents/sampling-curator.md`
+**Agent**: `story-engine-wyrd-sampling-curator`
 **Input**:
 - samples_file: `.story-state/[Story]/chapter-[N]-samples.md`
 - selection_mode: `auto-select`
@@ -506,7 +506,7 @@ The curator will:
 
 ### 6.5 Spawn Quality Checker
 
-**Agent**: `story-engine-wyrd/agents/quality-checker.md`
+**Agent**: `story-engine-wyrd-quality-checker`
 **Input**:
 - Chapter file: `.story-state/[Story]/chapters/chapter-[N].md`
 - Quality rubrics: `.story-state/[Story]/quality-rubrics.md`
@@ -542,7 +542,7 @@ Spawn agent with context:
 
 **Trigger**: After chapters 3, 6, 9, 12, ... (every 3rd chapter completion)
 
-**Agent**: `story-engine-wyrd/agents/continuity-validator.md`
+**Agent**: `story-engine-wyrd-continuity-validator`
 **Input**: Last 3 completed chapters + story bible files
 **Output**: Continuity report (returned by agent)
 
@@ -586,7 +586,7 @@ Spawn agent with context:
 
 **Trigger**: After all chapters completed
 
-**Agent**: `story-engine-wyrd/agents/final-review.md`
+**Agent**: `story-engine-wyrd-final-review`
 **Input**: Complete story directory
 **Output**: Final review notes
 

@@ -1,3 +1,8 @@
+---
+description: Performs batched final review of a completed story.
+mode: subagent
+---
+
 # Final Review Agent
 
 **Version**: 1.0.0

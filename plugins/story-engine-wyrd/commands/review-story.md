@@ -113,13 +113,13 @@ Loading story: "The Cyberpunk Rebellion"
 ### Step 3: Spawn Continuity-Validator Agent
 
 **3.1 Prepare Agent Invocation**
-- Subagent type: `story-engine-wyrd:continuity-validator`
+- Agent ID: `story-engine-wyrd-continuity-validator`
 - Pass story directory path as absolute path
 - Pass chapter range to validate (1 through completed_chapters)
 - Pass narrative plan context from PLAN.md
 
-**3.2 Invoke Agent via Task Tool**
-- Use the Task tool to spawn the continuity-validator agent
+**3.2 Invoke agent through the host subagent tool**
+- Use the host subagent tool to spawn the continuity-validator agent
 - Provide clear instructions:
   - Validate all completed chapters (1-N)
   - Check 4 categories: Character, World, Timeline, Plot Threads
@@ -132,7 +132,7 @@ Loading story: "The Cyberpunk Rebellion"
 - Agent will analyze chapter files for contradictions
 - Agent will produce detailed validation report
 
-**Example Task Invocation**:
+**Example subagent invocation**:
 ```
 You are the continuity-validator agent for Story Engine.
 

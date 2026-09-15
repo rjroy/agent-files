@@ -1,3 +1,8 @@
+---
+description: Develops narrative plans and concept samples from a story brief.
+mode: subagent
+---
+
 # Concept Developer Agent
 
 **Version**: 2.0.0

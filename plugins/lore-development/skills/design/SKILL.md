@@ -11,11 +11,11 @@ End with a decision. A design without one is just research.
 
 ## Saving
 
-Save to `.lore/work/design/[topic].md` using kebab-case. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields before writing.
+Save to `.lore/work/design/[topic].md` using kebab-case. Load `../../shared/frontmatter-schema.md (resolved from this skill's base directory)` for the frontmatter fields before writing.
 
-Write the body Markdown-first per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML when topology or trade-offs need it — inline-SVG architecture or flow diagrams that beat prose, and side-by-side visual comparison of competing options.
+Write the body Markdown-first per the "Body Format" section of `../../shared/frontmatter-schema.md (resolved from this skill's base directory)`. Reach for embedded inline HTML when topology or trade-offs need it — inline-SVG architecture or flow diagrams that beat prose, and side-by-side visual comparison of competing options.
 
-After saving, invoke the `design-reviewer` subagent via Task tool in
+After saving, invoke the `design-reviewer` subagent with the host's subagent capability in
 `initial-review` mode on the saved design. If unavailable, dispatch the host's
 general-purpose subagent with the role from `agents/design-reviewer.md`. If
 findings are corrected, invoke `verification` mode with the complete unresolved

@@ -11,7 +11,7 @@ Build an implementation plan the user can review and approve before any code is 
 
 ## Process
 
-**Gather context.** Invoke the `lore-researcher` subagent via Task tool with the topic description and wait for the result. If unavailable, dispatch the host's general-purpose subagent with the research role from `agents/lore-researcher.md`. Read relevant lore artifacts (spec, design, brainstorm, research). Explore the codebase with the host's exploration subagent to understand what exists and where changes will land.
+**Gather context.** Invoke the `lore-researcher` subagent with the host's subagent capability with the topic description and wait for the result. If unavailable, dispatch the host's general-purpose subagent with the research role from `agents/lore-researcher.md`. Read relevant lore artifacts (spec, design, brainstorm, research). Explore the codebase with the host's exploration subagent to understand what exists and where changes will land.
 
 **Surface gaps before drafting.** If the input has ambiguous requirements, contradictions, or unstated assumptions that would force guesses, list them and ask the user to resolve them first. A plan built on unreviewed assumptions fails during implementation.
 
@@ -19,10 +19,10 @@ Build an implementation plan the user can review and approve before any code is 
 
 **Save.** The saved file is the review vehicle — don't present the plan in chat before saving.
 
-**Fresh-eyes review.** After saving, invoke the `plan-reviewer` subagent via Task tool in initial-review mode on the saved plan. If unavailable, dispatch the host's general-purpose subagent with the role from `agents/plan-reviewer.md`. If findings are corrected, invoke verification mode with the complete unresolved finding records and changed sections. After those findings close, run one terminal broad acceptance review. Corrections from that review receive targeted verification with their complete finding records; do not run another broad review unless accepted scope changed.
+**Fresh-eyes review.** After saving, invoke the `plan-reviewer` subagent with the host's subagent capability in initial-review mode on the saved plan. If unavailable, dispatch the host's general-purpose subagent with the role from `agents/plan-reviewer.md`. If findings are corrected, invoke verification mode with the complete unresolved finding records and changed sections. After those findings close, run one terminal broad acceptance review. Corrections from that review receive targeted verification with their complete finding records; do not run another broad review unless accepted scope changed.
 
 ## Saving
 
-Save to `.lore/work/plans/[feature-name].md` using kebab-case. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. The document body is freeform — what matters is that steps are concrete (files, functions, changes) and the source artifact or goal is clearly referenced so validation has something to check against.
+Save to `.lore/work/plans/[feature-name].md` using kebab-case. Load `../../shared/frontmatter-schema.md (resolved from this skill's base directory)` for the frontmatter fields. The document body is freeform — what matters is that steps are concrete (files, functions, changes) and the source artifact or goal is clearly referenced so validation has something to check against.
 
-Write the body Markdown-first per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML when the step flow needs it — a visual step sequence with dependency indicators, and validation gates distinguished visually from the step description.
+Write the body Markdown-first per the "Body Format" section of `../../shared/frontmatter-schema.md (resolved from this skill's base directory)`. Reach for embedded inline HTML when the step flow needs it — a visual step sequence with dependency indicators, and validation gates distinguished visually from the step description.

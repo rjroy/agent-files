@@ -11,9 +11,9 @@ it. Not how to build it; that is the plan.
 
 ## Process
 
-Search for related prior work: invoke the `lore-researcher` subagent via Task tool with the topic description and wait for the result. If unavailable, dispatch the host's general-purpose subagent with the research role from `agents/lore-researcher.md`. Review relevant lore context. Ask clarifying questions. Draft. Save. Then run a fresh-eyes review.
+Search for related prior work: invoke the `lore-researcher` subagent with the host's subagent capability with the topic description and wait for the result. If unavailable, dispatch the host's general-purpose subagent with the research role from `agents/lore-researcher.md`. Review relevant lore context. Ask clarifying questions. Draft. Save. Then run a fresh-eyes review.
 
-After saving, invoke the `spec-reviewer` subagent via Task tool in initial-review mode on the saved spec. If unavailable, dispatch the host's general-purpose subagent with the role from `agents/spec-reviewer.md`. If findings are corrected, invoke verification mode with the complete unresolved finding records and changed sections. After those findings close, run one terminal broad acceptance review. Corrections from that review receive targeted verification with their complete finding records; do not run another broad review unless accepted scope changed.
+After saving, invoke the `spec-reviewer` subagent with the host's subagent capability in initial-review mode on the saved spec. If unavailable, dispatch the host's general-purpose subagent with the role from `agents/spec-reviewer.md`. If findings are corrected, invoke verification mode with the complete unresolved finding records and changed sections. After those findings close, run one terminal broad acceptance review. Corrections from that review receive targeted verification with their complete finding records; do not run another broad review unless accepted scope changed.
 
 ## Document Order
 
@@ -44,6 +44,6 @@ Every spec needs an AI Validation section. It answers: how will the AI verify th
 
 ## Saving
 
-Save to `.lore/work/specs/[feature-name].md` using kebab-case. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. Adapt the default order when useful, but preserve its human-first progression. Requirements must be numbered and validation explicit.
+Save to `.lore/work/specs/[feature-name].md` using kebab-case. Load `../../shared/frontmatter-schema.md (resolved from this skill's base directory)` for the frontmatter fields. Adapt the default order when useful, but preserve its human-first progression. Requirements must be numbered and validation explicit.
 
-Write the body Markdown-first per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML only where scannability needs it — per-requirement status badges and anchor links per requirement ID so cross-references work.
+Write the body Markdown-first per the "Body Format" section of `../../shared/frontmatter-schema.md (resolved from this skill's base directory)`. Reach for embedded inline HTML only where scannability needs it — per-requirement status badges and anchor links per requirement ID so cross-references work.

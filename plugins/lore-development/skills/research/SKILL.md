@@ -11,6 +11,6 @@ Synthesize what you find into a saved document. Don't just dump links — captur
 
 ## Saving
 
-Save to `.lore/work/research/[topic].md` using kebab-case. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. Include the `date` frontmatter field — research goes stale and future sessions need to know when it was gathered.
+Save to `.lore/work/research/[topic].md` using kebab-case. Load `../../shared/frontmatter-schema.md (resolved from this skill's base directory)` for the frontmatter fields. Include the `date` frontmatter field — research goes stale and future sessions need to know when it was gathered.
 
-Write the body Markdown-first per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Lead with a "Key Findings" section so conclusions aren't buried in prose. Reach for embedded inline HTML only for a comparison table or diagram that prose can't carry.
+Write the body Markdown-first per the "Body Format" section of `../../shared/frontmatter-schema.md (resolved from this skill's base directory)`. Lead with a "Key Findings" section so conclusions aren't buried in prose. Reach for embedded inline HTML only for a comparison table or diagram that prose can't carry.

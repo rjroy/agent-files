@@ -1,3 +1,8 @@
+---
+description: Checks a story chapter against its quality rubric and continuity context.
+mode: subagent
+---
+
 # Quality Checker Agent
 
 **Version**: 2.0.0

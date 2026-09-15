@@ -196,8 +196,8 @@ selection_probability: 0.XX
 ### Step 8: Spawn Lyric Writer
 
 ```
-Task tool:
-  subagent_type: music-engine-rowan:lyric-writer
+Host subagent tool:
+  agent: music-engine-rowan-lyric-writer
   prompt: "Write lyrics for the song concept in [song-directory]/concept-approved.md.
            Generate 5 distinct lyrical approaches with probabilities.
            Save to [song-directory]/lyrics-samples.md"
@@ -208,8 +208,8 @@ Task tool:
 After lyric-writer completes:
 
 ```
-Task tool:
-  subagent_type: music-engine-rowan:sampling-curator
+Host subagent tool:
+  agent: music-engine-rowan-sampling-curator
   prompt: "Review [song-directory]/lyrics-samples.md
            Auto-recommend top choice, present alternatives.
            On selection: Add lyrics to concept-approved.md, update phase to lyrics-drafted.
@@ -221,8 +221,8 @@ Task tool:
 After lyrics are selected:
 
 ```
-Task tool:
-  subagent_type: music-engine-rowan:production-designer
+Host subagent tool:
+  agent: music-engine-rowan-production-designer
   prompt: "Design production for [song-directory]/concept-approved.md (now with lyrics).
            Generate 5 distinct production approaches with probabilities.
            Save to [song-directory]/production-samples.md"
@@ -233,8 +233,8 @@ Task tool:
 After production-designer completes:
 
 ```
-Task tool:
-  subagent_type: music-engine-rowan:sampling-curator
+Host subagent tool:
+  agent: music-engine-rowan-sampling-curator
   prompt: "Review [song-directory]/production-samples.md
            Auto-recommend top choice, present alternatives.
            On selection: Add production to song file, update phase to production-designed.
@@ -246,8 +246,8 @@ Task tool:
 After production is selected, spawn the reviewer for fresh-eyes quality check:
 
 ```
-Task tool:
-  subagent_type: music-engine-rowan:song-reviewer
+Host subagent tool:
+  agent: music-engine-rowan-song-reviewer
   prompt: "Review the song in [song-directory]/concept-approved.md for quality issues.
            Check concept alignment, lyrical quality, production coherence, and Suno compatibility.
            Present findings to user and apply fixes if requested.
@@ -261,8 +261,8 @@ The reviewer comes in with fresh context—no memory of the creative process—w
 After review is complete (phase: reviewed):
 
 ```
-Task tool:
-  subagent_type: music-engine-rowan:suno-formatter
+Host subagent tool:
+  agent: music-engine-rowan-suno-formatter
   prompt: "Format the song in [song-directory]/concept-approved.md for Suno Custom Mode.
            Add final copy-paste ready output section.
            Update phase to complete."

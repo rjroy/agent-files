@@ -6,12 +6,12 @@ description: Use when the user asks to generate, create, edit, animate, or proce
 
 ## Model catalogs
 
-Read the appropriate catalog before selecting a model:
+From this skill's base directory, read the appropriate catalog before selecting a model:
 
-${CLAUDE_PLUGIN_ROOT}/reference/image-models.md
-${CLAUDE_PLUGIN_ROOT}/reference/video-models.md
-${CLAUDE_PLUGIN_ROOT}/reference/img2img-models.md
-${CLAUDE_PLUGIN_ROOT}/reference/remove-bg-models.md
+../../reference/image-models.md
+../../reference/video-models.md
+../../reference/img2img-models.md
+../../reference/remove-bg-models.md
 
 ## Prerequisites
 
@@ -19,10 +19,12 @@ All scripts require `REPLICATE_API_TOKEN` in the environment. If unset, the scri
 
 ## Script invocations
 
+Resolve each `../../src/` path from this skill's base directory.
+
 ### Text-to-image
 
 ```
-bun ${CLAUDE_PLUGIN_ROOT}/src/generate-image.ts --prompt <string> --output <path> [--model <string>] [--aspect-ratio <string>] [--width <number>] [--height <number>] [--num-outputs <number>] [--seed <number>] [--params <json>]
+bun ../../src/generate-image.ts --prompt <string> --output <path> [--model <string>] [--aspect-ratio <string>] [--width <number>] [--height <number>] [--num-outputs <number>] [--seed <number>] [--params <json>]
 ```
 
 Flags:
@@ -38,7 +40,7 @@ Flags:
 ### Image editing (img2img)
 
 ```
-bun ${CLAUDE_PLUGIN_ROOT}/src/edit-image.ts --image <path> --prompt <string> --model <string> --output <path> [--strength <number>] [--params <json>]
+bun ../../src/edit-image.ts --image <path> --prompt <string> --model <string> --output <path> [--strength <number>] [--params <json>]
 ```
 
 Flags:
@@ -54,7 +56,7 @@ Flags:
 > **Cost and time warning:** Video generation costs $0.10–$1.50+ per video and takes 2–5 minutes. Always confirm with the user before running video generation.
 
 ```
-bun ${CLAUDE_PLUGIN_ROOT}/src/generate-video.ts --image <path> --prompt <string> --model <string> --output <path> [--params <json>]
+bun ../../src/generate-video.ts --image <path> --prompt <string> --model <string> --output <path> [--params <json>]
 ```
 
 Flags:
@@ -67,7 +69,7 @@ Flags:
 ### Background removal
 
 ```
-bun ${CLAUDE_PLUGIN_ROOT}/src/remove-background.ts --image <path> --model <string> --output <path> [--params <json>]
+bun ../../src/remove-background.ts --image <path> --model <string> --output <path> [--params <json>]
 ```
 
 Flags:

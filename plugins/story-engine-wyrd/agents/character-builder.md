@@ -1,3 +1,8 @@
+---
+description: Creates story-bible character profiles from an approved narrative plan.
+mode: subagent
+---
+
 # Character Builder Agent
 
 **Version**: 2.0.0

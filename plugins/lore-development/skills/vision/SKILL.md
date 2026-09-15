@@ -34,6 +34,6 @@ When the document has been reviewed at least once, offer to save. The user can k
 
 ## Saving
 
-Save to `.lore/reference/vision.md`. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. Set `status: draft` — the user marks it approved. The document body is freeform: what the project is, what it values, what it refuses.
+Save to `.lore/reference/vision.md`. Load `../../shared/frontmatter-schema.md (resolved from this skill's base directory)` for the frontmatter fields. Set `status: draft` — the user marks it approved. The document body is freeform: what the project is, what it values, what it refuses.
 
-Write the body Markdown-first per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML only when a visual genuinely clarifies the north star.
+Write the body Markdown-first per the "Body Format" section of `../../shared/frontmatter-schema.md (resolved from this skill's base directory)`. Reach for embedded inline HTML only when a visual genuinely clarifies the north star.
