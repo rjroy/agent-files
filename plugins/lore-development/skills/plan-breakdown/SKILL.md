@@ -38,10 +38,10 @@ blocked state after mutation.
 
 ## Output
 
-Save task files to `.lore/work/tasks/<plan-name>/NNN-<task-name>.md`. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields. Set `status: pending` and include a `sequence` frontmatter field for ordering.
+Save task files to `.lore/work/tasks/<plan-name>/NNN-<task-name>.md`. Load `../../shared/frontmatter-schema.md (resolved from this skill's base directory)` for the frontmatter fields. Set `status: pending` and include a `sequence` frontmatter field for ordering.
 
 Each task file body: What, Validation, Why, Files sections.
 
-Write the body in Markdown per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML only when a visual carries meaning prose can't, such as a color-coded status badge or a diagram a reviewing agent needs at a glance.
+Write the body in Markdown per the "Body Format" section of `../../shared/frontmatter-schema.md (resolved from this skill's base directory)`. Reach for embedded inline HTML only when a visual carries meaning prose can't, such as a color-coded status badge or a diagram a reviewing agent needs at a glance.
 
 Stop here. The user invokes `/implement` when ready.

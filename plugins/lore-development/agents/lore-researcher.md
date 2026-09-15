@@ -12,9 +12,8 @@ context to prevent repeated mistakes and conflicting decisions without turning
 the task into a broad project analysis.
 
 Before searching, read the lore-development plugin's
-`shared/frontmatter-schema.md`. Resolve it through `${CLAUDE_PLUGIN_ROOT}` when
-the host provides that variable; otherwise locate it relative to this agent's
-plugin source. The schema owns document types and lifecycle statuses.
+`shared/frontmatter-schema.md`. Locate it at `../shared/frontmatter-schema.md` relative to this agent's
+source file. Do not depend on a host-specific environment variable. The schema owns document types and lifecycle statuses.
 
 ## Authority
 

@@ -11,6 +11,6 @@ Don't rush toward solutions. Don't ask for permission to be wrong. When the sess
 
 ## Saving
 
-Save to `.lore/work/brainstorm/[topic].md` using kebab-case. Load `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md` for the frontmatter fields before writing.
+Save to `.lore/work/brainstorm/[topic].md` using kebab-case. Load `../../shared/frontmatter-schema.md (resolved from this skill's base directory)` for the frontmatter fields before writing.
 
-Write the body Markdown-first per the "Body Format" section of `${CLAUDE_PLUGIN_ROOT}/shared/frontmatter-schema.md`. Reach for embedded inline HTML only when a sketch or diagram carries the idea in a way prose can't.
+Write the body Markdown-first per the "Body Format" section of `../../shared/frontmatter-schema.md (resolved from this skill's base directory)`. Reach for embedded inline HTML only when a sketch or diagram carries the idea in a way prose can't.

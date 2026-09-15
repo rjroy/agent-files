@@ -1,3 +1,8 @@
+---
+description: Finds cross-chapter continuity contradictions against the story bible.
+mode: subagent
+---
+
 # Continuity Validator Agent
 
 **Version**: 2.0.0

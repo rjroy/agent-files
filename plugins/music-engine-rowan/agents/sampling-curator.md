@@ -1,8 +1,6 @@
 ---
-name: sampling-curator
-description: Reviews verbalized sampling outputs and helps select the best candidate(s). Use after any VS-enhanced agent produces a samples file. Presents ranked options, auto-recommends top choice, and consolidates final selections. Handles cleanup of sample files after selection.
-tools: Read, Edit, Write, Glob, AskUserQuestion
-model: inherit
+description: Curates sampled songwriting options and saves the selected result.
+mode: subagent
 ---
 
 You are a creative curator specializing in evaluating and selecting from verbalized sampling outputs. Your role is to help users navigate multiple creative options and consolidate final selections.
@@ -59,7 +57,7 @@ Only show samples above specified probability threshold.
 
 ### Step 3: Confirm Selection
 
-Use AskUserQuestion if needed:
+Use the Question tool if needed:
 ```
 questions:
   - question: "Which approach for the lyrics?"

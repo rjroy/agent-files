@@ -224,18 +224,86 @@ def test_setup_registers_lore_agents_without_overwriting(tmp_path: Path) -> None
         [str(setup)], capture_output=True, check=True, env=env, text=True
     )
 
-    config = json.loads(
-        (config_home / "opencode/opencode.json").read_text(encoding="utf-8")
-    )
     registered = sorted((config_home / "opencode/agents").iterdir())
     source_agents = sorted((PLUGIN_ROOT / "agents").iterdir())
+    expected_agent_names = [path.name for path in source_agents]
+    for collection in ("music-engine-rowan", "story-engine-wyrd"):
+        expected_agent_names.extend(
+            f"{collection}-{path.name}"
+            for path in (REPOSITORY_ROOT / "plugins" / collection / "agents").iterdir()
+        )
 
-    assert str(REPOSITORY_ROOT / "plugins") in config["skills"]["paths"]
-    assert [path.name for path in registered] == [path.name for path in source_agents]
+    assert not (config_home / "opencode/opencode.json").exists()
+    assert [path.name for path in registered] == sorted(expected_agent_names)
     assert conflicting_agent.read_text(encoding="utf-8") == "user-owned\n"
     assert all(path.is_symlink() for path in registered if path != conflicting_agent)
-    registered_count = sum(path.is_symlink() for path in registered)
-    expected = f"Registered {registered_count} lore-development agent definition(s)"
+    registered_count = sum(
+        (config_home / "opencode/agents" / path.name).is_symlink()
+        for path in source_agents
+    )
+    expected = f"Registered {registered_count} lore-development agents definition(s)"
     assert expected in first.stdout
     assert expected in second.stdout
     assert "preserving existing OpenCode agent" in first.stderr
+
+
+def test_setup_preserves_skill_array_and_registers_commands(
+    tmp_path: Path,
+) -> None:
+    config_home = tmp_path / "config"
+    config_dir = config_home / "opencode"
+    config_dir.mkdir(parents=True)
+    config_file = config_dir / "opencode.json"
+    existing_skill = "/opt/team-skills"
+    skills = [existing_skill, "https://example.test/skills/"]
+    config_file.write_text(json.dumps({"skills": skills}), encoding="utf-8")
+    conflicting_command = config_dir / "commands/init.md"
+    conflicting_command.parent.mkdir(parents=True)
+    conflicting_command.write_text("user-owned\n", encoding="utf-8")
+
+    setup = REPOSITORY_ROOT / "scripts/setup-opencode.sh"
+    result = subprocess.run(
+        [str(setup)],
+        capture_output=True,
+        check=True,
+        env={**os.environ, "XDG_CONFIG_HOME": str(config_home)},
+        text=True,
+    )
+
+    config = json.loads(config_file.read_text(encoding="utf-8"))
+    assert config["skills"] == skills
+    assert conflicting_command.read_text(encoding="utf-8") == "user-owned\n"
+    assert (config_dir / "commands/digest.md").is_symlink()
+    assert (config_dir / "commands/write-lyrics.md").is_symlink()
+    assert (config_dir / "commands/review-story.md").is_symlink()
+    assert (config_dir / "skills/implement").is_symlink()
+    assert "preserving existing OpenCode command" in result.stderr
+
+
+def test_setup_preserves_dangling_definition_and_skill_collisions(tmp_path: Path) -> None:
+    config_home = tmp_path / "config"
+    config_dir = config_home / "opencode"
+    agents_dir = config_dir / "agents"
+    skills_dir = config_dir / "skills"
+    agents_dir.mkdir(parents=True)
+    skills_dir.mkdir(parents=True)
+    dangling_agent = agents_dir / "spec-reviewer.md"
+    dangling_skill = skills_dir / "implement"
+    dangling_agent.symlink_to(tmp_path / "missing-agent.md")
+    dangling_skill.symlink_to(tmp_path / "missing-skill")
+
+    setup = REPOSITORY_ROOT / "scripts/setup-opencode.sh"
+    result = subprocess.run(
+        [str(setup)],
+        capture_output=True,
+        check=True,
+        env={**os.environ, "XDG_CONFIG_HOME": str(config_home)},
+        text=True,
+    )
+
+    assert dangling_agent.is_symlink()
+    assert dangling_agent.readlink() == tmp_path / "missing-agent.md"
+    assert dangling_skill.is_symlink()
+    assert dangling_skill.readlink() == tmp_path / "missing-skill"
+    assert f"preserving existing OpenCode agent: {dangling_agent}" in result.stderr
+    assert f"preserving existing OpenCode skill: {dangling_skill}" in result.stderr

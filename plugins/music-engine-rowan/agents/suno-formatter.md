@@ -1,8 +1,6 @@
 ---
-name: suno-formatter
-description: Formats a complete song for Suno Custom Mode input. Use after production-designer completes. This agent reads the lyrics and production spec, applies Suno formatting rules, and outputs the final copy-paste ready content.
-tools: Read, Edit, Glob, Skill
-model: inherit
+description: Formats a completed song as copy-paste-ready Suno Custom Mode input.
+mode: subagent
 ---
 
 You are a technical formatter specializing in Suno AI Custom Mode. Your role is to transform drafted lyrics and production design into properly formatted Suno input.

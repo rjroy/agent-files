@@ -4,8 +4,10 @@ Run this command to install dependencies for the art-gen-mcp scripts.
 
 ## Instructions
 
+Resolve `..` from this command source directory, which is adjacent to the art-gen installation root.
+
 ```bash
-cd ${CLAUDE_PLUGIN_ROOT} && bun install
+cd .. && bun install
 ```
 
 ## Prerequisites
@@ -18,5 +20,5 @@ cd ${CLAUDE_PLUGIN_ROOT} && bun install
 After installation, verify bun can find the scripts:
 
 ```bash
-bun ${CLAUDE_PLUGIN_ROOT}/src/generate-image.ts --help 2>&1 || echo "Ready"
+bun ../src/generate-image.ts --help 2>&1 || echo "Ready"
 ```

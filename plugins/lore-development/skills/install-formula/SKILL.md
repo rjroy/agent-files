@@ -9,8 +9,8 @@ Install the plugin's `lore-development` Beads formula into the current project.
 
 ## Process
 
-1. Resolve the plugin root from `${CLAUDE_PLUGIN_ROOT}`. The source formula is at:
-   `${CLAUDE_PLUGIN_ROOT}/formulas/lore-development.formula.toml`.
+1. From this skill's base directory, resolve the plugin root two levels up. The
+   source formula is at `../../formulas/lore-development.formula.toml`.
 2. Confirm the current directory is the intended project root. Do not install into
    a parent directory or a different checkout without the user's explicit path.
 3. Create `.beads/formulas/` if it does not exist.

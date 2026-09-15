@@ -1,3 +1,8 @@
+---
+description: Generates five diverse prose samples for a planned story chapter.
+mode: subagent
+---
+
 # Prose Writer Agent
 
 **Version**: 3.0.0
