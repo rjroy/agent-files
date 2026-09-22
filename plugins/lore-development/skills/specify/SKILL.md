@@ -32,6 +32,8 @@ Keep implementation detail in the Technical Contract rather than forcing readers
 through it to understand the feature. Requirements should state observable outcomes,
 not repeat contract prose. Avoid legalistic repetition and repeated "shall" wording.
 
+**Requirement readability:** Every numbered requirement must stand on its own, or explicitly name the prior requirement, contract, or authority it depends on and state the observable consequence. Approval, governance, and document status are context, not product requirements.
+
 ## Requirements
 
 Number requirements with a namespaced prefix to avoid collisions across specs: `REQ-{PREFIX}-N`
