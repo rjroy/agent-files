@@ -119,7 +119,6 @@ def test_bun_typescript_reviewer_requires_material_traceable_findings() -> None:
 
 def test_specification_prompt_is_human_first() -> None:
     prompt = _read("skills/specify/SKILL.md")
-    reviewer = _read("agents/spec-reviewer.md")
 
     expected_order = [
         "Goal and user problem",
@@ -132,8 +131,23 @@ def test_specification_prompt_is_human_first() -> None:
     positions = [prompt.index(section) for section in expected_order]
 
     assert positions == sorted(positions)
-    assert "Run the comprehension pass" in reviewer
-    assert "legalistic repetition" in reviewer.lower()
+
+
+def test_specification_readability_safeguards_align_with_reviewer_criteria() -> None:
+    drafting = _normalized("skills/specify/SKILL.md").lower()
+    reviewer = _normalized("agents/spec-reviewer.md").lower()
+
+    for guidance in (drafting, reviewer):
+        assert "every numbered requirement must stand on its own" in guidance
+        assert "explicitly name the prior requirement, contract, or authority" in guidance
+        assert "state the observable consequence" in guidance
+        assert "approval, governance, and document status" in guidance
+        assert "context, not" in guidance
+
+    assert "as a material initial-review criterion" in reviewer
+    assert "protect human readability" in reviewer
+    assert "legalistic repetition" in reviewer
+    assert "materially obstructs understanding" in reviewer
 
 
 def test_design_skill_runs_fresh_context_review() -> None:

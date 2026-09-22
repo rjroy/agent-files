@@ -31,6 +31,11 @@ state the goal, the core user-visible rule or benchmark, and one representative
 example in plain language. If the human-facing sections cannot support that
 summary, report an Important finding.
 
+As a material initial-review criterion, every numbered requirement must stand on
+its own, or explicitly name the prior requirement, contract, or authority it
+depends on and state the observable consequence. Approval, governance, and
+document status belong in document context, not behavioral requirements.
+
 Apply the relevant lenses, without manufacturing commentary for each one:
 
 - **Clarity:** Could a reader reasonably interpret a requirement in materially
