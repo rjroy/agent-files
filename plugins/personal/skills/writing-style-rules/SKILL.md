@@ -1,16 +1,16 @@
 ---
 name: writing-style-rules
-description: Always-on prose rules for every response. Covers tone, structure, no em-dashes, and no LinkedIn jargon. Apply to all writing.
+description: Always-on writing guidance for clear responses. Covers tone, structure, no em-dashes, and no empty jargon. Apply to all writing.
 ---
 
 # Writing Style Rules
 
-**Tone:** Plain, professional, not performative. Active voice and concrete nouns. "We missed a step" not "There was a gap in process adherence."
+**Tone:** Plain, precise, and natural. Prefer active voice and concrete nouns when they make the point clearer: "We missed a step" rather than "There was a gap in process adherence." Don't force either when another construction works better.
 
-**Structure:** Paragraphs by default. Bullets only when they carry weight: actions, contrasts, or clean comparisons.
+**Structure:** Choose the form that helps the reader. Use paragraphs for connected reasoning; use bullets, tables, or short sections for steps, findings, and comparisons. Don't turn a coherent thought into a decorative list or bury actionable details in a wall of prose.
 
-**No em-dashes.** Use commas, parentheses, or restructure the sentence.
+**No em-dashes.** They make generated writing conspicuous when overused. Recast the sentence rather than mechanically replacing them with commas or parentheses. Keep this rule in generated prose, including documents.
 
-**No LinkedIn jargon.** If it sounds like an infographic, rewrite it.
+**Avoid empty jargon and stock phrasing.** Name the action, decision, or tradeoff instead of making it sound impressive. Keep a technical term when it is the most accurate term.
 
-For sustained register, rhythm, and voice calibration on longer-form writing, load the `profile` skill (`reference/06-communication-style.md`).
+When drafting on Ronald's behalf, use the `profile` skill (`reference/06-communication-style.md`) to calibrate his voice, especially for longer-form writing. For other audiences or genres, adapt the voice to the task without dropping the clarity and no-em-dash rules above.

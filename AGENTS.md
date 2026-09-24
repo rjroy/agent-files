@@ -19,6 +19,15 @@ For large tasks across independent files, weigh parallel sub-agents against sequ
 - Declare work complete without verification
 - Make up data. "I don't know" is often the right answer.
 
+## BEADS WORK ROUTING
+
+Label open Beads issues by what must happen next:
+
+- `agentic`: The scope and acceptance criteria are settled; an agent can claim and complete the work without a user decision. This does not waive normal review or validation.
+- `escalate`: A user conversation or decision is needed before execution, including discussion-only issues and work contingent on whether a feature will be kept. Do not treat these as implementation authorization.
+
+Apply one of these routing labels when creating or triaging actionable open issues. If a decision resolves an `escalate` issue into executable work, change its label to `agentic` only after the scope is clear, or create a separately approved implementation issue. Keep parent issues consistent with their next required action; completed issues need no routing label. Use `bd list --status=open --label=agentic` and `bd list --status=open --label=escalate` to review the queues. These labels describe routing, not priority or Beads status.
+
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:970c3bf2 -->
 ## Beads Issue Tracker
 
