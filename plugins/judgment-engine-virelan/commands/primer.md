@@ -23,7 +23,7 @@ Output when no pressure detected:
 
 Current State: Clear.
 What's Missing: No tension detected.
-Alternatives: Proceed | Specify concern | Use Q&A Runner skill
+Alternatives: Proceed | Specify concern | Use Exploratory Reasoning to examine distinct paths
 ```
 
 Guards:

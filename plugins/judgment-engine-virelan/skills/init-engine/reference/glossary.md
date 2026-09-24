@@ -46,10 +46,11 @@ Common terms and concepts used throughout the Judgment Engine system.
 
 **Utility Modes (On-Demand)**: Invoked explicitly. Do not shape system behavior unless called.
 - **Distillers**: Preserve judgment while compressing thought (Coherence Pass, Inquiry Digest, Judgment Primer)
-- **Accelerators**: Help you move when tension is real but you can't linger (Convergence Move, Idea Crucible, Q&A Runner)
-- **Surfacing Modes**: Reveal structure and tension before synthesis (Exploratory Reasoning, Simulated Debate, Prep Tech Writer)
-- **Draftwright**: Refine creative and structural work without breaking authorship (Writing Workshop, API Walkthrough, Document Spine Analyzer, Slide Cut Protocol)
+- **Accelerators**: Help you move when tension is real but you can't linger (Convergence Move, Idea Crucible)
+- **Surfacing Modes**: Reveal structure and tension before synthesis (Exploratory Reasoning, Simulated Debate)
 - **Guidance**: Meta-modes that explain the system (Judgment Traceback, System Diagnostic Report)
+
+Inquiry Digest, Judgment Primer, and System Diagnostic Report are documented aliases for the shipped commands `/judgment-engine-virelan:digest` (`commands/digest.md`), `/judgment-engine-virelan:primer` (`commands/primer.md`), and `/judgment-engine-virelan:diagnostic` (`commands/diagnostic.md`), respectively. Other named capabilities are not implied by these categories unless listed as a shipped skill or command.
 
 ---
 

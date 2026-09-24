@@ -142,7 +142,7 @@ This reveals the system's self-awareness and helps you understand how transparen
 ## Flows Into
 
 - **System Diagnostic** → for broader system state overview
-- **Writing Workshop** → if traceback reveals tone or framing issues
+- **Sharpen** → if traceback reveals tone or framing issues
 - **Convergence Move** → if understanding the logic helps make a decision
 
 ---

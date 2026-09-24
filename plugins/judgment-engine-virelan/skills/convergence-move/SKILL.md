@@ -82,7 +82,7 @@ Based on assessment, provide:
 
 ## Flows Into
 
-- **Writing Workshop** → turn the convergence frame into public-facing clarity
+- **Sharpen** → clarify the convergence frame while preserving your voice
 - **Simulated Debate** → if tension demands deeper surfacing before integration
 - **Coherence Pass** → if signal still feels unstructured (and structure is honest)
 - **Inquiry Digest** → if it needs to be packaged for later analysis
