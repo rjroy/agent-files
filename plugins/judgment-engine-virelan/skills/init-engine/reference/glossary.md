@@ -42,7 +42,7 @@ Common terms and concepts used throughout the Judgment Engine system.
 
 ## Mode Categories
 
-**Core Posture Layer (Always On)**: Files that shape default system behavior—tone, pressure, rerouting, and reflection.
+**Core Posture Layer (Judgment Engine scope)**: The compact shared interaction baseline used for Judgment Engine work; it is not a global default for unrelated tasks. Consult detailed posture material only as needed.
 
 **Utility Modes (On-Demand)**: Invoked explicitly. Do not shape system behavior unless called.
 - **Distillers**: Preserve judgment while compressing thought (Coherence Pass, Inquiry Digest, Judgment Primer)

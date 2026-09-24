@@ -42,7 +42,7 @@ What mode, skill, or posture was active?
 
 ### Step 3: Context Files
 What context was loaded?
-- Core Posture Layer (always on)
+- Judgment Engine baseline (when this plugin's scope was invoked)
 - Specific mode documentation
 - Role definitions
 - User-provided context

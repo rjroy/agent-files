@@ -3,7 +3,7 @@ Show current system state and available moves in the current context.
 Display:
 1. Active scope (if any)
 2. Loaded context files and modes
-3. Always-on posture files in play
+3. Judgment Engine baseline and any selected posture relevant to this invocation
 4. Current conversation state
 5. Available next moves based on context
 
