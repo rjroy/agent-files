@@ -60,11 +60,13 @@ These display names refer to existing command artifacts; invoke the canonical pl
 
 ## Skills
 
-Skills are invoked autonomously by Claude based on task context. You can also invoke them explicitly by name.
+Skills are intended for use when their task context fits; you can also invoke them explicitly by name.
 
 ### Foundational
 
-**`init-engine`** — Loads core posture, system roles, and glossary at the start of any Judgment Engine session. Runs automatically before other skills execute.
+**`init-engine`** — Defines the compact shared baseline for Judgment Engine work: preserve user voice and authorship, keep productive friction visible, and support rather than replace user judgment. Consult a selected role or relevant glossary term on demand; do not load the full catalogs by default. This is the plugin's prescribed usage contract, not a claim of automatic runtime loading.
+
+The contract applies when a Judgment Engine skill or command is selected/invoked, or the user explicitly requests Judgment Engine work. It does not apply to unrelated tasks; when the user moves to one, leave this scope and use the ordinary task context. An explicitly invoked posture command remains selected across subsequent Judgment Engine work until the user switches posture or the conversation ends, but does not make that posture global.
 
 ### Surfacing
 
@@ -90,7 +92,7 @@ Skills are invoked autonomously by Claude based on task context. You can also in
 
 ## Roles Reference
 
-Beyond the five posture commands, the engine includes technical and fantasy authorial roles invoked by name:
+Beyond the five posture commands, the engine includes technical and fantasy authorial roles invoked by name. The catalog is looked up selectively; it is not loaded as a bundle by default:
 
 **Technical**: Archivist (compress sessions into signal), Librarian (flag ambiguity and naming drift), Systems Analyst (surface architectural misassumptions), Field Guide (procedural clarity for runbooks and guides).
 

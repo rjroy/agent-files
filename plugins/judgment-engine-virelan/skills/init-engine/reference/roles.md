@@ -152,6 +152,8 @@ Protects: World logic as emergent texture, reader trust through emotional pacing
 
 ## Role Invocation
 
+This catalog is a lookup reference, not a default context bundle. Consult only the selected/requested role rather than loading every role. Roles apply within Judgment Engine work, not as global assistant defaults. A posture set by an explicit posture command persists across subsequent Judgment Engine work until the user switches posture or the conversation ends; an unrelated task is outside this plugin contract.
+
 To invoke a role, simply name it:
 - "Run Quinn"
 - "Give me the Max perspective"

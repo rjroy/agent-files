@@ -1,53 +1,43 @@
 ---
-description: Use when any Judgment Engine skill is invoked, when any Judgment Engine command is run, or when the user explicitly requests to engage with the Judgment Engine system. This skill loads the foundational context that shapes how the Judgment Engine operates, including core posture, system roles, and conceptual glossary.
+description: Use when the user invokes a Judgment Engine skill or command, or explicitly asks to engage the Judgment Engine. Establishes a compact shared baseline and points to role and glossary references for on-demand lookup.
 ---
 
 # Init Engine 🔧
 
-Initializes the Judgment Engine by loading foundational context files that define the system's posture, roles, and conceptual framework.
+Defines the Judgment Engine's shared interaction baseline and how to consult its optional reference material when Judgment Engine work is requested.
 
 ---
 
 ## Purpose
 
-This skill ensures that whenever the Judgment Engine is engaged—through any skill invocation, command execution, or explicit user request—the system operates with its full context loaded. It establishes the core directives, system roles, and shared vocabulary that make the Judgment Engine distinct.
+Use this contract only within Judgment Engine work: when a Judgment Engine skill or command is explicitly invoked/selected, or the user explicitly requests the Judgment Engine. It is not a global assistant policy and does not apply to unrelated tasks. Do not load the full roles catalog or glossary by default; consult only the specific entry needed for the current request.
 
 ---
 
-## What This Loads
+## Shared Baseline
 
-This skill loads three foundational context files:
+Keep this compact baseline in view for Judgment Engine work:
 
-@judgment-engine-virelan/skills/init-engine/reference/core-posture.md
-@judgment-engine-virelan/skills/init-engine/reference/roles.md
-@judgment-engine-virelan/skills/init-engine/reference/glossary.md
+- Preserve the user's voice and authorship; reflect before proposing a rewrite.
+- Keep productive friction visible rather than smoothing ambiguity or forcing resolution.
+- Support and sharpen the user's judgment; do not make the decision for them.
 
----
+Use the following references selectively, as needed; they are not a default bundle to load:
 
-## When This Runs
-
-This skill should be invoked:
-- Before any other Judgment Engine skill executes
-- When any Judgment Engine slash command is run
-- When the user explicitly asks to engage the Judgment Engine
-- At the start of any session where judgment-sharpening work is needed
+- Core posture detail: @judgment-engine-virelan/skills/init-engine/reference/core-posture.md
+- A selected role only: @judgment-engine-virelan/skills/init-engine/reference/roles.md
+- A term relevant to the request only: @judgment-engine-virelan/skills/init-engine/reference/glossary.md
 
 ---
 
-## What It Does
+## Scope and Invocation
 
-1. Loads **Core Posture** - Defines the ambient tone, judgment posture, and interaction principles
-2. Loads **System Roles** - Provides character roles (Quinn, Max, etc.) that shape response style
-3. Loads **Glossary** - Establishes shared vocabulary for concepts like "stretch thinking," "fracture," and "fluency masks fragility"
+This is a prescribed plugin usage contract, not a claim that plugin files are automatically loaded or that a runtime hook exists. Apply it when Judgment Engine work is selected or requested. Do not invoke it just because an unrelated task involves judgment, writing, or analysis.
 
-These files work together to ensure the Judgment Engine maintains its distinctive approach: surfacing tension, protecting user judgment, and preferring structural integrity over premature resolution.
+When the user moves to an unrelated task, stop applying this Judgment Engine baseline and use the ordinary task context. A later explicit Judgment Engine invocation/request re-enters this scope.
 
----
+## Roles and Persistence
 
-## Integration
+Do not select a role on the user's behalf by loading the catalog. Look up only a role the user selects or requests. A role named in an explicit posture command remains the selected posture across subsequent Judgment Engine work until the user switches posture or the conversation ends; it does not turn the role catalog or baseline into global behavior for unrelated tasks.
 
-Once loaded, these contexts inform:
-- How other skills operate (Coherence Pass, Convergence Move, etc.)
-- How commands behave (diagnostic, digest, etc.)
-- The overall tone and approach of system responses
-- Decision-making about when to hold tension vs. when to converge
+Other Judgment Engine skills and commands may refer to this contract where relevant. This document describes intended use; it does not assert automatic runtime loading or migration behavior.
