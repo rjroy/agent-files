@@ -109,7 +109,7 @@ Not resolution—but questions that guide judgment:
 ## Flows Into
 
 - **Convergence Move** → after tension is well-surfaced and you need to act
-- **Writing Workshop** → to turn debate insights into clear communication
+- **Coherence Pass** → to check whether debate insights form a genuine pattern
 - **Exploratory Reasoning** → if cross-exam reveals need for entirely different approaches
 - **Judgment Traceback** → to understand why one position felt more compelling
 

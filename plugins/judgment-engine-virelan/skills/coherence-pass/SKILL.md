@@ -111,7 +111,7 @@ The Reality Check (Step 2) is the whole point of this skill — word-level simil
 
 ## Flows Into
 
-- **Writing Workshop** → to compress insight into guidance language
+- **Sharpen** → to clarify insight in guidance language
 - **Inquiry Digest** → to capture distilled version post-integration
 - **Exploratory Reasoning** → if fragmentation suggests need for different thinking approaches
 - **Convergence Move** → once patterns are clear enough to act on

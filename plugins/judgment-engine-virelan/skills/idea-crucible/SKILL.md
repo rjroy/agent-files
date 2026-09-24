@@ -108,9 +108,9 @@ Only assumptions that hold conceptually under the stated pressure become proto-r
 
 ## Flows Into
 
-- **Q&A Runner** → to interrogate specific fractures deeper
+- **Judgment Primer** → to surface focused questions about specific fractures
 - **Convergence Move** → only after genuine unknowns are documented
-- **Writing Workshop** → to draft initial problem statement (not PRD)
+- **Sharpen** → to clarify the surviving problem statement without drafting a PRD
 - **Exploratory Reasoning** → to investigate alternative approaches
 
 ---

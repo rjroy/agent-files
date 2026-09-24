@@ -46,6 +46,16 @@ Switch the engine's stance mid-session. Each posture shapes tone and approach un
 | `/judgment-engine-virelan:trim` | Cuts 10-15% from a draft. Marks hedging language, redundant explanations, and scaffolding that doesn't carry weight. Shows what to cut and why. |
 | `/judgment-engine-virelan:diagnostic` | Shows current system state: active context, loaded modes, available next moves given where the conversation is. |
 
+### Documented Command Aliases
+
+These display names refer to existing command artifacts; invoke the canonical plugin command paths shown here:
+
+| Alias | Artifact | Canonical invocation |
+|-------|----------|----------------------|
+| Inquiry Digest | `commands/digest.md` | `/judgment-engine-virelan:digest` |
+| Judgment Primer | `commands/primer.md` | `/judgment-engine-virelan:primer` |
+| System Diagnostic Report | `commands/diagnostic.md` | `/judgment-engine-virelan:diagnostic` |
+
 ---
 
 ## Skills
@@ -66,15 +76,11 @@ Skills are invoked autonomously by Claude based on task context. You can also in
 
 ### Accelerating
 
-**`qa-runner`** — Interactive interrogation, one question at a time. Accepts a target context, optional posture (Quinn, Max, Librarian, etc.), and asks focused questions until you export, exit, or change topic. Includes pre-built question banks for planning, API review, 1:1 prep, and leadership assessment.
-
 **`convergence-move`** — Helps you act when thinking is stretched but nothing fully resolves. Scans for structural tensions, assesses whether movement is ready, premature, or whether the contradiction itself is the answer. Won't fake alignment.
 
 ### Integrating
 
 **`coherence-pass`** — Finds genuine patterns in rich notes or scattered thinking. Reality-checks whether coherence actually exists before claiming it. If patterns aren't there, says so and offers productive next moves instead.
-
-**`writing-workshop`** — Strengthens drafts without surrendering authorship. Identifies structural weaknesses, asks targeted questions you must answer to proceed, and only rewrites on explicit request (always marked as "example only").
 
 ### Meta
 

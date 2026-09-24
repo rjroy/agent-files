@@ -88,6 +88,6 @@ Run Primer on this context: The scheduled deployment completed successfully at 1
 
 - The response uses the “Pressure Check” outcome, acknowledges the clear state, and does not generate “Today's Questions.”
 - It does not manufacture tension, stakes, blind spots, or importance from the successful deployment.
-- It may offer the documented alternatives to proceed, specify a concern, or use Q&A Runner.
+- It may offer the documented alternatives to proceed, specify a concern, or use Exploratory Reasoning to examine distinct paths.
 
 **Fail if** the response produces three anchor questions or claims pressure that is not present in the supplied context.

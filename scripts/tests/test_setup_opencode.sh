@@ -56,6 +56,15 @@ for (const sourceDir of skillSources) {
   }
 }
 
+const skillSymlinkNames = fs.readdirSync(path.join(configDir, "skills"), { withFileTypes: true })
+  .filter((entry) => entry.isSymbolicLink())
+  .map((entry) => entry.name);
+for (const removedSkill of ["qa-runner", "writing-workshop"]) {
+  if (skillSymlinkNames.includes(removedSkill)) {
+    throw new Error(`removed skill ${removedSkill} is still in the OpenCode skill symlink inventory`);
+  }
+}
+
 for (const [collection, prefix] of [
   ["music-engine-rowan", "music-engine-rowan-"],
   ["story-engine-wyrd", "story-engine-wyrd-"],
