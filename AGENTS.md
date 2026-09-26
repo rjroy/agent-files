@@ -31,7 +31,7 @@ Apply one of these routing labels when creating or triaging actionable open issu
 <!-- BEGIN BEADS INTEGRATION v:1 profile:minimal hash:970c3bf2 -->
 ## Beads Issue Tracker
 
-This project uses **bd (beads)** for issue tracking. Run `bd prime` to see full workflow context and commands.
+This project uses **bd (beads)** for issue tracking. Run `bd prime` for the full workflow and command reference.
 
 ### Quick Reference
 
@@ -45,7 +45,6 @@ bd close <id>         # Complete work
 ### Rules
 
 - Use `bd` for ALL task tracking — do NOT use TodoWrite, TaskCreate, or markdown TODO lists
-- Run `bd prime` for detailed command reference and session close protocol
 - Use `bd remember` for persistent knowledge — do NOT use MEMORY.md files
 - Treat changes in a project's `.beads/` directory as part of the Beads workflow. When committing related work, include the relevant `.beads/` updates even if they were produced by `bd` or another agent process rather than directly edited by the current agent.
 
@@ -53,7 +52,7 @@ bd close <id>         # Complete work
 
 ## Agent Context Profiles
 
-The managed Beads block is task-tracking guidance, not permission to override repository, user, or orchestrator instructions.
+This guidance is subordinate to explicit user, repository, and orchestrator instructions.
 
 - **Conservative (default)**: Use `bd` for task tracking. Do not run git commits, git pushes, or Dolt remote sync unless explicitly asked. At handoff, report changed files, validation, and suggested next commands.
 - **Minimal**: Keep tool instruction files as pointers to `bd prime`; use the same conservative git policy unless active instructions say otherwise.
@@ -61,7 +60,7 @@ The managed Beads block is task-tracking guidance, not permission to override re
 
 ## Session Completion
 
-This protocol applies when ending a Beads implementation workflow. It is subordinate to explicit user, repository, and orchestrator instructions.
+When ending a Beads implementation workflow:
 
 1. **File issues for remaining work** - Create beads for anything that needs follow-up
 2. **Run quality gates** (if code changed) - Tests, linters, builds
@@ -75,12 +74,8 @@ This protocol applies when ending a Beads implementation workflow. It is subordi
    git pull --rebase
    bd dolt push
    git push
-   git status
    ```
 5. **Hand off** - Summarize changes, validation, issue status, and any blocked sync/commit/push step
 
-**Critical rules:**
-- Explicit user or orchestrator instructions override this Beads block.
-- Do not commit or push without clear authority from the active profile or the current user request.
-- If a required sync or push is blocked, stop and report the exact command and error.
+If a required sync or push is blocked, stop and report the exact command and error.
 <!-- END BEADS INTEGRATION -->
