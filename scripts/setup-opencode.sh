@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Register this repository's skills, agents, and commands with OpenCode V2.
+# Register this repository's instructions, skills, agents, and commands with OpenCode V2.
 set -euo pipefail
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -25,6 +25,19 @@ function isSymlinkTo(target, source) {
   if (!targetStat?.isSymbolicLink()) return false;
 
   return path.resolve(path.dirname(target), fs.readlinkSync(target)) === path.resolve(source);
+}
+
+const instructionsSource = path.join(path.dirname(resolvedPluginsDir), "COMMON.md");
+const instructionsTarget = path.join(configDir, "AGENTS.md");
+if (!fs.existsSync(instructionsSource)) {
+  throw new Error(`OpenCode instructions not found: ${instructionsSource}`);
+}
+if (fs.lstatSync(instructionsTarget, { throwIfNoEntry: false })) {
+  if (!isSymlinkTo(instructionsTarget, instructionsSource)) {
+    console.error(`Warning: preserving existing OpenCode instructions: ${instructionsTarget}`);
+  }
+} else {
+  fs.symlinkSync(instructionsSource, instructionsTarget);
 }
 
 const collections = [

@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 # Bootstrap this repo as the source of the user's global Claude config:
-#   1. Symlink ~/.claude/CLAUDE.md -> AGENTS.md
+#   1. Symlink ~/.claude/CLAUDE.md -> COMMON.md
 #   2. Register this repo as a local plugin marketplace
 #   3. Install every plugin the marketplace declares
 set -euo pipefail
 
 repo_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 claude_md="$HOME/.claude/CLAUDE.md"
-agents_md="$repo_dir/AGENTS.md"
+agents_md="$repo_dir/COMMON.md"
 marketplace_json="$repo_dir/.claude-plugin/marketplace.json"
 
 echo "==> Linking $claude_md -> $agents_md"
