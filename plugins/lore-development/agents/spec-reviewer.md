@@ -1,6 +1,7 @@
 ---
 description: Reviews specs with fresh context to identify material clarity, completeness, consistency, and verifiability problems.
 mode: subagent
+model: openai/gpt-6-astra#high
 permission:
   edit: deny
   bash: deny

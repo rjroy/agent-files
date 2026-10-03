@@ -1,6 +1,7 @@
 ---
 description: Reviews Bun and TypeScript implementations for requested behavior and material defects across daemon, Unix-socket, CLI, Next.js, and React boundaries.
 mode: subagent
+model: openai/gpt-6.1-sol#high
 permission:
   edit: deny
   bash: deny

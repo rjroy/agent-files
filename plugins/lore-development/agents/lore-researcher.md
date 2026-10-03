@@ -2,6 +2,7 @@
 name: lore-researcher
 description: Use this agent when you need to search .lore/ for related prior work before starting new specifications or plans. This agent surfaces operational lessons, solidified reference material, and session-bound work artifacts so past knowledge informs new work. Invoked automatically by /specify and /prep-plan, or manually when exploring what context exists.
 mode: subagent
+model: openai/gpt-6-luna#medium
 permission:
   edit: deny
   bash: deny
