@@ -1,6 +1,7 @@
 ---
 description: Reviews Rust daemon and CLI implementations for requested behavior and material defects at Unix-socket and process-security boundaries.
 mode: subagent
+model: openai/gpt-6.1-sol#high
 permission:
   edit: deny
   bash: deny

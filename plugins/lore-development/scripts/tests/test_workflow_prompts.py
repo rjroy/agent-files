@@ -205,20 +205,21 @@ def test_design_inputs_map_decisions_to_evidence() -> None:
     assert "reconcile every source obligation" in prompt
 
 
-def test_opencode_agent_frontmatter_is_read_only_and_model_agnostic() -> None:
-    agent_paths = [
-        "agents/bun-typescript-reviewer.md",
-        "agents/design-reviewer.md",
-        "agents/lore-researcher.md",
-        "agents/plan-reviewer.md",
-        "agents/spec-reviewer.md",
-    ]
+def test_opencode_agent_frontmatter_is_read_only_with_explicit_models() -> None:
+    agent_models = {
+        "agents/bun-typescript-reviewer.md": "openai/gpt-6.1-sol#high",
+        "agents/design-reviewer.md": "openai/gpt-6-astra#high",
+        "agents/lore-researcher.md": "openai/gpt-6-luna#medium",
+        "agents/plan-reviewer.md": "openai/gpt-6-astra#high",
+        "agents/rust-daemon-cli-reviewer.md": "openai/gpt-6.1-sol#high",
+        "agents/spec-reviewer.md": "openai/gpt-6-astra#high",
+    }
 
-    for path in agent_paths:
+    for path, model in agent_models.items():
         frontmatter = _frontmatter(path)
         assert frontmatter["mode"] == "subagent"
         assert frontmatter["permission"] == {"edit": "deny", "bash": "deny"}
-        assert "model" not in frontmatter
+        assert frontmatter["model"] == model
         assert "tools" not in frontmatter
 
 

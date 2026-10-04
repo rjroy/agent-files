@@ -1,6 +1,7 @@
 ---
 description: Reviews design documents with fresh context for weak decisions, missing trade-offs, and contracts that are not implementable.
 mode: subagent
+model: openai/gpt-6-astra#high
 permission:
   edit: deny
   bash: deny

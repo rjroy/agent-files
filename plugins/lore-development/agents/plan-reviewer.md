@@ -1,6 +1,7 @@
 ---
 description: Reviews implementation plans with fresh context for target coverage, feasibility, scope discipline, and actionable validation.
 mode: subagent
+model: openai/gpt-6-astra#high
 permission:
   edit: deny
   bash: deny

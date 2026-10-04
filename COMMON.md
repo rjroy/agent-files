@@ -21,10 +21,18 @@ For large tasks across independent files, weigh parallel sub-agents against sequ
 
 ## BEADS WORK ROUTING
 
+### Branches and checkpoints
+
+- Before implementing a sequence of Beads issues, create or switch to a dedicated working branch. Keep the sequence on that branch; do not implement directly on the repository's default branch.
+- After each bead is completed and verified, create a checkpoint commit before starting the next bead. Include only that bead's changes and relevant `.beads/` updates, leaving unrelated work untouched. Reference the bead ID in the commit message.
+- This rule authorizes local checkpoint commits for the sequence, overriding the default requirement to ask before committing. An explicit "do not commit" instruction still wins. Pushing, merging, and remote sync require separate authorization.
+- If validation or committing is blocked, stop and report the blocker rather than continuing to the next bead. If a bead produces no file changes, record its completion in Beads without creating an empty commit.
+
+### Routing labels
+
 Label open Beads issues by what must happen next:
 
 - `agentic`: The scope and acceptance criteria are settled; an agent can claim and complete the work without a user decision. This does not waive normal review or validation.
 - `escalate`: A user conversation or decision is needed before execution, including discussion-only issues and work contingent on whether a feature will be kept. Do not treat these as implementation authorization.
 
 Apply one of these routing labels when creating or triaging actionable open issues. If a decision resolves an `escalate` issue into executable work, change its label to `agentic` only after the scope is clear, or create a separately approved implementation issue. Keep parent issues consistent with their next required action; completed issues need no routing label. Use `bd list --status=open --label=agentic` and `bd list --status=open --label=escalate` to review the queues. These labels describe routing, not priority or Beads status.
-
