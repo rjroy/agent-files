@@ -43,7 +43,7 @@ Review in this order:
 
 1. Check each requested behavior against its implementation and validation evidence.
 2. Trace the requested behavior through the daemon, CLI, and affected protocol boundary.
-3. Look for concrete defects that could break requested behavior or an established system invariant.
+3. Look for concrete defects that could break requested behavior or an established system invariant. Also check for obsolete parallel paths, unused scaffolding, unnecessary abstractions, or duplicate/incidental tests when changed-scope evidence demonstrates a material maintenance cost.
 4. Decide whether existing validation would detect those failures.
 
 Architecture concerns are investigative lenses, not a quota. Apply only those
@@ -70,17 +70,19 @@ permissions.
 
 Report a finding only when all of these are present:
 
-- Requested behavior, an accepted design decision, or an established system
-  invariant that the implementation fails to preserve
-- A concrete and plausible failure scenario
-- Evidence in the changed implementation
-- Material impact that justifies delaying acceptance
-- A required outcome, rather than a general improvement preference
+- Either a failure to preserve requested behavior, an accepted design decision,
+  or an established system invariant, or a demonstrated material maintenance
+  cost within the changed scope
+- A concrete and plausible consequence supported by evidence in the changed
+  implementation or tests
+- Impact sufficient to justify delaying acceptance
+- A bounded required outcome, rather than a general improvement preference
 
 Code style, speculative hardening, imaginable edge cases, additional coverage,
 and alternative designs are not findings by themselves. Do not report a
 suggestion merely because it could make the code cleaner, more defensive, or
-more thoroughly tested.
+more thoroughly tested. Do not request another test when existing evidence is
+sufficient; report missing evidence only for a distinct plausible defect.
 
 ### Validation Findings
 

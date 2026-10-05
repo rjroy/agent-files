@@ -38,11 +38,15 @@ def test_implementation_roles_are_serialized_and_read_only() -> None:
 
 
 def test_implementation_requires_mapped_behavioral_evidence() -> None:
-    prompt = _read("skills/implement/SKILL.md")
+    prompt = _normalized("skills/implement/SKILL.md")
 
-    assert "mapping every obligation" in prompt
+    assert (
+        "Map each obligation to its phase and sufficient executable validation"
+        in prompt
+    )
     assert "task's exact Validation section" in prompt
-    assert "obligation-to-evidence table" in prompt
+    assert "An unmapped obligation is a planning gap" in prompt
+    assert "Reconcile obligations with evidence" in prompt
     assert "suite passing does not substitute" in prompt
 
 
@@ -201,8 +205,12 @@ def test_design_inputs_map_decisions_to_evidence() -> None:
     prompt = _normalized("skills/implement/SKILL.md")
 
     assert "decisions and interface commitments from a design" in prompt
-    assert "mapping every obligation" in prompt
-    assert "reconcile every source obligation" in prompt
+    assert (
+        "Map each obligation to its phase and sufficient executable validation"
+        in prompt
+    )
+    assert "An unmapped obligation is a planning gap" in prompt
+    assert "Reconcile obligations with evidence" in prompt
 
 
 def test_opencode_agent_frontmatter_is_read_only_with_explicit_models() -> None:
