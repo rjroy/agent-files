@@ -15,7 +15,7 @@ Build an implementation plan the user can review and approve before any code is 
 
 **Surface gaps before drafting.** If the input has ambiguous requirements, contradictions, or unstated assumptions that would force guesses, list them and ask the user to resolve them first. A plan built on unreviewed assumptions fails during implementation.
 
-**Draft collaboratively.** Map the goal or requirements to concrete implementation steps and executable evidence. Order by dependency. Flag steps that need specialized expertise. Distribute requirement checks into the steps that implement them, then include a final validation step for cross-cutting behavior and evidence reconciliation.
+**Draft collaboratively.** Plan the smallest coherent end state using existing capabilities where they fit. Name the affected surfaces and, where relevant, what is reused, replaced, deleted, or intentionally retired; preserve unapproved contracts and leave unrelated cleanup out of scope. Map the goal or requirements to concrete implementation steps and proportionate executable evidence. Reuse sufficient existing tests or evidence; add checks for distinct plausible defects, not one new test per requirement, task, or layer. Order steps by dependency and flag specialized expertise where it materially matters. Include cross-cutting validation and evidence reconciliation without creating a new phase when existing steps can cover them.
 
 **Save.** The saved file is the review vehicle — don't present the plan in chat before saving.
 

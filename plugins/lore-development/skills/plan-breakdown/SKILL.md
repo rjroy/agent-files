@@ -16,15 +16,16 @@ Invoked as `/plan-breakdown <path>` where `<path>` is a plan in `.lore/work/plan
 ## What to Add
 
 For each plan step, define:
-- **What**: concrete enough that an agent reading only this task knows what to build
-- **Validation**: specific criteria, not "run the tests" — "the CLI outputs X when called with Y", "Playwright confirms the button triggers Z", "unit test covers the rejection path"
+- **What**: concrete enough that an agent reading the task and compact whole-change context knows what to build; carry forward relevant reuse, replacement, deletion, intentional retirement, and retained-contract decisions
+- **Validation**: proportionate evidence, not "run the tests" — name observable criteria such as "the CLI outputs X when called with Y". Reuse sufficient existing tests/evidence and add checks for distinct plausible defects; do not require one new test per requirement, task, or layer
 - **Why**: the requirement or goal this step satisfies, with a reference back to the source
 - **Files**: affected files (guidance, not a constraint)
 
-Build a requirement-to-task-to-evidence matrix before saving. Every source
-requirement must map to an executable check. Discover affected consumers, state
-transitions, and system boundaries from the feature. Use realistic interfaces and
-persistence where mocks could hide behavior.
+Map source obligations to tasks and sufficient executable evidence before saving.
+Discover affected consumers, state transitions, and system boundaries. Use realistic
+interfaces and persistence where mocks could hide behavior. Consolidate redundant
+checks and remove tests solely protecting behavior explicitly approved for retirement;
+do not impose LOC, test-count, or coverage quotas.
 
 Split a step only when it bundles genuinely different concerns with different validation needs. Resist over-decomposition — the value is the validation gates, not artificial granularity.
 

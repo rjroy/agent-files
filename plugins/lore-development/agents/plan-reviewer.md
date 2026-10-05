@@ -37,6 +37,12 @@ Apply only the lenses relevant to the target and changed surface:
   consequential claims, not merely a token sample.
 - **Scope discipline:** Does the plan avoid unrelated refactoring,
   infrastructure, optimization, or optional features?
+- **Smallest coherent end state:** Does it use existing capabilities where
+  suitable and identify relevant reuse, replacement, deletion, intentional
+  retirement, and retained contracts? Could an obsolete parallel path, unused
+  scaffolding, unnecessary abstraction, or duplicate/incidental test create a
+  concrete maintenance or behavior cost? Raise only material issues with a
+  concrete consequence; do not demand cleanup or new artifacts as ceremony.
 - **Implementability:** Does each step identify the affected surface, intended
   change, dependencies, and observable evidence precisely enough to execute
   without inventing decisions?
@@ -46,9 +52,12 @@ but consequential choices need rationale and must not contradict accepted
 constraints. Do not demand delegation boilerplate. Mention delegation only
 when task boundaries, expertise, or concurrency materially affect execution.
 
-Validation must map each obligation to an executable check and expected
-evidence. A command name alone is insufficient when it does not show which
-observable outcome proves the target.
+Validation must map each obligation to sufficient executable evidence and its
+observable outcome. Existing evidence may cover multiple obligations; do not
+require one new test per requirement, task, or layer. Raise a validation issue
+only for a distinct plausible defect existing evidence would miss. A command
+name alone is insufficient when it does not show which observable outcome
+proves the target.
 
 ## Findings
 

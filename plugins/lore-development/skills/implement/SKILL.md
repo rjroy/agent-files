@@ -25,7 +25,7 @@ Write the body in Markdown per the "Body Format" section of `../../shared/frontm
 
 Search for related prior work: invoke the `lore-researcher` subagent with the host's subagent capability with the artifact description. Wait for the result before continuing. If that custom agent is unavailable, dispatch the host's general-purpose subagent with the research role from `agents/lore-researcher.md`.
 
-Break the input into implementable phases. If the input is a plan, phases are its steps. If a spec or design, break into independently testable chunks.
+Break the input into the smallest coherent implementable phases. If the input is a plan, phases are its steps. If a spec or design, group related work into phases without artificial splits. Prefer existing capabilities and name relevant reuse, replacement, deletion, intentional retirement, and retained contracts. Keep unrelated cleanup and unapproved contract retirement out of scope.
 
 **Task file detection.** When the input is a plan, check whether `.lore/work/tasks/<plan-name>/` exists. If it does, read task files sorted by their `sequence` frontmatter field — these become the phases. Compare the plan's modification timestamp against the oldest task file. If the plan is newer, warn the user and offer three options: re-run `/plan-breakdown`, use existing tasks, or abort.
 
@@ -45,10 +45,12 @@ TypeScript file. For other stacks, retain the host general-purpose fallback.
 
 **Establish evidence.** Extract the source's obligations: requirements from a spec,
 decisions and interface commitments from a design, or goals and validation from a
-plan. Create a notes table mapping every obligation to its phase and executable
-validation. Discover affected consumers, state transitions, and system boundaries
-from the feature. An unmapped obligation is a planning gap: resolve it before
-implementation.
+plan. Map each obligation to its phase and sufficient executable validation, reusing
+existing tests/evidence where adequate. Discover affected consumers, state transitions,
+and system boundaries. Add checks for distinct plausible defects, not one new test
+per obligation, task, or layer; consolidate redundant checks and remove tests solely
+protecting explicitly retired behavior. An unmapped obligation is a planning gap:
+resolve it before implementation.
 
 ### 2. Execute Phases
 
@@ -58,11 +60,11 @@ Only one agent may operate on a phase's files at a time. Await each result befor
 dispatching the next role. Testing and review agents are read-only: they return
 evidence or findings and never edit files. Do not test or review a moving worktree.
 
-**a. Implement.** Dispatch to an implementation agent with the host's subagent capability. Include: what to build, relevant file paths, context from prior phases or failures. One phase at a time — the agent does not see the full plan. Await a stable changed-file manifest before continuing.
+**a. Implement.** Dispatch to an implementation agent with the host's subagent capability. Include: the phase's work, relevant file paths, compact whole-change context (goal, affected surfaces, retained contracts, and planned reuse/replacements/deletions/intentional retirements), plus relevant prior-phase results or failures. Keep context focused; do not withhold the full-change decisions needed to avoid parallel or obsolete paths. One phase at a time. Await a stable changed-file manifest before continuing.
 
 **b. Test.** Dispatch to a testing agent with the host's subagent capability. Include: which files changed, the phase-specific validation criteria established during initialization (using the task's exact Validation section when task files exist), the mapped source obligations, and how to run the test suite. Expect back: pass/fail, commands or observations, and evidence for each criterion. The suite passing does not substitute for the phase's behavioral checks.
 
-**c. Review.** Dispatch to a review agent with the host's subagent capability in initial-review mode. Include: which files to review, relevant requirements from the source artifact, validation evidence, and affected consumers and boundaries. The reviewer may return a concise acceptance when the implementation is adequate. If changes are required, expect only material problems, each with a stable ID, code evidence, concrete consequence, affected surface, and connection to requested behavior or an important system invariant. A request for another test is not a finding unless it identifies the requested behavior or invariant left unvalidated, the plausible defect current evidence would miss, and the observable assertion needed. Accept the phase when the implementation has proportionate evidence and no material problem; do not require optional hardening or additional coverage.
+**c. Review.** Dispatch to a review agent with the host's subagent capability in initial-review mode. Include: which files to review, relevant requirements from the source artifact, validation evidence, and affected consumers and boundaries. The reviewer may return a concise acceptance when the implementation is adequate. Check for obsolete parallel paths, unused scaffolding, unnecessary abstractions, and duplicate/incidental tests; report a material problem only with evidence in the changed scope, a concrete consequence and impact sufficient to delay acceptance, and a bounded required outcome. The consequence must be either failure to preserve requested behavior, an accepted design decision, or an important system invariant, or a demonstrated material maintenance cost within the changed scope. Give each finding a stable ID. A request for another test is not a finding unless it identifies the behavior or invariant left unvalidated, the plausible defect current evidence would miss, and the observable assertion needed. Accept the phase when the implementation has proportionate evidence and no material problem; do not require optional hardening or additional coverage.
 
 **d. Handle failures.** Route failures back to an implementation agent for correction and await completion. Re-dispatch only the failed checks and a verification review with the complete unresolved finding records and correction diff. Inspect the changed surface and report any newly encountered material issue, but do not reopen unrelated accepted surfaces. After two failed attempts on one finding, or three correction rounds in a phase, escalate to the user.
 
@@ -72,7 +74,7 @@ When phases come from task files, update the task file's `status` meta to `compl
 
 ### 3. Validate
 
-After all local gates pass, dispatch one terminal acceptance review with the full source artifact, obligation-to-evidence table, changed-file manifest, and named consumers. Directive: reconcile every source obligation with evidence and run cross-cutting checks that could not belong to one phase. This is the only review called "final" or "acceptance."
+After all local gates pass, dispatch one terminal acceptance review with the full source artifact, obligation-to-evidence mapping, changed-file manifest, and named consumers. Reconcile obligations with evidence and check cross-cutting behavior, including obsolete parallel paths, unused scaffolding, unnecessary abstractions, and duplicate or incidental tests. Report these only with changed-scope evidence, a demonstrated material maintenance cost or behavior/contract defect that warrants delaying acceptance, and a bounded required outcome. Do not create another review pass or demand cleanup without such a consequence. This is the only review called "final" or "acceptance."
 
 Route findings through correction, targeted re-test, and verification review supplied with the complete finding records and correction diff. Do not restart a broad review unless the accepted surface changes. Final validation should reconcile evidence and expose cross-cutting defects, not discover basic unmapped requirements.
 

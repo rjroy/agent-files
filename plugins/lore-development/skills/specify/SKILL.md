@@ -32,6 +32,11 @@ Keep implementation detail in the Technical Contract rather than forcing readers
 through it to understand the feature. Requirements should state observable outcomes,
 not repeat contract prose. Avoid legalistic repetition and repeated "shall" wording.
 
+When scope boundaries matter, distinguish behavior the feature preserves from
+behavior it replaces or retires. Do not prescribe new artifacts, checklists, or
+infrastructure unless the goal requires them; keep unrelated cleanup and
+unapproved contract retirement out of scope.
+
 **Requirement readability:** Every numbered requirement must stand on its own, or explicitly name the prior requirement, contract, or authority it depends on and state the observable consequence. Approval, governance, and document status are context, not product requirements.
 
 ## Requirements
