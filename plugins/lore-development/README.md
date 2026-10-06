@@ -156,9 +156,9 @@ and artifact-driven. Breaking context before `/prep-plan` can help focus plannin
 the artifacts are context to reconsider against the user's present direction, not
 a gate that must satisfy an old contract.
 
-### Distilling existing code
+### Distilling reference knowledge
 
-Use `/distill code` when inheriting or joining an existing codebase, or `/distill work` when a spec, plan, or brainstorm holds invariants worth promoting. Both seeds run the same loop: read the seed, verify against current code, present reconciled candidates, let the user gate each one. Output goes to `.lore/reference/` and only contains what the code cannot tell a reader. Null output is a valid outcome.
+Field-guide distillation may use eligible historical brainstorm, design, intent, research, or retro artifacts as leads. Verify claims about current behavior against code/tests and follow current user direction. Plans, notes, and tasks (including local plans) are not reference sources; they may suggest investigation only. Keep only knowledge that code/tests do not adequately communicate and materially helps a future change. Merge or retire redundant pages rather than accumulating summaries; no new page is a valid outcome. See the field-guide ingest skill for the current distillation guidance.
 
 ## The Compound Loop
 

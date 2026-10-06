@@ -122,6 +122,47 @@ def test_local_lore_paths_setup_and_legacy_discovery_are_documented() -> None:
     assert "Legacy plans, tasks, and notes remain readable" in schema
 
 
+def test_field_guide_distills_verified_useful_context_not_binding_history() -> None:
+    field_guide = REPOSITORY_ROOT / "plugins/field-guide/skills"
+    ingest = (field_guide / "ingest/SKILL.md").read_text(encoding="utf-8")
+    query = (field_guide / "query/SKILL.md").read_text(encoding="utf-8")
+    drift = (field_guide / "resolve-drift/SKILL.md").read_text(encoding="utf-8")
+    lint = (field_guide / "lint/SKILL.md").read_text(encoding="utf-8")
+    ingest_query = " ".join(ingest.split())
+    query = " ".join(query.split())
+    drift = " ".join(drift.split())
+    lint = " ".join(lint.split())
+
+    # Example: an old approved design says use A, but the current user asks
+    # for B. The old approval is historical context, not an instruction.
+    assert "historical rationale" in ingest_query
+    assert "The user's current direction prevails" in ingest_query
+    assert "follow current direction" in query
+    assert "A conflict with an old plan, note, or artifact alone is not drift" in drift
+
+    # Example: a candidate page merely repeats implementation. Merge/update or
+    # retire existing prose rather than writing another artifact summary.
+    assert (
+        "Do not make a page just to summarize a feature, implementation"
+        in ingest_query
+    )
+    assert "merge" in ingest_query and "retire" in ingest_query
+    assert "no page is a valid outcome" in query
+
+    # Example: a local plan alone cannot promote an execution choice. It can
+    # only point toward independent investigation.
+    assert (
+        "Plans, notes, and tasks (including under `.lore/local/`) are never "
+        "reference sources"
+    ) in ingest_query
+    assert "may point to where to investigate" in ingest_query
+    assert "plans, notes, and tasks are not reference sources" in query
+
+    # Lint's file timestamps and provenance cannot reintroduce authority.
+    assert "not evidence that the reference page is stale" in lint
+    assert "not authority or proof of currency" in drift
+
+
 def test_prep_plan_prompts_collaborative_evidence_driven_planning() -> None:
     prompt = _normalized("skills/prep-plan/SKILL.md")
 
