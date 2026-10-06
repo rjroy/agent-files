@@ -27,8 +27,6 @@ Search for related prior work: invoke the `lore-researcher` subagent with the ho
 
 Break the input into the smallest coherent implementable phases. If the input is a plan, phases are its steps. If a spec or design, group related work into phases without artificial splits. Prefer existing capabilities and name relevant reuse, replacement, deletion, intentional retirement, and retained contracts. Keep unrelated cleanup and unapproved contract retirement out of scope.
 
-**Task file detection.** When the input is a plan, check whether `.lore/work/tasks/<plan-name>/` exists. If it does, read task files sorted by their `sequence` frontmatter field — these become the phases. Compare the plan's modification timestamp against the oldest task file. If the plan is newer, warn the user and offer three options: re-run `/plan-breakdown`, use existing tasks, or abort.
-
 **Select agents.** Consult `.lore/lore-agents.md` if it exists. Match agents to three mandatory roles:
 
 | Role | Registry Category | Fallback |
@@ -62,15 +60,13 @@ evidence or findings and never edit files. Do not test or review a moving worktr
 
 **a. Implement.** Dispatch to an implementation agent with the host's subagent capability. Include: the phase's work, relevant file paths, compact whole-change context (goal, affected surfaces, retained contracts, and planned reuse/replacements/deletions/intentional retirements), plus relevant prior-phase results or failures. Keep context focused; do not withhold the full-change decisions needed to avoid parallel or obsolete paths. One phase at a time. Await a stable changed-file manifest before continuing.
 
-**b. Test.** Dispatch to a testing agent with the host's subagent capability. Include: which files changed, the phase-specific validation criteria established during initialization (using the task's exact Validation section when task files exist), the mapped source obligations, and how to run the test suite. Expect back: pass/fail, commands or observations, and evidence for each criterion. The suite passing does not substitute for the phase's behavioral checks.
+**b. Test.** Dispatch to a testing agent with the host's subagent capability. Include: which files changed, the phase-specific validation criteria established during initialization, the mapped source obligations, and how to run the test suite. Expect back: pass/fail, commands or observations, and evidence for each criterion. The suite passing does not substitute for the phase's behavioral checks.
 
 **c. Review.** Dispatch to a review agent with the host's subagent capability in initial-review mode. Include: which files to review, relevant requirements from the source artifact, validation evidence, and affected consumers and boundaries. The reviewer may return a concise acceptance when the implementation is adequate. Check for obsolete parallel paths, unused scaffolding, unnecessary abstractions, and duplicate/incidental tests; report a material problem only with evidence in the changed scope, a concrete consequence and impact sufficient to delay acceptance, and a bounded required outcome. The consequence must be either failure to preserve requested behavior, an accepted design decision, or an important system invariant, or a demonstrated material maintenance cost within the changed scope. Give each finding a stable ID. A request for another test is not a finding unless it identifies the behavior or invariant left unvalidated, the plausible defect current evidence would miss, and the observable assertion needed. Accept the phase when the implementation has proportionate evidence and no material problem; do not require optional hardening or additional coverage.
 
 **d. Handle failures.** Route failures back to an implementation agent for correction and await completion. Re-dispatch only the failed checks and a verification review with the complete unresolved finding records and correction diff. Inspect the changed surface and report any newly encountered material issue, but do not reopen unrelated accepted surfaces. After two failed attempts on one finding, or three correction rounds in a phase, escalate to the user.
 
 **e. Record.** Update the notes file with results and evidence. Mark the phase's local gate complete only when every mapped criterion passes. Keep overall implementation status in progress until holistic validation passes.
-
-When phases come from task files, update the task file's `status` meta to `complete` after its local gate passes. If the implementation agent reports work is already done (task file still says `pending`), validate it normally rather than skipping or asking merely because status drifted.
 
 ### 3. Validate
 

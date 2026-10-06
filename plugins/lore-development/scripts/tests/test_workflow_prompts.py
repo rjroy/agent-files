@@ -44,7 +44,7 @@ def test_implementation_requires_mapped_behavioral_evidence() -> None:
         "Map each obligation to its phase and sufficient executable validation"
         in prompt
     )
-    assert "task's exact Validation section" in prompt
+    assert "task's exact Validation section" not in prompt
     assert "An unmapped obligation is a planning gap" in prompt
     assert "Reconcile obligations with evidence" in prompt
     assert "suite passing does not substitute" in prompt
@@ -232,15 +232,34 @@ def test_lore_search_contract_includes_lower_confidence_body_matches() -> None:
         assert "lower-confidence legacy material" in document
 
 
-def test_tracker_rules_prevent_duplicates_and_parent_dependency_cycles() -> None:
-    breakdown = _read("skills/plan-breakdown/SKILL.md")
+def test_retired_plan_breakdown_is_not_an_active_skill_or_implement_path(
+    tmp_path: Path,
+) -> None:
     implementation = _read("skills/implement/SKILL.md")
+    skill_dir = PLUGIN_ROOT / "skills/plan-breakdown"
 
-    assert "reconcile existing" in breakdown
-    assert "children before creating any" in breakdown
-    assert "never make a" in breakdown
-    assert "parent depend on its own descendant" in breakdown
+    assert not skill_dir.exists()
+    assert "plan-breakdown" not in implementation
+    assert "Task file detection" not in implementation
+    assert "task's exact Validation section" not in implementation
     assert "regenerate any passive export" in implementation
+
+    # Setup discovers skills from source directories. A dangling config symlink
+    # cannot restore a removed skill, and must remain untouched as user data.
+    config_home = tmp_path / "config"
+    skills_dir = config_home / "opencode/skills"
+    skills_dir.mkdir(parents=True)
+    stale_registration = skills_dir / "plan-breakdown"
+    stale_registration.symlink_to(tmp_path / "missing-plan-breakdown")
+    setup = REPOSITORY_ROOT / "scripts/setup-opencode.sh"
+    result = subprocess.run(
+        [str(setup)], capture_output=True, check=True,
+        env={**os.environ, "XDG_CONFIG_HOME": str(config_home)}, text=True,
+    )
+
+    assert stale_registration.is_symlink()
+    assert not stale_registration.exists()
+    assert "plan-breakdown" not in result.stdout
 
 
 def test_commit_handoff_does_not_reopen_accepted_work() -> None:

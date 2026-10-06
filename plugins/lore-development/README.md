@@ -19,7 +19,6 @@ Skills write into a three-directory `.lore/` tree (`work/`, `reference/`, `learn
 | `/lore-development:intent` | Think through what to build and why; record conversational intent |
 | `/lore-development:design` | Make technical decisions when the "how" is the problem |
 | `/lore-development:prep-plan` | Discuss an evidence-informed approach; optionally record a disposable working plan |
-| `/lore-development:plan-breakdown` | Decompose a plan into task files for `/implement` |
 | `/lore-development:implement` | Orchestrate implementation from a plan via sub-agents |
 | `/lore-development:simplify` | Orchestrate code cleanup with tests and review |
 | `/lore-development:retro` | Capture what happened in a session as free-form notes |
@@ -52,7 +51,7 @@ Context lives in `.lore/` under three top-level directories. Each directory has 
 │   ├── specs/          # Legacy historical specs; not active contracts
 │   ├── design/         # Technical decisions
 │   ├── plans/          # Implementation plans
-│   ├── tasks/          # Task files (from /plan-breakdown)
+│   ├── tasks/          # Historical task artifacts
 │   ├── notes/          # Session notes (e.g. /implement progress)
 │   ├── research/       # External findings
 │   ├── retros/         # Free-form retrospective notes
