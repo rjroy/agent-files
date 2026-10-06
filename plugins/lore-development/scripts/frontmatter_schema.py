@@ -37,6 +37,7 @@ FIELD_TYPES = {
     "related": "list",
     "source": "string",
     "sequence": "integer",
+    "legacy_source_type": "string",
 }
 
 # Schema section: "Status Values" tables (Build / Reference / Learned)
@@ -44,7 +45,11 @@ FIELD_TYPES = {
 STATUS_VALUES = {
     # Work documents — per-type lifecycles
     "work/brainstorm": ["open", "parked", "resolved", "archived"],
-    "work/intents": ["open", "archived"],
+    # Legacy spec statuses remain parseable after explicit migration; they are
+    # historical labels only and confer no authority.
+    "work/intents": [
+        "open", "archived", "draft", "approved", "implemented", "superseded"
+    ],
     # Legacy specs remain parseable/discoverable; their statuses confer no authority.
     "work/specs": ["draft", "approved", "implemented", "superseded", "archived"],
     "work/design": ["draft", "approved", "implemented", "superseded", "archived"],

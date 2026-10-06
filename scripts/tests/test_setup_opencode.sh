@@ -47,7 +47,7 @@ const skillSources = skillCollections.flatMap((collection) => {
     .filter((entry) => entry.isDirectory() && fs.existsSync(path.join(collectionDir, entry.name, "SKILL.md")))
     .map((entry) => path.join(collectionDir, entry.name));
 });
-if (skillSources.length !== 46) throw new Error(`expected 46 skills, found ${skillSources.length}`);
+if (skillSources.length !== 47) throw new Error(`expected 47 skills, found ${skillSources.length}`);
 for (const sourceDir of skillSources) {
   const target = path.join(configDir, "skills", path.basename(sourceDir));
   if (!fs.lstatSync(target).isSymbolicLink()) throw new Error(`${target} is not a skill symlink`);

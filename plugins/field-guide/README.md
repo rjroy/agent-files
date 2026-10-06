@@ -10,6 +10,8 @@ Project knowledge appears in scattered artifacts. Field Guide can use eligible h
 
 Field Guide is a sibling to lore-development. lore-development generates artifacts in `.lore/work/`; field guide synthesizes them into reference material in `.lore/reference/`.
 
+For an optional preview-first move of legacy `.lore/work/specs/`, `plans/`, `tasks/`, and `notes/`, use `/lore-development:migrate`. Migration preserves these artifacts as historical context; it does not promote them into field-guide reference pages.
+
 ## Skills
 
 | Skill | Purpose |

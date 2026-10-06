@@ -316,6 +316,25 @@ class TestStatusValues(unittest.TestCase):
             self.assertEqual(len(status_errs), 1)
             self.assertIn("wip", status_errs[0]["message"])
 
+    def test_legacy_intent_status_requires_migration_marker(self):
+        legacy = (
+            "---\ntitle: Historical\ndate: 2024-01-01\nstatus: approved\n"
+            "tags: [legacy]\nlegacy_source_type: spec\n---\n# Historical\n"
+        )
+        with tempfile.TemporaryDirectory() as tmpdir:
+            lore = _make_lore_tree(tmpdir, {"work/intents/legacy.md": legacy})
+            self.assertEqual(scan_directory(lore), [])
+
+        with tempfile.TemporaryDirectory() as tmpdir:
+            unmarked = legacy.replace("legacy_source_type: spec\n", "")
+            lore = _make_lore_tree(tmpdir, {"work/intents/legacy.md": unmarked})
+            findings = scan_directory(lore)
+            status_errs = [
+                f for f in findings if f["error_type"] == "invalid_status"
+            ]
+            self.assertEqual(len(status_errs), 1)
+            self.assertIn("approved", status_errs[0]["message"])
+
     def test_valid_status_for_brainstorm(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             lore = _make_lore_tree(tmpdir, {"work/brainstorm/test.md": VALID_BRAINSTORM_FM})

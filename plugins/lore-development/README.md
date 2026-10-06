@@ -19,6 +19,7 @@ Skills use four `.lore/` zones (`local/`, `work/`, `reference/`, `learned/`) —
 | `/lore-development:intent` | Think through what to build and why; record conversational intent |
 | `/lore-development:design` | Make technical decisions when the "how" is the problem |
 | `/lore-development:prep-plan` | Discuss an evidence-informed approach; optionally record a disposable working plan |
+| `/lore-development:migrate` | Preview and optionally move legacy work specs/plans/tasks/notes into intents and gitignored local paths |
 | `/lore-development:implement` | Orchestrate implementation from the current request, optionally informed by lore context |
 | `/lore-development:simplify` | Orchestrate code cleanup with tests and review |
 | `/lore-development:retro` | Capture what happened in a session as free-form notes |
@@ -89,7 +90,7 @@ storage in a project, run `python3 <path-to-lore-development>/scripts/ensure_loc
 
 ### Migrating from the old layout
 
-Pre-redesign projects had a flat `.lore/` with directories like `specs/`, `plans/`, `retros/` at the top level. Run `/lore-development:tend migrate` to move an existing tree into the shared work/reference/learned zones. Then initialize disposable local output with the setup helper described above. The migrate mode rewrites internal links in frontmatter and prose, leaves guild-hall–owned paths alone, and is idempotent on re-run.
+Pre-work-layout projects may have legacy directories directly under `.lore/` (`specs/`, `design/`, `retros/`, `plans/`, and others). Use optional `/lore-development:migrate` to preview moving recognized historical folders into `work/` and local `plans/`, `tasks/`, and `notes/`. Legacy HTML artifacts are converted to Markdown with original-byte backups in ignored local storage. Unmapped data is reported and left untouched; migration requires explicit confirmation and is not needed to use current skills.
 
 ## Agents
 
@@ -198,8 +199,8 @@ modules: [affected-modules]
 
 The `lore-researcher` can find documents without frontmatter through body-text
 search, but treats them as lower-confidence legacy material because lifecycle
-and module metadata are unavailable. Use `/tend` to retrofit old documents, and
-`/tend migrate` to move a flat-layout `.lore/` into the shared lore zones.
+and module metadata are unavailable. Use `/tend` to retrofit old documents;
+use the optional `/migrate` skill for preview-first layout transition.
 
 Document bodies are Markdown by default. Embed raw inline HTML only where a visual carries meaning Markdown cannot (color-coding, inline-`<svg>` charts, side-by-side comparison) — never inside a fenced code block, and with no `<script>` or external resources. See the "Body Format" section of `shared/frontmatter-schema.md`.
 

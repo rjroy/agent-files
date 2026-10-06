@@ -375,6 +375,8 @@ def validate_file(filepath, root, status_values=None):
     if "status" in data and isinstance(data["status"], str):
         if doc_type and doc_type in status_values:
             valid = status_values[doc_type]
+            if doc_type == "work/intents" and data.get("legacy_source_type") != "spec":
+                valid = ["open", "archived"]
             if data["status"] not in valid:
                 valid_str = ", ".join(valid)
                 findings.append(

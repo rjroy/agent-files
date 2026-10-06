@@ -75,7 +75,7 @@ Work artifacts retain meaningful per-type lifecycles. The directory key is `work
 | Type | Directory | Valid Status Values |
 |------|-----------|---------------------|
 | brainstorm | `.lore/work/brainstorm/` | `open`, `parked`, `resolved`, `archived` |
-| intent | `.lore/work/intents/` | `open`, `archived` |
+| intent | `.lore/work/intents/` | `open`, `archived`; migrated legacy specs may retain `draft`, `approved`, `implemented`, `superseded` as historical labels only |
 | legacy spec | `.lore/work/specs/` | `draft`, `approved`, `implemented`, `superseded`, `archived` (historical labels only; none make a document binding) |
 | design | `.lore/work/design/` | `draft`, `approved`, `implemented`, `superseded`, `archived` |
 | plan | `.lore/work/plans/` | `draft`, `approved`, `executed`, `archived` |
@@ -221,7 +221,10 @@ not chosen an implementation; discuss options and useful validation in the plan.
 Older `.lore/work/specs/` documents remain discoverable historical context. Their
 status labels, requirement IDs, and validation sections do not make them
 authoritative for current work. Do not rewrite old documents just to adopt the
-intent format.
+intent format. Optional `/lore-development:migrate` moves them without rewriting
+their bodies, adds `legacy_source_type: spec`, and preserves their legacy status
+for validation; neither marker makes the document a newly authored intent or
+confers authority.
 
 ### Brainstorm
 
