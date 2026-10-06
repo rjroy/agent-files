@@ -1,28 +1,28 @@
 ---
 name: prep-plan
-description: Use when ready to build a reviewable implementation plan as a lore artifact. Input can be a spec, design, brainstorm, research, or a well-defined prompt. Triggers include "prep plan", "prepare a plan", "plan this", "make a plan", "plan the implementation", and "break this into steps".
+description: Use to think through an implementation approach with the user, discuss useful evidence, and optionally record a working plan. Input can be conversational intent, design, brainstorm, research, or a prompt. Triggers include "prep plan", "prepare a plan", "plan this", "make a plan", "plan the implementation", and "break this into steps".
 ---
 
 # Prep Plan
 
-Build an implementation plan the user can review and approve before any code is written. The plan is the output. Implementation is a separate step via `/implement`.
+Think through how to make the user's present what and why real. Discuss the approach and meaningful evidence with the user before execution; revise when repository facts or other evidence change the picture. A written plan is optional working context for `/implement`, not a contract. This skill does not add an approval requirement.
 
-**Do not use `EnterPlanMode`.** This skill authors a document, not a precursor to immediate code changes.
+**Do not use `EnterPlanMode`.** This skill discusses an approach; it need not produce a document or start code changes.
 
 ## Process
 
-**Gather context.** Invoke the `lore-researcher` subagent with the host's subagent capability with the topic description and wait for the result. If unavailable, dispatch the host's general-purpose subagent with the research role from `agents/lore-researcher.md`. Read relevant lore artifacts (spec, design, brainstorm, research). Explore the codebase with the host's exploration subagent to understand what exists and where changes will land.
+**Understand the work.** Start from the user's current request and clarify the intended outcome and motivation. Use the `lore-researcher` or code-exploration agents when they help; inspect relevant code and tests as needed to understand existing behavior, likely change surfaces, and constraints. Treat intents, designs, brainstorms, research, old specs, and plans as suggestions or historical context, not instructions that override current direction. Surface concrete safety or compatibility consequences when relevant.
 
-**Surface gaps before drafting.** If the input has ambiguous requirements, contradictions, or unstated assumptions that would force guesses, list them and ask the user to resolve them first. A plan built on unreviewed assumptions fails during implementation.
+**Explore uncertainty.** Identify assumptions or unanswered questions that could materially change the approach. Discuss meaningful options with the user and use repository evidence to narrow or revise them. Ask for a decision where the user's direction does not resolve an important choice; do not turn every open detail into a blocker or require all uncertainty to be eliminated before planning.
 
-**Draft collaboratively.** Plan the smallest coherent end state using existing capabilities where they fit. Name the affected surfaces and, where relevant, what is reused, replaced, deleted, or intentionally retired; preserve unapproved contracts and leave unrelated cleanup out of scope. Map the goal or requirements to concrete implementation steps and proportionate executable evidence. Reuse sufficient existing tests or evidence; add checks for distinct plausible defects, not one new test per requirement, task, or layer. Order steps by dependency and flag specialized expertise where it materially matters. Include cross-cutting validation and evidence reconciliation without creating a new phase when existing steps can cover them.
+**Discuss the approach.** Sketch a coherent path using existing capabilities where they fit. Name affected surfaces and useful sequencing, dependencies, compatibility concerns, and meaningful project-specific validation or review. Keep scope proportionate; tests or other evidence may support several parts of the work, and do not need a one-to-one mapping to goals or artifacts. Revise the approach when code, tests, or discussion reveal a better path. Avoid exhaustive obligation maps, coverage matrices, and ceremonial reconciliation.
 
-**Save.** The saved file is the review vehicle — don't present the plan in chat before saving.
+**Record if useful.** If a written plan will help the work, save concise, disposable context after discussing the approach. Do not require a particular template or mandatory sections. The user can proceed, revise, or set the plan aside; it does not lock implementation choices or supersede current direction. Plans and notes are not promoted to reference material.
 
-**Fresh-eyes review.** After saving, invoke the `plan-reviewer` subagent with the host's subagent capability in initial-review mode on the saved plan. If unavailable, dispatch the host's general-purpose subagent with the role from `agents/plan-reviewer.md`. If findings are corrected, invoke verification mode with the complete unresolved finding records and changed sections. After those findings close, run one terminal broad acceptance review. Corrections from that review receive targeted verification with their complete finding records; do not run another broad review unless accepted scope changed.
+**Fresh-eyes review.** When an independent review would materially improve the plan, use the `plan-reviewer` in initial-review mode. If unavailable, use a general-purpose reviewer with the role from `agents/plan-reviewer.md`. Address material findings in proportion to the work; do not repeat broad review or require review ceremony for its own sake. A review cannot make historical artifacts binding or reject a plan only because it departs from them.
 
 ## Saving
 
-Save to `.lore/work/plans/[feature-name].md` using kebab-case. Load `../../shared/frontmatter-schema.md (resolved from this skill's base directory)` for the frontmatter fields. The document body is freeform — what matters is that steps are concrete (files, functions, changes) and the source artifact or goal is clearly referenced so validation has something to check against.
+If useful, save to `.lore/work/plans/[feature-name].md` using kebab-case. Load `../../shared/frontmatter-schema.md` (resolved from this skill's base directory) for common frontmatter fields. Keep enough concrete sequencing and evidence planning to help implementation without exhaustive traceability tables. Treat the file as temporary working context: new user direction and evidence can change the approach, and the plan is not promoted to reference.
 
-Write the body Markdown-first per the "Body Format" section of `../../shared/frontmatter-schema.md (resolved from this skill's base directory)`. Reach for embedded inline HTML when the step flow needs it — a visual step sequence with dependency indicators, and validation gates distinguished visually from the step description.
+Write the body in Markdown. Use a diagram only when it makes meaningful dependencies or trade-offs easier to discuss.

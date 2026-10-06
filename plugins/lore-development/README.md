@@ -18,7 +18,7 @@ Skills write into a three-directory `.lore/` tree (`work/`, `reference/`, `learn
 | `/lore-development:brainstorm` | Explore ideas, record "what if" thinking |
 | `/lore-development:intent` | Think through what to build and why; record conversational intent |
 | `/lore-development:design` | Make technical decisions when the "how" is the problem |
-| `/lore-development:prep-plan` | Build implementation plans as reviewable lore artifacts |
+| `/lore-development:prep-plan` | Discuss an evidence-informed approach; optionally record a disposable working plan |
 | `/lore-development:plan-breakdown` | Decompose a plan into task files for `/implement` |
 | `/lore-development:implement` | Orchestrate implementation from a plan via sub-agents |
 | `/lore-development:simplify` | Orchestrate code cleanup with tests and review |
@@ -174,7 +174,7 @@ Knowledge compounds when past learnings inform new work. The plugin closes this 
         └─► captures notes → writes to .lore/work/retros/
 ```
 
-The `lore-researcher` agent runs automatically at the start of `/intent` and `/prep-plan`, surfacing relevant retros, legacy specs, and brainstorms as historical context before new work begins.
+The `lore-researcher` agent runs at the start of `/intent`; `/prep-plan` uses it when prior context would help. It surfaces relevant retros, legacy specs, and brainstorms as historical context, not instructions for current work.
 
 ## Frontmatter Schema
 

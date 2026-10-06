@@ -100,6 +100,36 @@ def test_lore_researcher_surfaces_context_without_binding_history() -> None:
     assert "Frontmatter improves ranking but is not a prerequisite" in prompt
 
 
+def test_prep_plan_prompts_collaborative_evidence_driven_planning() -> None:
+    prompt = _normalized("skills/prep-plan/SKILL.md")
+
+    assert "user's present what and why" in prompt
+    assert "Discuss the approach and meaningful evidence with the user" in prompt
+    assert "revise when repository facts or other evidence change" in prompt
+    assert "as suggestions or historical context" in prompt
+    assert "Plans and notes are not promoted to reference material" in prompt
+    assert "exhaustive obligation maps, coverage matrices" in prompt
+    assert "does not add an approval requirement" in prompt
+    for forbidden_rule in [
+        "Map the goal or requirements to concrete implementation steps",
+        "An unmapped obligation is a planning gap",
+        "## Coverage Matrix",
+    ]:
+        assert forbidden_rule not in prompt
+
+
+def test_plan_reviewer_avoids_exhaustive_mapping_and_historical_authority() -> None:
+    reviewer = _normalized("agents/plan-reviewer.md")
+
+    assert "fits the user's current direction" in reviewer
+    assert "do not override current user direction" in reviewer
+    assert "do not require exhaustive obligation mapping" in reviewer
+    assert "acceptance matrices" in reviewer
+    assert "meaningful for the project-specific behavior and risks" in reviewer
+    assert "Do not report old-artifact noncompliance alone" in reviewer
+    assert "one test per requirement" in reviewer
+
+
 def test_bun_typescript_reviewer_requires_material_traceable_findings() -> None:
     reviewer = _normalized("agents/bun-typescript-reviewer.md")
     implementation = _normalized("skills/implement/SKILL.md")
