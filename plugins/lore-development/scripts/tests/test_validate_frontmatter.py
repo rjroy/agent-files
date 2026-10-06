@@ -344,6 +344,37 @@ class TestStatusValues(unittest.TestCase):
 # -- Unit tests: helpers -------------------------------------------------------
 
 class TestResolveDocType(unittest.TestCase):
+    def test_local_plan_and_notes_resolve_to_local_keys(self):
+        self.assertEqual(_resolve_doc_type(".lore/local/plans/auth.md"), "local/plans")
+        self.assertEqual(_resolve_doc_type(".lore/local/notes/auth.md"), "local/notes")
+
+    def test_local_task_does_not_require_historical_sequence_fields(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            lore = _make_lore_tree(
+                tmpdir,
+                {
+                    "local/tasks/task.md": (
+                        "---\ntitle: Task\ndate: 2026-03-10\nstatus: pending\n"
+                        "tags: [task]\n---\n"
+                    )
+                },
+            )
+            self.assertEqual(scan_directory(lore), [])
+
+    def test_legacy_work_tasks_still_require_historical_fields(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            lore = _make_lore_tree(
+                tmpdir,
+                {
+                    "work/tasks/task.md": (
+                        "---\ntitle: Task\ndate: 2026-03-10\nstatus: pending\n"
+                        "tags: [task]\n---\n"
+                    )
+                },
+            )
+            missing = {finding.get("field") for finding in scan_directory(lore)}
+            self.assertEqual(missing, {"source", "sequence"})
+
     def test_work_path_resolves_to_two_level_key(self):
         self.assertEqual(_resolve_doc_type(".lore/work/specs/auth.md"), "work/specs")
 

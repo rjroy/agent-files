@@ -38,15 +38,16 @@ When you do, write the HTML **raw and inline** so it renders. Never put it in a 
 
 Render target is local editors (Obsidian, VS Code preview, pandoc, browser), where inline `style=` and `<svg>` render fully.
 
-## The three-directory model
+## The four-zone model
 
-`.lore/` is organized into three top-level directories. Every lore document lives under exactly one of them:
+`.lore/` separates disposable local context, shared historical work, maintained reference, and operational learning:
 
-- **`.lore/work/`** — work scaffolding. Session-bound material: brainstorms, intents, legacy specs, designs, plans, tasks, notes, research, retros, issues, ideas, validation, stubs, excavation indices, session diagrams.
+- **`.lore/local/`** — disposable, gitignored plans, implementation notes, and generic task context. New plans and notes go here; task artifacts are not automatic implementation phases.
+- **`.lore/work/`** — shared historical conversations and work. Intents, brainstorms, legacy specs, designs, research, retros, issues, ideas, validation, stubs, excavation indices, and session diagrams remain discoverable. Existing tracked content is preserved. Legacy plans, tasks, and notes remain readable historical context, not binding instructions.
 - **`.lore/reference/`** — solidified, system-oriented documentation. What the code cannot say. Distilled feature docs, vision, current-state diagrams.
 - **`.lore/learned/`** — operational imperatives, mistakes-only, worker-oriented. Written by `/learn`.
 
-Status values are scoped to the directory tree the document lives in (see "Status Values" below).
+Status values are scoped to the directory tree and document type (see "Status Values" below). Initialize local storage with `python3 <path-to-lore-development>/scripts/ensure_local.py <project-root>` before writing local artifacts. The helper creates the directory, adds a root-anchored ignore rule, and verifies effective ignore behavior in Git worktrees.
 
 ## Common Fields
 
@@ -85,6 +86,18 @@ Work artifacts retain meaningful per-type lifecycles. The directory key is `work
 | issue | `.lore/work/issues/` | `open`, `resolved`, `wontfix`, `archived` |
 | diagram (work) | `.lore/work/diagrams/` | `current`, `outdated`, `archived` |
 
+### Disposable local documents
+
+New plans, implementation notes, and generic task context are stored locally
+and excluded from Git. Legacy files in corresponding `work/` directories are
+still validated with their historical rules.
+
+| Type | Directory | Valid Status Values |
+|------|-----------|---------------------|
+| plan | `.lore/local/plans/` | `draft`, `approved`, `executed`, `archived` |
+| task (generic context) | `.lore/local/tasks/` | `pending`, `complete`, `skipped` |
+| notes | `.lore/local/notes/` | `in_progress`, `complete`, `archived` |
+
 Diagrams in both `work/diagrams/` and `reference/diagrams/` share the same status set: `current` while accurate, `outdated` once not, `archived` once no longer worth maintaining. The split is at the directory level, not the status level.
 
 ### Reference documents
@@ -115,7 +128,9 @@ source: .lore/work/plans/auth-flow.md
 
 ## Task-Specific Fields
 
-Tasks support two additional required fields:
+Historical tasks under `.lore/work/tasks/` support two additional required
+fields. Generic task context under `.lore/local/tasks/` uses common fields only
+and is not an execution sequence.
 
 ```yaml
 source: .lore/work/plans/auth-flow.md
@@ -124,8 +139,8 @@ sequence: 1
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| source | Yes | Path to the plan this historical task artifact came from; useful for traceability. |
-| sequence | Yes | Integer ordering within the historical task set. It does not determine `/implement` execution order. |
+| source | Required for historical `.lore/work/tasks/`; optional for local tasks | Path to relevant context. |
+| sequence | Required for historical `.lore/work/tasks/`; optional for local tasks | Historical ordering only; it does not determine `/implement` execution order. |
 
 ## Vision-Specific Notes
 

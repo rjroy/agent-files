@@ -144,6 +144,7 @@ def _resolve_doc_type(filepath, root=None):
     Maps a path under `.lore/` to the directory key used by the schema:
 
     - `.lore/work/<type>/...` → `work/<type>` (e.g. `work/specs`).
+    - `.lore/local/<type>/...` → `local/<type>`.
     - `.lore/reference/...` → `reference` (covers any subdirectory).
     - `.lore/learned/...` → `learned`.
     - Anything else (custom directories, legacy paths) returns the first
@@ -183,8 +184,8 @@ def _segments_below_lore(filepath, root):
 def _doc_type_from_segments(segments):
     """Resolve the directory key for a path's segments below .lore/."""
     head = segments[0]
-    if head == "work" and len(segments) >= 3:
-        return f"work/{segments[1]}"
+    if head in ("work", "local") and len(segments) >= 3:
+        return f"{head}/{segments[1]}"
     if head in ("reference", "learned"):
         return head
     # Custom or legacy directories — return the first segment so

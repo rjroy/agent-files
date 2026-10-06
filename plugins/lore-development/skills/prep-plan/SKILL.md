@@ -23,6 +23,6 @@ Think through how to make the user's present what and why real. Discuss the appr
 
 ## Saving
 
-If useful, save to `.lore/work/plans/[feature-name].md` using kebab-case. Load `../../shared/frontmatter-schema.md` (resolved from this skill's base directory) for common frontmatter fields. Keep enough concrete sequencing and evidence planning to help implementation without exhaustive traceability tables. Treat the file as temporary working context: new user direction and evidence can change the approach, and the plan is not promoted to reference.
+If useful, save to `.lore/local/plans/[feature-name].md` using kebab-case. Before creating any local output, resolve `../../scripts/ensure_local.py` from this skill's installed directory (not the project cwd or a global path), then run it with `python3 <resolved-helper-path> <explicit-project-root>`. Write only after setup succeeds; report setup failure as a blocker for local output rather than falling back to `.lore/work/`. This is required only when writing local output, not for discussing a plan. Load `../../shared/frontmatter-schema.md` (resolved from this skill's base directory) for common frontmatter fields. Keep enough concrete sequencing and evidence planning to help implementation without exhaustive traceability tables. Treat the file as temporary working context: new user direction and evidence can change the approach, and the plan is not promoted to reference.
 
 Write the body in Markdown. Use a diagram only when it makes meaningful dependencies or trade-offs easier to discuss.

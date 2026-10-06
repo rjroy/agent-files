@@ -32,7 +32,7 @@ Only one agent may operate on target files at a time. Await cleanup before testi
 
 ## Output
 
-Record what happened in `.lore/work/notes/simplify-<identifier>.md`. Load `../../shared/frontmatter-schema.md` resolved from this skill's base directory for frontmatter fields and body-format requirements. Capture the resolved scope, files processed, what was simplified, and failures/resolutions.
+When recording what happened is useful, save to `.lore/local/notes/simplify-<identifier>.md`. Before writing local output, resolve `../../scripts/ensure_local.py` from this skill's installed directory and run it with `python3 <resolved-helper-path> <explicit-project-root>`. Write only after setup succeeds; report setup failure as a blocker for local output rather than falling back to `.lore/work/`. Do not run setup if no note is useful. Load `../../shared/frontmatter-schema.md` resolved from this skill's base directory for frontmatter fields and body-format requirements. Capture the resolved scope, files processed, what was simplified, and failures/resolutions.
 
 ## Escalation
 

@@ -95,8 +95,31 @@ def test_lore_researcher_surfaces_context_without_binding_history() -> None:
     assert "the user's current direction as the guide" in prompt
     assert "Legacy documents under `work/specs/` are historical input only" in prompt
     assert "Do not silently resolve conflicts" in prompt
-    assert "Search all three zones even after finding a strong match" in prompt
+    assert "Search all relevant zones even after finding a strong match" in prompt
     assert "Frontmatter improves ranking but is not a prerequisite" in prompt
+
+
+def test_local_lore_paths_setup_and_legacy_discovery_are_documented() -> None:
+    for path in [
+        "skills/prep-plan/SKILL.md",
+        "skills/implement/SKILL.md",
+        "skills/simplify/SKILL.md",
+    ]:
+        prompt = _normalized(path)
+        assert ".lore/local/" in prompt
+        assert "scripts/ensure_local.py" in prompt
+        assert "from this skill's installed directory" in prompt
+        assert "python3 <resolved-helper-path>" in prompt
+        assert "Write only after setup succeeds" in prompt
+        assert ".lore/work/" in prompt
+        assert any(term in prompt for term in ("fall back", "falling back", "fallback"))
+    init_path = REPOSITORY_ROOT / "plugins/field-guide/skills/init/SKILL.md"
+    init = Path(init_path).read_text()
+    assert "CronCreate and CronList are only required for scheduling" in init
+    assert "Do not require the helper or Cron for wiki/index setup" in init
+    assert "do not claim `.lore/local/` is ready" in init
+    schema = _read("shared/frontmatter-schema.md")
+    assert "Legacy plans, tasks, and notes remain readable" in schema
 
 
 def test_prep_plan_prompts_collaborative_evidence_driven_planning() -> None:

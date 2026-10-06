@@ -8,7 +8,7 @@ A lightweight plugin for building and organizing project context.
 
 Modern LLMs have strong native planning and implementation capabilities. This plugin doesn't teach process - it helps build findable, organized context (the "lore" of your project) that informs better work.
 
-Skills write into a three-directory `.lore/` tree (`work/`, `reference/`, `learned/`) — see **Artifact Storage** below for the full layout.
+Skills use four `.lore/` zones (`local/`, `work/`, `reference/`, `learned/`) — see **Artifact Storage** below for the full layout.
 
 ## Skills
 
@@ -40,19 +40,24 @@ The plugin includes a hook that captures ideas without invoking the AI. Start an
 
 ## Artifact Storage
 
-Context lives in `.lore/` under three top-level directories. Each directory has a different purpose, audience, and lifetime. The only file at the `.lore/` root is `lore-agents.md`, a cross-plugin agent registry surface (see below).
+Context lives in `.lore/` across four zones. Each has a different purpose, audience, and lifetime. The only file at the `.lore/` root is `lore-agents.md`, a cross-plugin agent registry surface (see below).
 
 ```
 .lore/
-├── work/          # Work scaffolding — session-bound, written during a flow
+├── local/         # Disposable, gitignored context for current execution
+│   ├── plans/          # Optional implementation plans
+│   ├── notes/          # Optional implementation/resumption notes
+│   └── tasks/          # Generic context only; not execution phases
+│
+├── work/          # Shared historical conversations and work
 │   ├── ideas/          # Captured ideas (via hook, one file per date)
 │   ├── brainstorm/     # Recorded explorations
 │   ├── intents/        # Conversational what/why context
 │   ├── specs/          # Legacy historical specs; not active contracts
 │   ├── design/         # Technical decisions
-│   ├── plans/          # Implementation plans
+│   ├── plans/          # Legacy plans, retained as historical context
 │   ├── tasks/          # Historical task artifacts
-│   ├── notes/          # Session notes, including optional implementation resumption context
+│   ├── notes/          # Historical session notes
 │   ├── research/       # External findings
 │   ├── retros/         # Free-form retrospective notes
 │   ├── issues/         # Structured issues
@@ -71,18 +76,20 @@ Context lives in `.lore/` under three top-level directories. Each directory has 
 └── lore-agents.md  # Agent registry (optional, cross-plugin surface)
 ```
 
-**Why three directories?** `work/` holds the work-in-progress: messy, conversational, tied to a specific session. `reference/` holds what survived: invariants, vision, distilled documentation that informs future work. `learned/` is narrowly scoped to mistakes — not lessons, not insights, not "what went well." Each has a different decay rate and a different reader.
+**Why four zones?** `local/` holds disposable, gitignored plans, notes, and task context for active execution. `work/` preserves shared historical conversations (including intents, brainstorms, and older work artifacts) as searchable, nonbinding context. `reference/` holds selectively maintained descriptions of what code and tests cannot explain. `learned/` is narrowly scoped to operational mistakes and remains unchanged. Each has a different decay rate and reader.
 
 Work artifacts are historical context, not binding instructions. The user's
 current direction takes precedence; call out concrete safety or compatibility
 consequences rather than treating disagreement with an old document as a blocker.
-Legacy files under `.lore/work/specs/` remain discoverable historical material.
+Legacy files under `.lore/work/` remain discoverable historical material; do not
+delete or untrack them as part of adopting local storage. To initialize local
+storage in a project, run `python3 <path-to-lore-development>/scripts/ensure_local.py <project-root>`. It creates `.lore/local/` and adds `/.lore/local/` to the project root's `.gitignore` without replacing existing content. In a Git worktree it verifies effective ignore behavior and fails without rewriting explicit `.lore/local` negations; in a non-Git project it prepares the rule for future Git initialization. If Git is unavailable, the helper warns that effective ignore behavior could not be verified. When invoked from a lore-development skill, resolve the helper relative to that installed skill, not the project working directory. Field-guide's init can invoke it when the plugins are installed as siblings; separately installed plugins do not assume a shared source tree. Static skill guidance cannot force a model to execute the helper; direct setup is available for non-skill workflows.
 
 **Layered subdirectories in stable zones.** When `reference/` or `learned/` accumulates enough docs that "all in one place" hinders navigation, run `/lore-development:stratify <path>` to reorganize the directory into dependency-ordered subdirectories with a `README.md` index at the top. The index uses standard lore frontmatter (`title`, `date`, `status`, `tags`) and explains reading order, layer dependencies, and what each subdirectory holds.
 
 ### Migrating from the old layout
 
-Pre-redesign projects had a flat `.lore/` with directories like `specs/`, `plans/`, `retros/` at the top level. Run `/lore-development:tend migrate` to move an existing tree into the three-directory model. The migrate mode rewrites internal links in frontmatter and prose, leaves guild-hall–owned paths alone, and is idempotent on re-run.
+Pre-redesign projects had a flat `.lore/` with directories like `specs/`, `plans/`, `retros/` at the top level. Run `/lore-development:tend migrate` to move an existing tree into the shared work/reference/learned zones. Then initialize disposable local output with the setup helper described above. The migrate mode rewrites internal links in frontmatter and prose, leaves guild-hall–owned paths alone, and is idempotent on re-run.
 
 ## Agents
 
@@ -192,7 +199,7 @@ modules: [affected-modules]
 The `lore-researcher` can find documents without frontmatter through body-text
 search, but treats them as lower-confidence legacy material because lifecycle
 and module metadata are unavailable. Use `/tend` to retrofit old documents, and
-`/tend migrate` to move a flat-layout `.lore/` into the three-directory model.
+`/tend migrate` to move a flat-layout `.lore/` into the shared lore zones.
 
 Document bodies are Markdown by default. Embed raw inline HTML only where a visual carries meaning Markdown cannot (color-coding, inline-`<svg>` charts, side-by-side comparison) — never inside a fenced code block, and with no `<script>` or external resources. See the "Body Format" section of `shared/frontmatter-schema.md`.
 

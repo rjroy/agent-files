@@ -22,8 +22,8 @@ from frontmatter_schema import (
 )
 
 # Directory keys listed in the schema's "Status Values" tables.
-# Keying convention: work/<type> for work documents, single-name keys for
-# reference and learned (each covers its whole subtree).
+# Keying convention: <zone>/<type> for work/local documents, single-name keys
+# for reference and learned (each covers its whole subtree).
 SCHEMA_DOCUMENT_TYPES = [
     "work/brainstorm",
     "work/intents",
@@ -36,6 +36,9 @@ SCHEMA_DOCUMENT_TYPES = [
     "work/retros",
     "work/issues",
     "work/diagrams",
+    "local/plans",
+    "local/tasks",
+    "local/notes",
     "reference",
     "learned",
 ]
@@ -121,6 +124,9 @@ class TestTypeSpecificRequired(unittest.TestCase):
         self.assertIn("work/tasks", TYPE_SPECIFIC_REQUIRED)
         self.assertIn("source", TYPE_SPECIFIC_REQUIRED["work/tasks"])
         self.assertIn("sequence", TYPE_SPECIFIC_REQUIRED["work/tasks"])
+
+    def test_local_tasks_are_generic_context(self):
+        self.assertEqual(TYPE_SPECIFIC_REQUIRED["local/tasks"], [])
 
 
 if __name__ == "__main__":

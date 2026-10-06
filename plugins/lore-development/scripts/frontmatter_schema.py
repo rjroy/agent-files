@@ -7,13 +7,14 @@ Each constant references the schema section it encodes.
 
 Directory keying convention
 ---------------------------
-The schema is organized around three top-level directories under `.lore/`:
-`work/`, `reference/`, and `learned/`. Status sets are scoped to that tree.
+The schema covers `.lore/local/`, `.lore/work/`, `.lore/reference/`, and
+`.lore/learned/`. Status sets are scoped to those trees.
 
 Directory keys in this module follow that layout:
 
-- Work documents are keyed `work/<type>` (e.g. `work/intents`, `work/specs`,
-  `work/notes`). `work/specs` is retained for historical documents only.
+- Disposable local documents are keyed `local/<type>` (plans, notes, tasks).
+- Historical work documents are keyed `work/<type>`; `work/specs` and the
+  legacy work plans/notes/tasks remain discoverable.
 - Reference documents are keyed `reference` (one set covers the whole tree
   including subdirectories like `reference/diagrams/`).
 - Learned documents are keyed `learned`.
@@ -54,6 +55,10 @@ STATUS_VALUES = {
     "work/retros": ["open", "archived"],
     "work/issues": ["open", "resolved", "wontfix", "archived"],
     "work/diagrams": ["current", "outdated", "archived"],
+    # Disposable local work — task artifacts are generic context, not phases.
+    "local/plans": ["draft", "approved", "executed", "archived"],
+    "local/notes": ["in_progress", "complete", "archived"],
+    "local/tasks": ["pending", "complete", "skipped"],
     # Reference documents — one shared status set, including reference/diagrams/
     "reference": ["current", "outdated", "archived"],
     # Learned documents — minimal set; lifecycle deferred per design-learned-structure.md
@@ -65,4 +70,6 @@ STATUS_VALUES = {
 TYPE_SPECIFIC_REQUIRED = {
     "work/notes": [],
     "work/tasks": ["source", "sequence"],
+    "local/notes": [],
+    "local/tasks": [],
 }
