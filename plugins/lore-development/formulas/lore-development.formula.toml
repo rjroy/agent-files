@@ -1,5 +1,5 @@
 formula = "lore-development"
-description = "Explore, specify, design, plan, implement, and capture lore for a change"
+description = "Explore intent, design, plan, implement, and capture lore for a change"
 version = 1
 type = "workflow"
 
@@ -21,22 +21,14 @@ title = "Brainstorm {{topic}}"
 needs = ["research"]
 
 [[steps]]
-id = "specify"
-title = "Write specification for {{artifact_name}}"
+id = "intent"
+title = "Capture intent for {{artifact_name}}"
 needs = ["brainstorm"]
-
-[[steps]]
-id = "approve-spec"
-title = "Human approval: specification for {{artifact_name}}"
-needs = ["specify"]
-
-[steps.gate]
-type = "human"
 
 [[steps]]
 id = "design"
 title = "Design {{artifact_name}}"
-needs = ["approve-spec"]
+needs = ["intent"]
 
 [[steps]]
 id = "approve-design"

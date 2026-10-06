@@ -16,7 +16,7 @@ Skills write into a three-directory `.lore/` tree (`work/`, `reference/`, `learn
 |-------|---------|
 | `/lore-development:research` | Gather context from outside the project |
 | `/lore-development:brainstorm` | Explore ideas, record "what if" thinking |
-| `/lore-development:specify` | Define requirements and success criteria |
+| `/lore-development:intent` | Think through what to build and why; record conversational intent |
 | `/lore-development:design` | Make technical decisions when the "how" is the problem |
 | `/lore-development:prep-plan` | Build implementation plans as reviewable lore artifacts |
 | `/lore-development:plan-breakdown` | Decompose a plan into task files for `/implement` |
@@ -31,7 +31,7 @@ Skills write into a three-directory `.lore/` tree (`work/`, `reference/`, `learn
 | `/lore-development:install-formula` | Install the reusable Beads workflow formula in a project |
 | `/lore-development:tend` | Periodic hygiene to maintain document status accuracy |
 | `/lore-development:stratify` | Reorganize a stable lore directory into layered subdirectories with a navigational index |
-| `/lore-development:update-stubs` | Scan specs for stubs and generate an outstanding stub index |
+| `/lore-development:update-stubs` | Scan legacy specs for stubs and generate an outstanding stub index |
 | `/lore-development:update-lore-agents` | Build/update the project's agent registry |
 | `/lore-development:review-ideas` | Process captured ideas into structured issues |
 
@@ -48,7 +48,8 @@ Context lives in `.lore/` under three top-level directories. Each directory has 
 ├── work/          # Work scaffolding — session-bound, written during a flow
 │   ├── ideas/          # Captured ideas (via hook, one file per date)
 │   ├── brainstorm/     # Recorded explorations
-│   ├── specs/          # Requirements
+│   ├── intents/        # Conversational what/why context
+│   ├── specs/          # Legacy historical specs; not active contracts
 │   ├── design/         # Technical decisions
 │   ├── plans/          # Implementation plans
 │   ├── tasks/          # Task files (from /plan-breakdown)
@@ -73,6 +74,11 @@ Context lives in `.lore/` under three top-level directories. Each directory has 
 
 **Why three directories?** `work/` holds the work-in-progress: messy, conversational, tied to a specific session. `reference/` holds what survived: invariants, vision, distilled documentation that informs future work. `learned/` is narrowly scoped to mistakes — not lessons, not insights, not "what went well." Each has a different decay rate and a different reader.
 
+Work artifacts are historical context, not binding instructions. The user's
+current direction takes precedence; call out concrete safety or compatibility
+consequences rather than treating disagreement with an old document as a blocker.
+Legacy files under `.lore/work/specs/` remain discoverable historical material.
+
 **Layered subdirectories in stable zones.** When `reference/` or `learned/` accumulates enough docs that "all in one place" hinders navigation, run `/lore-development:stratify <path>` to reorganize the directory into dependency-ordered subdirectories with a `README.md` index at the top. The index uses standard lore frontmatter (`title`, `date`, `status`, `tags`) and explains reading order, layer dependencies, and what each subdirectory holds.
 
 ### Migrating from the old layout
@@ -85,11 +91,11 @@ The plugin ships with agents that skills invoke automatically:
 
 | Agent | Purpose |
 |-------|---------|
-| `lore-researcher` | Search `.lore/` for related prior work before new specs or plans |
+| `lore-researcher` | Search `.lore/` for useful historical context before intents or plans |
 | `bun-typescript-reviewer` | Review Bun/TypeScript daemon, Unix-socket, CLI, Next.js, and React implementations against requested behavior |
 | `design-reviewer` | Review design documents for weak decisions and gaps |
 | `plan-reviewer` | Review plans for infeasible steps and scope creep |
-| `spec-reviewer` | Review specs for clarity issues and ambiguities |
+| `intent-reviewer` | Check that intent notes faithfully capture what the user wants and why |
 | `fresh-lore` | Fresh-context analysis when the current session is too deep in the weeds |
 | `surface-surveyor` | Quick codebase reconnaissance to find entry points |
 
@@ -117,13 +123,13 @@ Skills flow from exploration to implementation. The key decision is when to star
 
 ### Explore (same session)
 
-Run `/brainstorm`, `/research`, `/specify`, and `/design` in the same conversation. These phases are conversational. The value is in the back-and-forth, the rejected ideas, the "not that because X" reasoning. Let context accumulate.
+Run `/brainstorm`, `/research`, `/intent`, and `/design` in the same conversation. These phases are conversational. The value is in the back-and-forth, the rejected ideas, the "not that because X" reasoning. Let context accumulate.
 
-When `/design` or `/specify` completes, you have written artifacts in `.lore/`. The exploration phase is done.
+When `/design` or `/intent` completes, you have historical context in `.lore/`. Intent records what and why, not a contract; implementation and validation approaches belong in the plan.
 
 ### Plan (fresh session)
 
-Start a new session. Run `/prep-plan` pointing at the artifacts from the explore phase. The planner synthesizes from the documents, not from conversational memory. This is intentional: if the written artifacts aren't clear enough for a fresh context to produce a good plan, they need revision before implementation.
+Start a new session. Run `/prep-plan` with the artifacts from the explore phase as context. Use them as suggestions, then plan in light of current user direction and evidence.
 
 ### Implement (fresh session)
 
@@ -139,7 +145,10 @@ If a specific mistake is worth not repeating, run `/learn` to record it. `/learn
 
 ### Why break context
 
-Rolling context helps when work is exploratory. It hurts when work is procedural and artifact-driven. Breaking context before `/prep-plan` also serves as a forcing function: if the specs and designs can't stand on their own without the conversation that produced them, they aren't ready.
+Rolling context helps when work is exploratory. It hurts when work is procedural
+and artifact-driven. Breaking context before `/prep-plan` can help focus planning;
+the artifacts are context to reconsider against the user's present direction, not
+a gate that must satisfy an old contract.
 
 ### Distilling existing code
 
@@ -150,12 +159,12 @@ Use `/distill code` when inheriting or joining an existing codebase, or `/distil
 Knowledge compounds when past learnings inform new work. The plugin closes this loop automatically:
 
 ```
-/specify or /prep-plan
+/intent or /prep-plan
         │
         ├─► lore-researcher agent searches .lore/ for related work
         │
         ▼
-   findings included in new spec/plan
+   useful historical context considered while shaping intent/plan
         │
         ... work happens ...
         │
@@ -165,7 +174,7 @@ Knowledge compounds when past learnings inform new work. The plugin closes this 
         └─► captures notes → writes to .lore/work/retros/
 ```
 
-The `lore-researcher` agent runs automatically at the start of `/specify` and `/prep-plan`, surfacing relevant retros, specs, and brainstorms before new work begins.
+The `lore-researcher` agent runs automatically at the start of `/intent` and `/prep-plan`, surfacing relevant retros, legacy specs, and brainstorms as historical context before new work begins.
 
 ## Frontmatter Schema
 

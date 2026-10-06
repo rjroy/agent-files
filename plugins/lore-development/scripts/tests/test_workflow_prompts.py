@@ -54,7 +54,6 @@ def test_review_workflows_distinguish_initial_and_verification_modes() -> None:
     prompts = [
         _read("skills/implement/SKILL.md"),
         _read("agents/design-reviewer.md"),
-        _read("agents/spec-reviewer.md"),
         _read("agents/plan-reviewer.md"),
     ]
 
@@ -65,7 +64,6 @@ def test_review_workflows_distinguish_initial_and_verification_modes() -> None:
 
     for path in [
         "agents/design-reviewer.md",
-        "agents/spec-reviewer.md",
         "agents/plan-reviewer.md",
     ]:
         prompt = _normalized(path)
@@ -77,7 +75,6 @@ def test_review_workflows_distinguish_initial_and_verification_modes() -> None:
 def test_document_reviewers_do_not_force_ceremonial_output() -> None:
     for path in [
         "agents/design-reviewer.md",
-        "agents/spec-reviewer.md",
         "agents/plan-reviewer.md",
     ]:
         prompt = _normalized(path)
@@ -87,15 +84,17 @@ def test_document_reviewers_do_not_force_ceremonial_output() -> None:
         assert "## Strengths" not in prompt
 
 
-def test_lore_researcher_uses_lifecycle_aware_authority() -> None:
+def test_lore_researcher_surfaces_context_without_binding_history() -> None:
     prompt = _normalized("agents/lore-researcher.md")
 
     assert "shared/frontmatter-schema.md" in prompt
     assert "schema owns document types and lifecycle statuses" in prompt
-    assert "check frontmatter status" in prompt
-    assert "not as proof that a document is authoritative" in prompt
-    assert "authoritative status or explicit supersession evidence" in prompt
-    assert "links could establish authority" not in prompt
+    assert (
+        "their location, status, dates, and links do not make them instructions"
+        in prompt
+    )
+    assert "the user's current direction as the guide" in prompt
+    assert "Legacy documents under `work/specs/` are historical input only" in prompt
     assert "Do not silently resolve conflicts" in prompt
     assert "Search all three zones even after finding a strong match" in prompt
     assert "Frontmatter improves ranking but is not a prerequisite" in prompt
@@ -121,37 +120,66 @@ def test_bun_typescript_reviewer_requires_material_traceable_findings() -> None:
     assert "A request for another test is not a finding unless" in implementation
 
 
-def test_specification_prompt_is_human_first() -> None:
-    prompt = _read("skills/specify/SKILL.md")
+def test_intent_prompt_is_conversational_and_nonbinding() -> None:
+    prompt = _normalized("skills/intent/SKILL.md")
 
-    expected_order = [
-        "Goal and user problem",
-        "representative user-visible examples",
-        "Plain-language explanation",
-        "Visible behavior and important product choices",
-        "Numbered requirements",
-        "Optional Technical Contract",
-    ]
-    positions = [prompt.index(section) for section in expected_order]
+    assert "what to build and why" in prompt
+    assert "conversational" in prompt
+    assert "not a binding contract" in prompt
+    assert "The plan is where" in prompt
+    assert "current direction takes priority" in prompt
+    assert "historical context" in prompt
+    assert "## Requirements" not in prompt
+    assert "## Validation" not in prompt
+    assert "REQ-" not in prompt
+    assert "acceptance matrix" in prompt
 
-    assert positions == sorted(positions)
+
+def test_intent_reviewer_has_fresh_context_modes_without_contract_checks() -> None:
+    reviewer = _normalized("agents/intent-reviewer.md")
+
+    assert "initial-review" in reviewer
+    assert "verification" in reviewer
+    assert "faithfully captures intent" in reviewer
+    assert "Do not require numbered requirements" in reviewer
+    assert "Do not treat an old artifact's noncompliance" in reviewer
 
 
-def test_specification_readability_safeguards_align_with_reviewer_criteria() -> None:
-    drafting = _normalized("skills/specify/SKILL.md").lower()
-    reviewer = _normalized("agents/spec-reviewer.md").lower()
+def test_intent_reviewer_and_researcher_treat_legacy_specs_as_history() -> None:
+    reviewer = _normalized("agents/intent-reviewer.md")
+    researcher = _normalized("agents/lore-researcher.md")
 
-    for guidance in (drafting, reviewer):
-        assert "every numbered requirement must stand on its own" in guidance
-        assert "explicitly name the prior requirement, contract, or authority" in guidance
-        assert "state the observable consequence" in guidance
-        assert "approval, governance, and document status" in guidance
-        assert "context, not" in guidance
+    assert "historical context, not a binding contract" in reviewer
+    assert "The user's current direction prevails" in reviewer
+    assert (
+        "Legacy documents under `work/specs/` are historical input only"
+        in researcher
+    )
+    assert "do not override the user's present direction" in researcher
+    assert "old-document noncompliance alone is not a blocker" in researcher
 
-    assert "as a material initial-review criterion" in reviewer
-    assert "protect human readability" in reviewer
-    assert "legalistic repetition" in reviewer
-    assert "materially obstructs understanding" in reviewer
+    design_reviewer = _normalized("agents/design-reviewer.md")
+    assert "Historical specs and other work artifacts" in design_reviewer
+    assert "do not constrain current user direction" in design_reviewer
+    assert "old-document noncompliance alone" in design_reviewer
+
+
+def test_intent_schema_keeps_legacy_specs_historical_only() -> None:
+    schema = _normalized("shared/frontmatter-schema.md")
+
+    assert "`.lore/work/intents/`" in schema
+    assert "`.lore/work/specs/`" in schema
+    assert "historical labels only; none make a document binding" in schema
+    assert "do not make them authoritative" in schema
+
+
+def test_implementation_does_not_block_on_old_artifact_conflict_alone() -> None:
+    prompt = _normalized("skills/implement/SKILL.md")
+
+    assert "A conflict with an old artifact alone is not a blocker" in prompt
+    assert "follow current user direction" in prompt
+    assert "concrete safety or compatibility consequences" in prompt
+    assert "old artifact's omission or contradiction alone" in prompt
 
 
 def test_design_skill_runs_fresh_context_review() -> None:
@@ -220,7 +248,7 @@ def test_opencode_agent_frontmatter_is_read_only_with_explicit_models() -> None:
         "agents/lore-researcher.md": "openai/gpt-6-luna#medium",
         "agents/plan-reviewer.md": "openai/gpt-6-astra#high",
         "agents/rust-daemon-cli-reviewer.md": "openai/gpt-6.1-sol#high",
-        "agents/spec-reviewer.md": "openai/gpt-6-astra#high",
+        "agents/intent-reviewer.md": "openai/gpt-6-astra#high",
     }
 
     for path, model in agent_models.items():
@@ -236,7 +264,7 @@ def test_setup_registers_lore_agents_without_overwriting(tmp_path: Path) -> None
     env = {**os.environ, "XDG_CONFIG_HOME": str(config_home)}
     setup = REPOSITORY_ROOT / "scripts/setup-opencode.sh"
 
-    conflicting_agent = config_home / "opencode/agents/spec-reviewer.md"
+    conflicting_agent = config_home / "opencode/agents/intent-reviewer.md"
     conflicting_agent.parent.mkdir(parents=True)
     conflicting_agent.write_text("user-owned\n", encoding="utf-8")
 
@@ -300,6 +328,8 @@ def test_setup_preserves_skill_array_and_registers_commands(
     assert (config_dir / "commands/write-lyrics.md").is_symlink()
     assert (config_dir / "commands/review-story.md").is_symlink()
     assert (config_dir / "skills/implement").is_symlink()
+    assert (config_dir / "skills/intent").is_symlink()
+    assert not os.path.lexists(config_dir / "skills/specify")
     assert "preserving existing OpenCode command" in result.stderr
 
 
@@ -310,7 +340,7 @@ def test_setup_preserves_dangling_definition_and_skill_collisions(tmp_path: Path
     skills_dir = config_dir / "skills"
     agents_dir.mkdir(parents=True)
     skills_dir.mkdir(parents=True)
-    dangling_agent = agents_dir / "spec-reviewer.md"
+    dangling_agent = agents_dir / "intent-reviewer.md"
     dangling_skill = skills_dir / "implement"
     dangling_agent.symlink_to(tmp_path / "missing-agent.md")
     dangling_skill.symlink_to(tmp_path / "missing-skill")

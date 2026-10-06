@@ -12,7 +12,8 @@ The schema is organized around three top-level directories under `.lore/`:
 
 Directory keys in this module follow that layout:
 
-- Work documents are keyed `work/<type>` (e.g. `work/specs`, `work/notes`).
+- Work documents are keyed `work/<type>` (e.g. `work/intents`, `work/specs`,
+  `work/notes`). `work/specs` is retained for historical documents only.
 - Reference documents are keyed `reference` (one set covers the whole tree
   including subdirectories like `reference/diagrams/`).
 - Learned documents are keyed `learned`.
@@ -24,7 +25,7 @@ REQUIRED_FIELDS = ["title", "date", "status", "tags"]
 # Schema section: "Required vs Optional" table (optional rows)
 OPTIONAL_FIELDS = ["modules", "related"]
 
-# Schema section: "Common Fields" code block + spec/notes/task-specific fields
+# Schema section: "Common Fields" code block + notes/task-specific fields
 # Maps field name to expected type string.
 FIELD_TYPES = {
     "title": "string",
@@ -33,7 +34,6 @@ FIELD_TYPES = {
     "tags": "list",
     "modules": "list",
     "related": "list",
-    "req-prefix": "string",
     "source": "string",
     "sequence": "integer",
 }
@@ -43,6 +43,8 @@ FIELD_TYPES = {
 STATUS_VALUES = {
     # Work documents — per-type lifecycles
     "work/brainstorm": ["open", "parked", "resolved", "archived"],
+    "work/intents": ["open", "archived"],
+    # Legacy specs remain parseable/discoverable; their statuses confer no authority.
     "work/specs": ["draft", "approved", "implemented", "superseded", "archived"],
     "work/design": ["draft", "approved", "implemented", "superseded", "archived"],
     "work/plans": ["draft", "approved", "executed", "archived"],

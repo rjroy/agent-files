@@ -297,6 +297,16 @@ class TestFieldTypes(unittest.TestCase):
 class TestStatusValues(unittest.TestCase):
     """REQ-FMVAL-6: status value validation."""
 
+    def test_legacy_spec_req_prefix_remains_accepted(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            legacy_spec = VALID_FM.replace(
+                "tags: [testing]", "tags: [testing]\nreq-prefix: AUTH"
+            )
+            lore = _make_lore_tree(
+                tmpdir, {"work/specs/legacy.md": legacy_spec}
+            )
+            self.assertEqual(scan_directory(lore), [])
+
     def test_invalid_status_for_specs(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             lore = _make_lore_tree(tmpdir, {

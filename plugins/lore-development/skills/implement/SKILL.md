@@ -109,10 +109,10 @@ narrowly instead of rerunning the workflow.
 Two conditions require human intervention. Everything else is autonomous.
 
 1. **Stuck loop**: Two failed attempts on one finding, or three correction rounds in one phase. Present the finding IDs and failure history.
-2. **Plan divergence**: Implementation requires something the source artifact didn't specify or contradicts. Present the divergence and ask the user to authorize or redirect.
+2. **Material uncertainty**: New evidence reveals a choice that could materially change the outcome and the user's current direction does not resolve it. Explain the trade-off and ask. A conflict with an old artifact alone is not a blocker; follow current user direction and surface concrete safety or compatibility consequences.
 
 Do not ask for confirmation between phases.
 
 ## Divergence
 
-If reality requires something the source artifact didn't account for, do not proceed. Escalate to the user with the specific divergence and why it's needed. Record approved divergences in the notes file.
+If new evidence raises a material choice not resolved by the user's current direction, explain it and ask before choosing. Do not treat an old artifact's omission or contradiction alone as a blocker. Preserve test and review rigor, and raise concrete safety or compatibility consequences when they matter.

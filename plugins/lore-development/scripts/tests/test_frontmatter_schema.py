@@ -26,6 +26,7 @@ from frontmatter_schema import (
 # reference and learned (each covers its whole subtree).
 SCHEMA_DOCUMENT_TYPES = [
     "work/brainstorm",
+    "work/intents",
     "work/specs",
     "work/design",
     "work/plans",

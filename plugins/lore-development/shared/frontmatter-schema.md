@@ -42,7 +42,7 @@ Render target is local editors (Obsidian, VS Code preview, pandoc, browser), whe
 
 `.lore/` is organized into three top-level directories. Every lore document lives under exactly one of them:
 
-- **`.lore/work/`** — work scaffolding. Session-bound material: brainstorms, specs, designs, plans, tasks, notes, research, retros, issues, ideas, validation, stubs, excavation indices, session diagrams.
+- **`.lore/work/`** — work scaffolding. Session-bound material: brainstorms, intents, legacy specs, designs, plans, tasks, notes, research, retros, issues, ideas, validation, stubs, excavation indices, session diagrams.
 - **`.lore/reference/`** — solidified, system-oriented documentation. What the code cannot say. Distilled feature docs, vision, current-state diagrams.
 - **`.lore/learned/`** — operational imperatives, mistakes-only, worker-oriented. Written by `/learn`.
 
@@ -63,27 +63,6 @@ All lore documents include these fields:
 
 Array fields (`tags`, `modules`, `related`) use YAML list syntax: `[a, b, c]` inline, or a block list with `-` items.
 
-## Spec-Specific Fields
-
-Specs support one additional optional field:
-
-```yaml
-req-prefix: AUTH
-```
-
-| Field | Required | Notes |
-|-------|----------|-------|
-| req-prefix | No | Override auto-generated prefix. Use 3-12 uppercase chars. |
-
-If omitted, prefix is auto-generated from the spec filename (first 2 segments, uppercase, max 12 chars).
-
-Examples:
-- `auth-flow.md` → `AUTH-FLOW`
-- `user-authentication-oauth2.md` → `USER-AUTH`
-- With `req-prefix: AUTH` → `AUTH`
-
-Requirements then use format: `REQ-{prefix}-N` (e.g., `REQ-AUTH-FLOW-1`)
-
 ## Status Values
 
 Status values are organized into three sets, one per top-level directory.
@@ -95,7 +74,8 @@ Work artifacts retain meaningful per-type lifecycles. The directory key is `work
 | Type | Directory | Valid Status Values |
 |------|-----------|---------------------|
 | brainstorm | `.lore/work/brainstorm/` | `open`, `parked`, `resolved`, `archived` |
-| spec | `.lore/work/specs/` | `draft`, `approved`, `implemented`, `superseded`, `archived` |
+| intent | `.lore/work/intents/` | `open`, `archived` |
+| legacy spec | `.lore/work/specs/` | `draft`, `approved`, `implemented`, `superseded`, `archived` (historical labels only; none make a document binding) |
 | design | `.lore/work/design/` | `draft`, `approved`, `implemented`, `superseded`, `archived` |
 | plan | `.lore/work/plans/` | `draft`, `approved`, `executed`, `archived` |
 | task | `.lore/work/tasks/` | `pending`, `complete`, `skipped` |
@@ -204,23 +184,29 @@ modules: [brief-system, email-processing]
 ...
 ```
 
-### Spec
+### Intent
 
 ```markdown
 ---
-title: User authentication flow
+title: Why users need a simpler sign-in flow
 date: 2026-01-28
-status: draft
-tags: [auth, security, login]
+status: open
+tags: [auth, security, sign-in]
 modules: [auth-service, user-model]
 related: [.lore/work/research/oauth-patterns.md]
-req-prefix: AUTH
 ---
 
-# User authentication flow
+# Why users need a simpler sign-in flow
 
-...
+The current sign-in flow is confusing for returning users. We want to make it
+easier to get back into an account without weakening account security. We have
+not chosen an implementation; discuss options and useful validation in the plan.
 ```
+
+Older `.lore/work/specs/` documents remain discoverable historical context. Their
+status labels, requirement IDs, and validation sections do not make them
+authoritative for current work. Do not rewrite old documents just to adopt the
+intent format.
 
 ### Brainstorm
 
