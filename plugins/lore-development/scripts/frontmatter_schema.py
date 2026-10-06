@@ -63,6 +63,6 @@ STATUS_VALUES = {
 # Schema sections: "Notes-Specific Fields" and "Task-Specific Fields"
 # Maps directory key to additional required fields beyond REQUIRED_FIELDS.
 TYPE_SPECIFIC_REQUIRED = {
-    "work/notes": ["source"],
+    "work/notes": [],
     "work/tasks": ["source", "sequence"],
 }

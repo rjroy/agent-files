@@ -37,17 +37,16 @@ def test_implementation_roles_are_serialized_and_read_only() -> None:
     assert "dispatching the next role" in prompt
 
 
-def test_implementation_requires_mapped_behavioral_evidence() -> None:
+def test_implementation_uses_proportionate_behavioral_evidence() -> None:
     prompt = _normalized("skills/implement/SKILL.md")
 
-    assert (
-        "Map each obligation to its phase and sufficient executable validation"
-        in prompt
-    )
-    assert "task's exact Validation section" not in prompt
-    assert "An unmapped obligation is a planning gap" in prompt
-    assert "Reconcile obligations with evidence" in prompt
+    assert "The full suite passing is not enough" in prompt
+    assert "focused checks for distinct plausible defects" in prompt
+    assert "Do not create requirement IDs, exhaustive mappings" in prompt
     assert "suite passing does not substitute" in prompt
+    assert "Current user direction may authorize behavior or contract changes" in prompt
+    assert "do not treat an old artifact's silence" in prompt
+    assert "new evidence" in prompt
 
 
 def test_review_workflows_distinguish_initial_and_verification_modes() -> None:
@@ -144,10 +143,8 @@ def test_bun_typescript_reviewer_requires_material_traceable_findings() -> None:
     assert "## Requirement Evidence" not in reviewer
     assert "## Findings" not in reviewer
     assert "use the bundled `bun-typescript-reviewer`" in implementation
-    assert (
-        "The reviewer may return a concise acceptance" in implementation
-    )
-    assert "A request for another test is not a finding unless" in implementation
+    assert "Accept adequate work" in implementation
+    assert "A request for another test must identify" in implementation
 
 
 def test_intent_prompt_is_conversational_and_nonbinding() -> None:
@@ -212,6 +209,44 @@ def test_implementation_does_not_block_on_old_artifact_conflict_alone() -> None:
     assert "old artifact's omission or contradiction alone" in prompt
 
 
+def test_implementation_accepts_direct_requests_and_keeps_notes_optional() -> None:
+    prompt = _normalized("skills/implement/SKILL.md")
+    schema = _normalized("shared/frontmatter-schema.md")
+    readme = _normalized("README.md")
+
+    assert "current request or intent, optionally informed" in prompt
+    assert "user's current request" in prompt
+    assert "A plan is useful but not required" in prompt
+    assert "do not create one by default" in prompt
+    assert "Do not ask for confirmation between phases" in prompt
+    assert "read-only testing agent" in prompt
+    assert "read-only review agent" in prompt
+    assert "Route material findings to implementation for correction" in prompt
+    assert "repeat only the failed checks" in prompt
+    assert "terminal review to catch interactions" in prompt
+    assert "reuse, replace, or remove" in prompt
+    assert "obsolete parallel path or unused scaffolding" in prompt
+    assert "material maintenance or behavior cost, not a cleanup quota" in prompt
+    assert "does not determine `/implement` execution order" in schema
+    assert "an optional plan can help, but is not required" in readme
+
+
+def test_implementation_reviewers_follow_current_direction() -> None:
+    implementation = _normalized("skills/implement/SKILL.md")
+
+    assert "relevant requirements from the source artifact" not in implementation
+    assert "mapped source obligations" not in implementation
+    assert "obligation-to-evidence mapping" not in implementation
+    for path in [
+        "agents/bun-typescript-reviewer.md",
+        "agents/rust-daemon-cli-reviewer.md",
+    ]:
+        reviewer = _normalized(path)
+        assert "user's current requested behavior" in reviewer
+        assert "do not override current user direction" in reviewer
+        assert "Do not report noncompliance with an old artifact alone" in reviewer
+
+
 def test_design_skill_runs_fresh_context_review() -> None:
     prompt = _normalized("skills/design/SKILL.md")
 
@@ -242,7 +277,6 @@ def test_retired_plan_breakdown_is_not_an_active_skill_or_implement_path(
     assert "plan-breakdown" not in implementation
     assert "Task file detection" not in implementation
     assert "task's exact Validation section" not in implementation
-    assert "regenerate any passive export" in implementation
 
     # Setup discovers skills from source directories. A dangling config symlink
     # cannot restore a removed skill, and must remain untouched as user data.
@@ -262,32 +296,23 @@ def test_retired_plan_breakdown_is_not_an_active_skill_or_implement_path(
     assert "plan-breakdown" not in result.stdout
 
 
-def test_commit_handoff_does_not_reopen_accepted_work() -> None:
+def test_commit_handoff_revalidates_changes_after_review() -> None:
     prompt = _read("skills/implement/SKILL.md")
 
-    assert "do not reopen implementation or" in prompt
-    assert "Perform only commit safety checks" in prompt
-    assert "accepted-manifest equality" in prompt
-    assert "record an accepted manifest" in prompt
-    assert "exact porcelain status" in prompt
-    assert "index blob identity or absent/unmerged marker" in prompt
-    assert "working-tree SHA-256 content hash or deletion marker" in prompt
-    assert "index and working-tree content separately" in prompt
-    assert "Include untracked files" in prompt
-    assert "requires exact equality" in prompt
-    assert "instead of rerunning the workflow" in prompt
-
-
-def test_design_inputs_map_decisions_to_evidence() -> None:
-    prompt = _normalized("skills/implement/SKILL.md")
-
-    assert "decisions and interface commitments from a design" in prompt
+    assert "check the intended changes and required project safeguards" in prompt
     assert (
-        "Map each obligation to its phase and sufficient executable validation"
+        "If code changes after testing/review, validate and review the "
+        "changed behavior again"
         in prompt
     )
-    assert "An unmapped obligation is a planning gap" in prompt
-    assert "Reconcile obligations with evidence" in prompt
+
+
+def test_design_inputs_use_relevant_evidence_without_exhaustive_mapping() -> None:
+    prompt = _normalized("skills/implement/SKILL.md")
+
+    assert "affected consumers, actual behavior" in prompt
+    assert "Identify the project-specific behavior and risks" in prompt
+    assert "Do not create requirement IDs, exhaustive mappings" in prompt
 
 
 def test_opencode_agent_frontmatter_is_read_only_with_explicit_models() -> None:
@@ -382,7 +407,9 @@ def test_setup_preserves_skill_array_and_registers_commands(
     assert "preserving existing OpenCode command" in result.stderr
 
 
-def test_setup_preserves_dangling_definition_and_skill_collisions(tmp_path: Path) -> None:
+def test_setup_preserves_dangling_definition_and_skill_collisions(
+    tmp_path: Path,
+) -> None:
     config_home = tmp_path / "config"
     config_dir = config_home / "opencode"
     agents_dir = config_dir / "agents"

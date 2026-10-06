@@ -203,16 +203,15 @@ class TestRequiredFields(unittest.TestCase):
 
 
 class TestTypeSpecificRequired(unittest.TestCase):
-    """Type-specific required fields (notes need source, tasks need source+sequence)."""
+    """Type-specific required fields (tasks need source+sequence)."""
 
-    def test_note_missing_source(self):
+    def test_note_without_source_is_valid(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             lore = _make_lore_tree(tmpdir, {
                 "work/notes/test.md": (FIXTURES / "note_missing_source.md").read_text()
             })
             findings = scan_directory(lore)
-            missing = [f for f in findings if f["error_type"] == "missing_field" and f["field"] == "source"]
-            self.assertEqual(len(missing), 1)
+            self.assertEqual(findings, [])
 
     def test_task_missing_sequence(self):
         with tempfile.TemporaryDirectory() as tmpdir:

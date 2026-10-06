@@ -103,7 +103,7 @@ All reference documents share one status set:
 
 ## Notes-Specific Fields
 
-Notes support one additional required field:
+Notes may include a source field when a particular artifact informed the work:
 
 ```yaml
 source: .lore/work/plans/auth-flow.md
@@ -111,7 +111,7 @@ source: .lore/work/plans/auth-flow.md
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| source | Yes | Path to the spec, design, or plan being implemented. Enables retro to diff plan vs reality. |
+| source | No | Path to a relevant intent, spec, design, plan, or other context. Useful for navigation, but notes do not require a source artifact. |
 
 ## Task-Specific Fields
 
@@ -124,8 +124,8 @@ sequence: 1
 
 | Field | Required | Notes |
 |-------|----------|-------|
-| source | Yes | Path to the plan this task was decomposed from. Enables implement to find the parent plan. |
-| sequence | Yes | Integer ordering within the task set. Determines execution order in implement. |
+| source | Yes | Path to the plan this historical task artifact came from; useful for traceability. |
+| sequence | Yes | Integer ordering within the historical task set. It does not determine `/implement` execution order. |
 
 ## Vision-Specific Notes
 

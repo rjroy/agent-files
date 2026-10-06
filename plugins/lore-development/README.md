@@ -19,7 +19,7 @@ Skills write into a three-directory `.lore/` tree (`work/`, `reference/`, `learn
 | `/lore-development:intent` | Think through what to build and why; record conversational intent |
 | `/lore-development:design` | Make technical decisions when the "how" is the problem |
 | `/lore-development:prep-plan` | Discuss an evidence-informed approach; optionally record a disposable working plan |
-| `/lore-development:implement` | Orchestrate implementation from a plan via sub-agents |
+| `/lore-development:implement` | Orchestrate implementation from the current request, optionally informed by lore context |
 | `/lore-development:simplify` | Orchestrate code cleanup with tests and review |
 | `/lore-development:retro` | Capture what happened in a session as free-form notes |
 | `/lore-development:learn` | Record a mistake worth not repeating; user-invoked dialog writing to `.lore/learned/` |
@@ -52,7 +52,7 @@ Context lives in `.lore/` under three top-level directories. Each directory has 
 │   ├── design/         # Technical decisions
 │   ├── plans/          # Implementation plans
 │   ├── tasks/          # Historical task artifacts
-│   ├── notes/          # Session notes (e.g. /implement progress)
+│   ├── notes/          # Session notes, including optional implementation resumption context
 │   ├── research/       # External findings
 │   ├── retros/         # Free-form retrospective notes
 │   ├── issues/         # Structured issues
@@ -124,7 +124,7 @@ Skills flow from exploration to implementation. The key decision is when to star
 
 Run `/brainstorm`, `/research`, `/intent`, and `/design` in the same conversation. These phases are conversational. The value is in the back-and-forth, the rejected ideas, the "not that because X" reasoning. Let context accumulate.
 
-When `/design` or `/intent` completes, you have historical context in `.lore/`. Intent records what and why, not a contract; implementation and validation approaches belong in the plan.
+When `/design` or `/intent` completes, you have historical context in `.lore/`. Intent records what and why, not a contract. A disposable plan can explore implementation and validation, but is optional; `/implement` follows the user's current request.
 
 ### Plan (fresh session)
 
@@ -132,7 +132,7 @@ Start a new session. Run `/prep-plan` with the artifacts from the explore phase 
 
 ### Implement (fresh session)
 
-Start a new session. Run `/implement` pointing at the plan. The implement skill delegates to sub-agents who get their own fresh context. The orchestrator shouldn't carry exploration history when it needs full attention on dispatching, testing, and reviewing.
+Start a new session for substantial work. Run `/implement` with the current request and any useful context; an optional plan can help, but is not required. The implement skill delegates to sub-agents who get their own fresh context. The orchestrator shouldn't carry exploration history when it needs full attention on dispatching, testing, and reviewing.
 
 ### Capture (same session)
 

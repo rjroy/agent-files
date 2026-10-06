@@ -111,10 +111,10 @@ class TestStatusValues(unittest.TestCase):
 
 
 class TestTypeSpecificRequired(unittest.TestCase):
-    def test_notes_has_source(self):
-        """Notes require 'source' per the Notes-Specific Fields section."""
+    def test_notes_do_not_require_source(self):
+        """Notes may capture work from a direct request without a source artifact."""
         self.assertIn("work/notes", TYPE_SPECIFIC_REQUIRED)
-        self.assertIn("source", TYPE_SPECIFIC_REQUIRED["work/notes"])
+        self.assertNotIn("source", TYPE_SPECIFIC_REQUIRED["work/notes"])
 
     def test_tasks_has_source_and_sequence(self):
         """Tasks require 'source' and 'sequence' per the Task-Specific Fields section."""
