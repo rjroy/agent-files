@@ -38,36 +38,20 @@ FIELD_TYPES = {
     "source": "string",
     "sequence": "integer",
     "legacy_source_type": "string",
+    "legacy_status": "string",
 }
 
-# Schema section: "Status Values" tables (Build / Reference / Learned)
-# Maps directory key (see module docstring) to valid status strings.
+# Schema section: "Status Values". All lore documents share one lifecycle.
+# Field-guide freshness remains separate in `fg-status` metadata.
+LORE_STATUSES = ["draft", "approved", "completed", "archived"]
 STATUS_VALUES = {
-    # Work documents — per-type lifecycles
-    "work/brainstorm": ["open", "parked", "resolved", "archived"],
-    # Legacy spec statuses remain parseable after explicit migration; they are
-    # historical labels only and confer no authority.
-    "work/intents": [
-        "open", "archived", "draft", "approved", "implemented", "superseded"
-    ],
-    # Legacy specs remain parseable/discoverable; their statuses confer no authority.
-    "work/specs": ["draft", "approved", "implemented", "superseded", "archived"],
-    "work/design": ["draft", "approved", "implemented", "superseded", "archived"],
-    "work/plans": ["draft", "approved", "executed", "archived"],
-    "work/tasks": ["pending", "complete", "skipped"],
-    "work/notes": ["in_progress", "complete", "archived"],
-    "work/research": ["active", "archived"],
-    "work/retros": ["open", "archived"],
-    "work/issues": ["open", "resolved", "wontfix", "archived"],
-    "work/diagrams": ["current", "outdated", "archived"],
-    # Disposable local work — task artifacts are generic context, not phases.
-    "local/plans": ["draft", "approved", "executed", "archived"],
-    "local/notes": ["in_progress", "complete", "archived"],
-    "local/tasks": ["pending", "complete", "skipped"],
-    # Reference documents — one shared status set, including reference/diagrams/
-    "reference": ["current", "outdated", "archived"],
-    # Learned documents — minimal set; lifecycle deferred per design-learned-structure.md
-    "learned": ["active", "superseded"],
+    key: LORE_STATUSES
+    for key in (
+        "work/brainstorm", "work/intents", "work/specs", "work/design",
+        "work/plans", "work/tasks", "work/notes", "work/research",
+        "work/retros", "work/issues", "work/diagrams", "local/plans",
+        "local/notes", "local/tasks", "reference", "learned",
+    )
 }
 
 # Schema sections: "Notes-Specific Fields" and "Task-Specific Fields"

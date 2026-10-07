@@ -191,7 +191,7 @@ All lore documents use YAML frontmatter for searchability. The schema is defined
 ---
 title: Descriptive title
 date: YYYY-MM-DD
-status: draft|approved|complete|etc
+status: draft
 tags: [relevant, keywords]
 modules: [affected-modules]
 ---
@@ -199,12 +199,13 @@ modules: [affected-modules]
 
 The `lore-researcher` can find documents without frontmatter through body-text
 search, but treats them as lower-confidence legacy material because lifecycle
-and module metadata are unavailable. Use `/tend` to retrofit old documents;
-use the optional `/migrate` skill for preview-first layout transition.
+and module metadata are unavailable. Review legacy material with `/tend`; do
+not rewrite project histories en masse. Use the optional `/migrate` skill for
+preview-first layout transition and status normalization of mapped legacy files.
 
 Document bodies are Markdown by default. Embed raw inline HTML only where a visual carries meaning Markdown cannot (color-coding, inline-`<svg>` charts, side-by-side comparison) — never inside a fenced code block, and with no `<script>` or external resources. See the "Body Format" section of `shared/frontmatter-schema.md`.
 
-To validate frontmatter across a tree (the schema's field and per-directory status rules), run the bundled checker. It scans `.md` files, emits one JSON finding per line, and exits non-zero when any document is invalid:
+To validate frontmatter across a tree (the schema's field rules and shared four-value lifecycle), run the bundled checker. It scans `.md` files, emits one JSON finding per line, and exits non-zero when any document is invalid:
 
 ```bash
 python scripts/validate_frontmatter.py .lore

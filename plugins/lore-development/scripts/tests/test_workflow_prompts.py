@@ -258,10 +258,9 @@ def test_intent_reviewer_and_researcher_treat_legacy_specs_as_history() -> None:
 def test_intent_schema_keeps_legacy_specs_historical_only() -> None:
     schema = _normalized("shared/frontmatter-schema.md")
 
-    assert "`.lore/work/intents/`" in schema
     assert "`.lore/work/specs/`" in schema
-    assert "historical labels only; none make a document binding" in schema
-    assert "do not make them authoritative" in schema
+    assert "legacy_status" in schema
+    assert "Neither marker makes a document newly authored or confers" in schema
 
 
 def test_implementation_does_not_block_on_old_artifact_conflict_alone() -> None:

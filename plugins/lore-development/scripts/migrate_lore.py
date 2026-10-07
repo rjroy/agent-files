@@ -295,6 +295,53 @@ _HTML_META = re.compile(r"(?is)<meta\b[^>]*>")
 _HTML_ATTRIBUTE = re.compile(r"(?i)(\b[A-Za-z0-9_-]+\s*=\s*)([\"'])([^\"']*)([\"'])")
 _PATH_FIELDS = {"related", "source", "fg-sources", "migrated-from"}
 
+_STATUS_MIGRATION = {
+    "draft": "draft", "open": "draft", "pending": "draft",
+    "in_progress": "draft", "approved": "approved",
+    "completed": "completed", "complete": "completed",
+    "implemented": "completed", "executed": "completed",
+    "resolved": "completed", "current": "completed", "active": "completed",
+    "archived": "archived", "superseded": "archived", "parked": "archived",
+    "outdated": "archived", "wontfix": "archived", "skipped": "archived",
+}
+
+
+def _normalize_legacy_status(text: str, source: Path) -> str:
+    """Normalize a mapped artifact's lifecycle status without touching its body."""
+    if not text.startswith(("---\n", "---\r\n")):
+        return text
+    newline = "\r\n" if text.startswith("---\r\n") else "\n"
+    lines = text.splitlines(keepends=True)
+    close = next(
+        (i for i in range(1, len(lines)) if lines[i].rstrip("\r\n") == "---"), None
+    )
+    if close is None:
+        return text
+    status_index = next(
+        (i for i in range(1, close) if re.match(r"^status\s*:", lines[i])), None
+    )
+    if status_index is None:
+        return text
+    match = re.match(
+        r"^status\s*:\s*([\"']?)([A-Za-z_]+)\1\s*(\r?\n)?$",
+        lines[status_index],
+    )
+    if match is None:
+        raise ValueError(f"cannot safely normalize legacy status in {source}")
+    original = match.group(2)
+    normalized = _STATUS_MIGRATION.get(original.lower())
+    if normalized is None:
+        raise ValueError(
+            f"unknown legacy status {original!r} in {source}; preview refused "
+            "without changing files"
+        )
+    if original == normalized:
+        return text
+    if not any(line.startswith("legacy_status:") for line in lines[1:close]):
+        lines.insert(close, f"legacy_status: {original}{newline}")
+    lines[status_index] = f"status: {normalized}{newline}"
+    return "".join(lines)
+
 
 def _is_legacy_spec_path(path: str) -> bool:
     return path.startswith((".lore/specs/", ".lore/work/specs/"))
@@ -536,6 +583,8 @@ def build_plan(project_root: Path) -> Plan:
                 and move.destination.suffix.lower() == ".md"
             ):
                 original = _legacy_frontmatter(original, move.destination)
+        if move is not None:
+            original = _normalize_legacy_status(original, move.source)
         destination_document = move_destinations.get(document, document)
         replacement, changed = _rewrite_document(
             document, original, root, mapping, destination_document, unresolved_links

@@ -22,6 +22,6 @@ Search for related prior work: invoke the `lore-researcher` subagent with the ho
 
 ## Saving
 
-Save to `.lore/work/intents/[topic].md` using a short kebab-case name. Load `../../shared/frontmatter-schema.md` (resolved from this skill's base directory) for common frontmatter fields. Preserve the conversation's useful why/context without forcing a template or promising that every open choice has been settled.
+Save to `.lore/work/intents/[topic].md` using a short kebab-case name. Load `../../shared/frontmatter-schema.md` (resolved from this skill's base directory) for common frontmatter fields. New documents start `draft`; use `approved` only for explicit user approval (including editing to approve) or a request for the relevant next process step, never infer it from arbitrary edits. Use `completed` when applicable agent work is done, independently of approval; use `archived` when archived. Status tracks lifecycle, not maturity/correctness. Current user direction may revise approved artifacts, and approval is not a veto or mandatory gate; don't ask for approval on minor transitions or every document. Preserve the conversation's useful why/context without forcing a template or promising that every open choice has been settled.
 
 Write the body in Markdown. Do not rewrite old spec archives as part of creating an intent; old specs may be discovered as historical context, but their status, numbering, and validation sections do not make them binding.

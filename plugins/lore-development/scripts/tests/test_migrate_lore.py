@@ -108,7 +108,7 @@ def test_apply_preserves_nested_bytes_rewrites_exact_links_and_is_idempotent(
     assert readme.read_text() == "[historic spec](.lore/work/specs/nested/old.md)\n"
     assert (tmp_path / ".gitignore").read_text().endswith("/.lore/local/\n")
 
-    # Moved approved specs retain valid historical lifecycle labels.
+    # Migrated documents validate; untouched reference history is not rewritten.
     findings = subprocess.run(
         [
             sys.executable,
@@ -118,7 +118,14 @@ def test_apply_preserves_nested_bytes_rewrites_exact_links_and_is_idempotent(
         capture_output=True,
         text=True,
     )
-    assert '"error_type": "invalid_status"' not in findings.stdout
+    assert (
+        '"file": "work/intents/nested/old.md", "error_type": "invalid_status"'
+        not in findings.stdout
+    )
+    assert (
+        '"file": "reference/guide.md", "error_type": "invalid_status"'
+        in findings.stdout
+    )
     second = run(tmp_path, "--apply")
     assert second.returncode == 0, second.stderr
     assert "No legacy files found" in second.stdout
@@ -155,6 +162,88 @@ def test_approved_crlf_spec_gets_legacy_marker_without_body_normalization(
     )
     assert findings.returncode == 0, findings.stdout + findings.stderr
     assert '"error_type": "invalid_status"' not in findings.stdout
+
+
+@pytest.mark.parametrize("newline", ["\n", "\r\n"])
+def test_apply_normalizes_legacy_status_preserving_metadata_and_body(
+    tmp_path: Path, newline: str
+) -> None:
+    source = tmp_path / ".lore/brainstorm/old.md"
+    source.parent.mkdir(parents=True)
+    original = newline.join([
+        "---", "title: Historical", "date: 2024-01-01", "status: current",
+        "tags: [legacy]", "custom-field: keep", "---", "# Body", "Exact body.", "",
+    ]).encode()
+    source.write_bytes(original)
+
+    preview = run(tmp_path)
+    assert preview.returncode == 0, preview.stderr
+    assert "status: current" in source.read_text()
+    result = run(tmp_path, "--apply")
+    assert result.returncode == 0, result.stderr
+    destination = tmp_path / ".lore/work/brainstorm/old.md"
+    migrated = destination.read_bytes()
+    assert b"status: completed" + newline.encode() in migrated
+    assert b"legacy_status: current" + newline.encode() in migrated
+    assert b"custom-field: keep" + newline.encode() in migrated
+    assert migrated.endswith(("# Body" + newline + "Exact body." + newline).encode())
+
+
+def test_apply_normalizes_html_status_and_keeps_original_backup(tmp_path: Path) -> None:
+    source = tmp_path / ".lore/research/old.html"
+    source.parent.mkdir(parents=True)
+    original = (
+        b"<html><head><title>Research</title><meta name=\"date\" "
+        b"content=\"2024-01-01\"><meta name=\"status\" content=\"active\">"
+        b"<meta name=\"tags\" content=\"research\"></head><body><h1>Research</h1>"
+        b"<p>Body.</p></body></html>"
+    )
+    source.write_bytes(original)
+
+    result = run(tmp_path, "--apply")
+    assert result.returncode == 0, result.stderr
+    destination = tmp_path / ".lore/work/research/old.md"
+    converted = destination.read_text()
+    assert "status: completed" in converted
+    assert "legacy_status: active" in converted
+    backup = next((tmp_path / ".lore/local/migration-backups").rglob("*.html"))
+    assert backup.read_bytes() == original
+
+
+def test_unknown_legacy_status_fails_preview_without_mutation(tmp_path: Path) -> None:
+    source = tmp_path / ".lore/issues/unknown.md"
+    source.parent.mkdir(parents=True)
+    original = b"---\ntitle: Unknown\ndate: 2024-01-01\nstatus: mystery\n---\nBody\n"
+    source.write_bytes(original)
+
+    result = run(tmp_path)
+
+    assert result.returncode == 1
+    assert "unknown legacy status 'mystery'" in result.stderr
+    assert source.read_bytes() == original
+    assert not (tmp_path / ".lore/work/issues/unknown.md").exists()
+
+
+def test_legacy_status_mapping_is_complete_and_conservative() -> None:
+    expected = {
+        "draft": "draft", "open": "draft", "pending": "draft",
+        "in_progress": "draft", "approved": "approved",
+        "completed": "completed", "complete": "completed",
+        "implemented": "completed", "executed": "completed",
+        "resolved": "completed", "current": "completed", "active": "completed",
+        "archived": "archived", "superseded": "archived", "parked": "archived",
+        "outdated": "archived", "wontfix": "archived", "skipped": "archived",
+    }
+    assert expected == migrate_lore._STATUS_MIGRATION
+    for old_status, new_status in expected.items():
+        text = (
+            "---\ntitle: Legacy\ndate: 2024-01-01\n"
+            f"status: {old_status}\ntags: [legacy]\n---\nBody\n"
+        )
+        migrated = migrate_lore._normalize_legacy_status(text, Path("legacy.md"))
+        assert f"status: {new_status}\n" in migrated
+        if old_status != new_status:
+            assert f"legacy_status: {old_status}\n" in migrated
 
 
 def test_readonly_reference_is_preflighted_before_any_move(tmp_path: Path) -> None:
@@ -470,9 +559,12 @@ def test_flat_pre_work_fixture_migrates_recognized_layout_and_keeps_unknowns(
         "[.lore/specs/auth.md](.lore/work/intents/auth.md)"
         in (tmp_path / ".lore/vision.md").read_text()
     )
-    assert (
-        tmp_path / ".lore/work/issues/migration-walkthrough.md"
-    ).read_text() == original_wiki
+    expected_wiki = original_wiki.replace("status: open\n", "status: draft\n")
+    expected_wiki = expected_wiki.replace(
+        "---\n\n# Migration", "legacy_status: open\n---\n\n# Migration"
+    )
+    migrated_wiki = (tmp_path / ".lore/work/issues/migration-walkthrough.md")
+    assert migrated_wiki.read_text() == expected_wiki
     assert (tmp_path / ".lore/commissions/c1.md").exists()
     assert (tmp_path / ".lore/meetings/m1.md").exists()
     assert (tmp_path / ".lore/prototypes/p1.md").exists()

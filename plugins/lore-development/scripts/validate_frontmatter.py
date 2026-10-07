@@ -35,6 +35,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent))
 
 from frontmatter_schema import (
     FIELD_TYPES,
+    LORE_STATUSES,
     REQUIRED_FIELDS,
     STATUS_VALUES,
     TYPE_SPECIFIC_REQUIRED,
@@ -373,17 +374,20 @@ def validate_file(filepath, root, status_values=None):
 
     # Step 6: Status values
     if "status" in data and isinstance(data["status"], str):
-        if doc_type and doc_type in status_values:
-            valid = status_values[doc_type]
-            if doc_type == "work/intents" and data.get("legacy_source_type") != "spec":
-                valid = ["open", "archived"]
-            if data["status"] not in valid:
+        if doc_type:
+            valid = status_values.get(doc_type)
+            if valid is None and doc_type.split("/", 1)[0] in {"work", "local"}:
+                valid = LORE_STATUSES
+            if valid is not None and data["status"] not in valid:
                 valid_str = ", ".join(valid)
                 findings.append(
                     _finding(
                         rel,
                         "invalid_status",
-                        f"Invalid status '{data['status']}' (valid for {doc_type}: {valid_str})",
+                        f"Invalid status '{data['status']}' "
+                        f"(valid for {doc_type}: {valid_str}); "
+                        "run /lore-development:migrate only for legacy-layout files, "
+                        "or update this document's status to a listed value",
                         field="status",
                     )
                 )

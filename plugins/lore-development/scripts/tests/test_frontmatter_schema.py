@@ -15,6 +15,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
 from frontmatter_schema import (
     FIELD_TYPES,
+    LORE_STATUSES,
     OPTIONAL_FIELDS,
     REQUIRED_FIELDS,
     STATUS_VALUES,
@@ -111,6 +112,25 @@ class TestStatusValues(unittest.TestCase):
         for doc_type, values in STATUS_VALUES.items():
             for v in values:
                 self.assertIsInstance(v, str, f"Non-string status value in '{doc_type}': {v}")
+
+    def test_all_zones_share_exact_four_lifecycle_values(self):
+        expected = ["draft", "approved", "completed", "archived"]
+        self.assertEqual(LORE_STATUSES, expected)
+        for values in STATUS_VALUES.values():
+            self.assertEqual(values, expected)
+
+    def test_document_writing_skills_use_shared_lifecycle_guidance(self):
+        root = Path(__file__).resolve().parents[2]
+        skill_names = [
+            "intent", "brainstorm", "design", "prep-plan", "retro", "research",
+            "vision", "define-validation", "implement", "simplify",
+        ]
+        for name in skill_names:
+            with self.subTest(skill=name):
+                text = (root / "skills" / name / "SKILL.md").read_text()
+                self.assertIn("draft", text)
+                self.assertIn("explicit user approval", text)
+                self.assertIn("completed", text)
 
 
 class TestTypeSpecificRequired(unittest.TestCase):

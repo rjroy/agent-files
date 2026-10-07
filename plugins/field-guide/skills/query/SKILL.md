@@ -33,7 +33,7 @@ Write a Markdown page at `.lore/reference/[descriptive-kebab-name].md`. If the w
 ---
 title: Precise noun-first description of what the synthesis answers
 date: YYYY-MM-DD
-status: current
+status: completed
 tags: [kebab-case, terms, subject, domain, question-type]
 fg-type: synthesis
 fg-sources: [relative/path/to/source1.md, relative/path/to/source2.md]

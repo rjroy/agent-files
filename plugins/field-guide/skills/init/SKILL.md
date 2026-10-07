@@ -41,7 +41,7 @@ If neither index exists, write a minimal Markdown file at `.lore/reference/index
 ---
 title: Field Guide Index
 date: YYYY-MM-DD
-status: current
+status: draft
 tags: [index, field-guide]
 ---
 
@@ -49,6 +49,8 @@ tags: [index, field-guide]
 ```
 
 Never overwrite an existing index. If `index.html` already exists and `index.md` does not, leave it in place; the other field-guide skills can read either format.
+
+Use the shared lore lifecycle values: new agent-created documents start `draft`; `approved` requires explicit user approval (including editing to approve) or a request for the relevant next process step; arbitrary edits are not approval. `completed` records completed agent work, not user approval. Lifecycle `status` is separate from field-guide `fg-status` freshness. Current direction can revise approved artifacts; do not ask for approval on minor transitions or every document.
 
 **2. Check for an existing lint job.**
 

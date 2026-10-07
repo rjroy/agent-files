@@ -69,7 +69,7 @@ VALID_BRAINSTORM_FM = """\
 ---
 title: "Test brainstorm"
 date: 2026-03-10
-status: open
+status: draft
 tags: [testing]
 ---
 
@@ -80,7 +80,7 @@ VALID_NOTE_FM = """\
 ---
 title: "Test note"
 date: 2026-03-10
-status: in_progress
+status: draft
 tags: [testing]
 source: .lore/work/specs/example.md
 ---
@@ -92,7 +92,7 @@ VALID_TASK_FM = """\
 ---
 title: "Test task"
 date: 2026-03-10
-status: pending
+status: draft
 tags: [testing]
 source: .lore/work/plans/example.md
 sequence: 1
@@ -286,7 +286,10 @@ class TestFieldTypes(unittest.TestCase):
 
     def test_sequence_must_be_integer(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            content = '---\ntitle: test\ndate: 2026-03-10\nstatus: pending\ntags: [a]\nsource: x\nsequence: "one"\n---\n'
+            content = (
+                '---\ntitle: test\ndate: 2026-03-10\nstatus: draft\n'
+                'tags: [a]\nsource: x\nsequence: "one"\n---\n'
+            )
             lore = _make_lore_tree(tmpdir, {"work/tasks/test.md": content})
             findings = scan_directory(lore)
             type_errs = [f for f in findings if f["error_type"] == "invalid_type" and f["field"] == "sequence"]
@@ -314,16 +317,19 @@ class TestStatusValues(unittest.TestCase):
             findings = scan_directory(lore)
             status_errs = [f for f in findings if f["error_type"] == "invalid_status"]
             self.assertEqual(len(status_errs), 1)
+            self.assertIn("approved", status_errs[0]["message"])
             self.assertIn("wip", status_errs[0]["message"])
 
-    def test_legacy_intent_status_requires_migration_marker(self):
+    def test_legacy_intent_marker_does_not_bypass_four_status_schema(self):
         legacy = (
-            "---\ntitle: Historical\ndate: 2024-01-01\nstatus: approved\n"
+            "---\ntitle: Historical\ndate: 2024-01-01\nstatus: open\n"
             "tags: [legacy]\nlegacy_source_type: spec\n---\n# Historical\n"
         )
         with tempfile.TemporaryDirectory() as tmpdir:
             lore = _make_lore_tree(tmpdir, {"work/intents/legacy.md": legacy})
-            self.assertEqual(scan_directory(lore), [])
+            findings = scan_directory(lore)
+            status_errs = [f for f in findings if f["error_type"] == "invalid_status"]
+            self.assertEqual(len(status_errs), 1)
 
         with tempfile.TemporaryDirectory() as tmpdir:
             unmarked = legacy.replace("legacy_source_type: spec\n", "")
@@ -333,7 +339,7 @@ class TestStatusValues(unittest.TestCase):
                 f for f in findings if f["error_type"] == "invalid_status"
             ]
             self.assertEqual(len(status_errs), 1)
-            self.assertIn("approved", status_errs[0]["message"])
+            self.assertIn("open", status_errs[0]["message"])
 
     def test_valid_status_for_brainstorm(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -349,6 +355,20 @@ class TestStatusValues(unittest.TestCase):
             findings = scan_directory(lore)
             status_errs = [f for f in findings if f["error_type"] == "invalid_status"]
             self.assertEqual(status_errs, [])
+
+    def test_unlisted_work_subdirectory_uses_shared_lore_statuses(self):
+        with tempfile.TemporaryDirectory() as tmpdir:
+            content = (
+                "---\ntitle: test\ndate: 2026-03-10\nstatus: open\n"
+                "tags: [a]\n---\n"
+            )
+            lore = _make_lore_tree(tmpdir, {"work/ideas/test.md": content})
+            findings = scan_directory(lore)
+            status_errs = [f for f in findings if f["error_type"] == "invalid_status"]
+            self.assertEqual(len(status_errs), 1)
+            self.assertIn(
+                "draft, approved, completed, archived", status_errs[0]["message"]
+            )
 
     def test_file_directly_in_lore_skips_status_check(self):
         """Files directly in .lore/ (no subdirectory) skip status validation."""
@@ -373,7 +393,7 @@ class TestResolveDocType(unittest.TestCase):
                 tmpdir,
                 {
                     "local/tasks/task.md": (
-                        "---\ntitle: Task\ndate: 2026-03-10\nstatus: pending\n"
+                        "---\ntitle: Task\ndate: 2026-03-10\nstatus: draft\n"
                         "tags: [task]\n---\n"
                     )
                 },
@@ -386,7 +406,7 @@ class TestResolveDocType(unittest.TestCase):
                 tmpdir,
                 {
                     "work/tasks/task.md": (
-                        "---\ntitle: Task\ndate: 2026-03-10\nstatus: pending\n"
+                        "---\ntitle: Task\ndate: 2026-03-10\nstatus: draft\n"
                         "tags: [task]\n---\n"
                     )
                 },

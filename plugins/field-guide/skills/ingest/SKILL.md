@@ -60,7 +60,7 @@ New Markdown pages use YAML frontmatter:
 ---
 title: Precise noun-first description of the knowledge unit
 date: YYYY-MM-DD
-status: current
+status: draft
 tags: [kebab-case, terms, subject, domain, problem-type]
 fg-type: decision|lesson|architecture|concept|entity
 fg-sources: [relative/path/to/source.md]
@@ -73,6 +73,8 @@ fg-status: current
 ```
 
 `fg-sources` is a YAML list of relative paths. Include all source files that contributed to this page; paths may end in `.md` or `.html`.
+
+`status` is the shared lore lifecycle (`draft`, `approved`, `completed`, or `archived`), not freshness; `fg-status` separately records field-guide freshness. New agent-created pages start `draft`. Use `approved` only for explicit user approval (including editing to approve) or when the user asks for the relevant next process step; arbitrary edits are not approval. Mark applicable agent work `completed` when done, independently of approval. Current user direction may revise approved pages; approval is not a veto or mandatory gate. Do not ask approval for minor transitions or every page.
 
 The body must be self-contained. Write it in Markdown. Reach for embedded inline HTML only when a visual carries meaning Markdown cannot — a color-coded status badge, an inline `<svg>` diagram, a side-by-side comparison. When you do, write it raw and inline; never in a fenced code block.
 
@@ -104,7 +106,7 @@ Example index structure:
 ---
 title: Field Guide Index
 date: YYYY-MM-DD
-status: current
+status: completed
 tags: [index, field-guide]
 ---
 
