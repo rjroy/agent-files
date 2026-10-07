@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+import shlex
 import stat
 import subprocess
 import sys
@@ -46,12 +47,19 @@ def _verify_ignored(root: Path) -> None:
     if result.returncode == 1:
         raise ValueError(
             "Git does not effectively ignore .lore/local; an ignore negation or "
-            "more-specific rule may override /.lore/local/. Resolve the rule "
-            "explicitly; existing ignore rules were left unchanged."
+            "more-specific rule may override /.lore/local/. Inspect the matching "
+            f"rule with `git -C {shlex.quote(str(root))} check-ignore -v --no-index "
+            f"{IGNORE_PROBE}`; decide whether to edit that exact rule, then verify "
+            "again. Do not force past this check; existing ignore rules were left "
+            "unchanged."
         )
     if result.returncode != 0:
         detail = result.stderr.strip() or f"git check-ignore exited {result.returncode}"
-        raise ValueError(f"could not verify .lore/local ignore behavior: {detail}")
+        raise ValueError(
+            f"could not verify .lore/local ignore behavior for {root / IGNORE_PROBE}: "
+            f"{detail}. Inspect Git availability and the ignore rule, then retry "
+            "setup only after resolving the cause."
+        )
 
 
 def _has_local_negation(contents: bytes) -> bool:
@@ -67,7 +75,10 @@ def ensure_local(project_root: Path) -> bool:
     """Ensure .lore/local exists and is ignored; return whether ignore changed."""
     root = project_root.resolve()
     if not root.is_dir():
-        raise ValueError(f"project root is not a directory: {project_root}")
+        raise ValueError(
+            f"project root {project_root} is missing or is not a directory. Check "
+            "that this is the intended project directory containing .lore/."
+        )
 
     gitignore = root / ".gitignore"
     try:
@@ -75,14 +86,25 @@ def ensure_local(project_root: Path) -> bool:
     except FileNotFoundError:
         mode = None
     if mode is not None and not stat.S_ISREG(mode):
-        raise ValueError(f"refusing non-regular .gitignore: {gitignore}")
+        raise ValueError(
+            f"refusing non-regular .gitignore path {gitignore}. Inspect that path "
+            "and preserve its contents; do not replace it automatically."
+        )
 
     lore = root / ".lore"
     if lore.is_symlink() or (lore.exists() and not lore.is_dir()):
-        raise ValueError(f"refusing unsafe .lore target: {lore}")
+        raise ValueError(
+            f"refusing unsafe .lore target {lore}: it is a symlink or not a "
+            "directory. Inspect the path and decide what it should reference; "
+            "setup will not dereference or replace it."
+        )
     local = lore / "local"
     if local.is_symlink() or (local.exists() and not local.is_dir()):
-        raise ValueError(f"refusing unsafe local target: {local}")
+        raise ValueError(
+            f"refusing unsafe local target {local}: it is a symlink or not a "
+            "directory. Inspect the path and decide what it should reference; "
+            "setup will not dereference or replace it."
+        )
 
     current = gitignore.read_bytes() if mode is not None else b""
     in_git = _git_repo_state(root)
@@ -91,12 +113,20 @@ def ensure_local(project_root: Path) -> bool:
             _verify_ignored(root)
         except ValueError as exc:
             raise ValueError(
-                "root .gitignore contains an explicit .lore/local ignore "
-                "exception; refusing to override it. Resolve the rule explicitly."
+                f"{gitignore} contains an explicit .lore/local ignore exception; "
+                "refusing to override it. Inspect the exact negation and its "
+                f"effect with `git -C {shlex.quote(str(root))} "
+                "check-ignore -v --no-index "
+                f"{IGNORE_PROBE}`; decide whether to edit that rule, then verify "
+                "again. Do not bypass the guard."
             ) from exc
         raise ValueError(
-            "root .gitignore contains an explicit .lore/local ignore exception; "
-            "refusing to override it. Resolve the rule explicitly."
+            f"{gitignore} contains an explicit .lore/local ignore exception; "
+            "refusing to override it. Inspect the exact negation and its effect "
+            f"with `git -C {shlex.quote(str(root))} check-ignore -v --no-index "
+            f"{IGNORE_PROBE}`; "
+            "decide whether to edit that rule, then verify again. Do not bypass "
+            "the guard."
         )
 
     if any(line.strip() == IGNORE_RULE for line in current.splitlines()):

@@ -6,6 +6,7 @@ from __future__ import annotations
 import argparse
 import os
 import re
+import shlex
 import shutil
 import stat
 import subprocess
@@ -73,6 +74,13 @@ def _requires_local_storage(move: Move) -> bool:
     return ".lore/local/" in move.destination.as_posix() or move.backup is not None
 
 
+def _preview_command(root: Path) -> str:
+    return (
+        f"python3 {shlex.quote(str(Path(__file__).resolve()))} "
+        f"{shlex.quote(str(root))}"
+    )
+
+
 def _git(root: Path, *args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["git", "-C", str(root), *args],
@@ -90,12 +98,19 @@ def _check_no_symlink_chain(root: Path, path: Path) -> None:
     try:
         relative = path.relative_to(root)
     except ValueError as exc:
-        raise ValueError(f"path escapes project root: {path}") from exc
+        raise ValueError(
+            f"path {path} escapes supplied project root {root}; inspect the root "
+            "and intended migration paths, then rerun preview with the correct root."
+        ) from exc
     current = root
     for part in relative.parts:
         current /= part
         if current.is_symlink():
-            raise ValueError(f"refusing symlink path: {current}")
+            raise ValueError(
+                f"refusing symlink path {current}: migration will not dereference it. "
+                "Inspect the link target and decide whether this path is intentional; "
+                "do not replace or follow it automatically, then rerun preview."
+            )
 
 
 def _source_files(root: Path, source: Path) -> list[Path]:
@@ -103,18 +118,36 @@ def _source_files(root: Path, source: Path) -> list[Path]:
     if not source.exists():
         return []
     if not source.is_dir():
-        raise ValueError(f"source is not a directory: {source}")
+        raise ValueError(
+            f"expected legacy source directory {source}, but it is not a directory. "
+            "Inspect that path and the project root; preserve its contents and rerun "
+            "preview after resolving the layout."
+        )
     files: list[Path] = []
     for current, dirnames, filenames in os.walk(source, followlinks=False):
         here = Path(current)
         for name in list(dirnames):
             entry = here / name
             if entry.is_symlink():
-                raise ValueError(f"refusing symlink directory: {entry}")
+                raise ValueError(
+                    f"refusing symlink directory {entry}: migration will not traverse "
+                    "it. Inspect its target and decide whether the linked content "
+                    "belongs in this migration; do not dereference it automatically."
+                )
         for name in filenames:
             entry = here / name
-            if entry.is_symlink() or not entry.is_file():
-                raise ValueError(f"refusing non-regular or symlink file: {entry}")
+            if entry.is_symlink():
+                raise ValueError(
+                    f"refusing symlink file {entry}: migration will not dereference "
+                    "it. Inspect its link target and decide whether the linked "
+                    "content belongs in this migration; no target was read."
+                )
+            if not entry.is_file():
+                raise ValueError(
+                    f"refusing non-regular file {entry}: migration handles only "
+                    "regular files. Inspect its type and decide whether this path "
+                    "is an intended migration source."
+                )
             files.append(entry)
     return sorted(files)
 
@@ -134,14 +167,20 @@ def _scan_lore_text(root: Path) -> list[Path]:
             entry = here / name
             if entry.is_symlink():
                 raise ValueError(
-                    f"refusing symlink directory while scanning lore: {entry}"
+                    f"refusing symlink directory while scanning lore: {entry}. "
+                    "Inspect the link and its intended scope; migration will not "
+                    "traverse or dereference it."
                 )
         for name in filenames:
             entry = here / name
             if entry.suffix.lower() not in {".md", ".html", ".htm"}:
                 continue
             if entry.is_symlink() or not entry.is_file():
-                raise ValueError(f"refusing unsafe lore document: {entry}")
+                raise ValueError(
+                    f"refusing unsafe lore document {entry}: it is not a regular "
+                    "file. Inspect the path and decide how to handle it; migration "
+                    "will not dereference links."
+                )
             result.append(entry)
     return result
 
@@ -212,7 +251,12 @@ def _source_mapping(root: Path) -> tuple[list[Move], dict[str, str], tuple[str, 
                     )
                 except UnicodeDecodeError as exc:
                     raise ValueError(
-                        f"cannot safely convert non-UTF-8 HTML before moving: {source}"
+                        f"cannot safely convert non-UTF-8 HTML source {source}: "
+                        "bytes are not valid "
+                        "UTF-8, so preserving its content as Markdown is uncertain. "
+                        "Keep the original bytes; decide explicitly whether to "
+                        "provide a correct encoding/conversion or leave this file "
+                        "unmigrated. No lossy conversion was attempted."
                     ) from exc
                 converted_markdown = conversion.markdown
                 if legacy_spec:
@@ -224,7 +268,13 @@ def _source_mapping(root: Path) -> tuple[list[Move], dict[str, str], tuple[str, 
                 backup = lore / "local/migration-backups" / source.relative_to(lore)
                 _check_no_symlink_chain(root, backup.parent)
                 if backup.exists() or backup.is_symlink() or backup in reserved:
-                    raise ValueError(f"HTML backup collision; no files moved: {backup}")
+                    raise ValueError(
+                        f"HTML backup collision at {backup}; source is {source}. "
+                        "Both paths are preserved. Compare the existing backup and "
+                        "source, decide explicitly which path/content should be "
+                        "retained, and rerun preview; migration will not overwrite "
+                        "or delete either file."
+                    )
                 if (
                     in_git
                     and _git(
@@ -236,7 +286,13 @@ def _source_mapping(root: Path) -> tuple[list[Move], dict[str, str], tuple[str, 
                     ).returncode
                     == 0
                 ):
-                    raise ValueError(f"HTML backup collision in Git index: {backup}")
+                    raise ValueError(
+                        f"HTML backup path {backup} is already present in the Git "
+                        f"index. Inspect it with git ls-files --stage -- "
+                        f"{shlex.quote(backup.relative_to(root).as_posix())}, compare "
+                        "the indexed and working-tree content with the source, then "
+                        "resolve ownership explicitly; neither path was overwritten."
+                    )
             _check_no_symlink_chain(root, destination.parent)
             if (
                 destination.exists()
@@ -244,7 +300,10 @@ def _source_mapping(root: Path) -> tuple[list[Move], dict[str, str], tuple[str, 
                 or destination in reserved
             ):
                 raise ValueError(
-                    f"destination collision; no files moved: {destination}"
+                    f"destination collision: source {source} would move to existing "
+                    f"path {destination}. Nothing was overwritten. Compare both "
+                    "documents and choose an intentional destination/content; do "
+                    "not delete or overwrite either automatically, then rerun preview."
                 )
             if in_git:
                 indexed = _git(
@@ -256,8 +315,12 @@ def _source_mapping(root: Path) -> tuple[list[Move], dict[str, str], tuple[str, 
                 )
                 if indexed.returncode == 0:
                     raise ValueError(
-                        "destination collision in Git index; no files moved: "
-                        f"{destination}"
+                        f"destination collision in Git index at {destination} for "
+                        f"source {source}. Inspect its index entry with "
+                        "git ls-files --stage -- "
+                        f"{shlex.quote(destination.relative_to(root).as_posix())}; "
+                        "compare source and destination, then resolve ownership "
+                        "explicitly. Migration will not overwrite or remove it."
                     )
             move = Move(
                 source, destination, legacy_spec, backup, converted_markdown, warnings
@@ -266,7 +329,13 @@ def _source_mapping(root: Path) -> tuple[list[Move], dict[str, str], tuple[str, 
             reserved[destination] = source
             if backup is not None:
                 if backup in reserved or backup.exists() or backup.is_symlink():
-                    raise ValueError(f"HTML backup collision; no files moved: {backup}")
+                    other_source = reserved.get(backup)
+                    raise ValueError(
+                        f"HTML backup collision at {backup} for source {source}"
+                        + (f" (also claimed by {other_source})" if other_source else "")
+                        + ". Nothing was overwritten. Compare the sources and backup, "
+                        "resolve the intended paths explicitly, and rerun preview."
+                    )
                 reserved[backup] = source
             old = source.relative_to(root).as_posix()
             new = destination.relative_to(root).as_posix()
@@ -327,13 +396,36 @@ def _normalize_legacy_status(text: str, source: Path) -> str:
         lines[status_index],
     )
     if match is None:
-        raise ValueError(f"cannot safely normalize legacy status in {source}")
+        line_number = status_index + 1
+        observed = lines[status_index].rstrip("\r\n")
+        location = (
+            f"{source} (converted Markdown metadata line {line_number})"
+            if source.suffix.lower() in {".html", ".htm"}
+            else f"{source}:{line_number}"
+        )
+        raise ValueError(
+            f"cannot safely identify lifecycle status in {location}; "
+            f"observed {observed!r}. The value must be explicit. Choose draft, "
+            "approved, completed, or archived based on the document's meaning; "
+            "never infer approval. Preserve the original value in a separate "
+            "legacy_status field if useful. Edit this legacy file deliberately, "
+            "then rerun the no-write preview."
+        )
     original = match.group(2)
     normalized = _STATUS_MIGRATION.get(original.lower())
     if normalized is None:
+        location = (
+            f"{source} (converted Markdown metadata line {status_index + 1})"
+            if source.suffix.lower() in {".html", ".htm"}
+            else f"{source}:{status_index + 1}"
+        )
         raise ValueError(
-            f"unknown legacy status {original!r} in {source}; preview refused "
-            "without changing files"
+            f"unknown legacy status {original!r} in {location}; "
+            "preview refused without changing files. Decide what the document "
+            "means, then explicitly set status to draft, approved, completed, or "
+            "archived; never infer approval from agent work or arbitrary edits. "
+            "If useful, retain the source value as legacy_status. After editing, "
+            "rerun the no-write preview."
         )
     if original == normalized:
         return text
@@ -519,14 +611,28 @@ def _assert_editable_reference(path: Path) -> None:
     try:
         mode = path.stat().st_mode
     except OSError as exc:
-        raise ValueError(f"cannot preflight reference edit {path}: {exc}") from exc
+        raise ValueError(
+            f"cannot inspect reference path {path} before editing: {exc}. Check "
+            "that exact path and its ownership/permissions, preserving current "
+            "content; resolve deliberately without sudo or blanket chmod, then "
+            "rerun preview."
+        ) from exc
     # Check mode bits as well as effective access: privileged processes may be
     # able to write a deliberately read-only file, but migration should not.
     writable = stat.S_IWUSR | stat.S_IWGRP | stat.S_IWOTH
     if not stat.S_ISREG(mode) or not mode & writable:
-        raise ValueError(f"reference file is not writable: {path}")
+        raise ValueError(
+            f"reference file is not writable or regular: {path} (mode "
+            f"{stat.filemode(mode)}). Review its ownership/permissions and intended "
+            "editability; preserve its content and resolve this exact path without "
+            "sudo or blanket chmod, then rerun preview."
+        )
     if not os.access(path, os.W_OK):
-        raise ValueError(f"reference file is not writable: {path}")
+        raise ValueError(
+            f"reference file is not writable for this process: {path}. Review its "
+            "ownership/permissions and resolve this exact path without sudo or "
+            "blanket chmod; preserve content and rerun preview."
+        )
 
 
 def _clean_tracked_paths(root: Path, paths: set[Path]) -> set[Path]:
@@ -546,9 +652,16 @@ def _clean_tracked_paths(root: Path, paths: set[Path]) -> set[Path]:
         )
         worktree_matches_index = _git(root, "diff", "--quiet", "--", literal)
         if index_matches_head.returncode != 0 or worktree_matches_index.returncode != 0:
+            quoted = shlex.quote(relative)
+            root_arg = shlex.quote(str(root))
             raise ValueError(
                 f"tracked source has staged or unstaged changes (including "
-                f"reference files): {relative}"
+                f"reference edits): {relative}. Migration refuses to overwrite "
+                "them. Inspect both `git -C "
+                f"{root_arg} diff -- {quoted}` and `git -C {root_arg} diff "
+                f"--cached -- {quoted}`; preserve or intentionally resolve your "
+                "changes, then rerun preview. Do not reset, checkout, or discard "
+                "the changes to bypass this check."
             )
         tracked.append(path)
     return set(tracked)
@@ -557,7 +670,12 @@ def _clean_tracked_paths(root: Path, paths: set[Path]) -> set[Path]:
 def build_plan(project_root: Path) -> Plan:
     root = project_root.resolve()
     if not root.is_dir():
-        raise ValueError(f"project root is not a directory: {project_root}")
+        raise ValueError(
+            f"project root {project_root} is missing or is not a directory. Check "
+            "the exact path and that it is the project root containing .lore/; "
+            "do not create or modify directories just to bypass this check. Rerun "
+            "preview with the intended root."
+        )
     moves, mapping, warnings = _source_mapping(root)
     if not moves:
         return Plan(root, (), (), (), (), warnings)
@@ -693,11 +811,26 @@ def apply_plan(plan: Plan, untrack: bool = False) -> None:
             path.relative_to(plan.root).as_posix() for path in plan.tracked_local
         )
         raise ValueError(
-            f"tracked local sources require explicit --untrack approval: {paths}"
+            f"tracked local sources require explicit --untrack approval: {paths}. "
+            "No move or index change was made. Ask the user whether they approve "
+            "staging index removals for only these paths; files stay in .lore/local/. "
+            "Only after explicit approval, rerun the reviewed command with "
+            "--apply --untrack. Otherwise stop or change the plan."
         )
     # Setup/ignore is deliberately after all preflight checks and before moves.
     if any(_requires_local_storage(move) for move in plan.moves):
-        ensure_local(plan.root)
+        try:
+            ensure_local(plan.root)
+        except (OSError, ValueError) as exc:
+            raise ValueError(
+                f"local storage/ignore setup failed before lore moves: {exc}. "
+                "Inspect .gitignore and verify effective ignore behavior with "
+                f"`git -C {shlex.quote(str(plan.root))} check-ignore -v --no-index "
+                ".lore/local/.ensure-local-ignore-probe`. If a negation or more "
+                "specific rule conflicts, decide whether to edit that exact rule; "
+                "do not force past the check. Check git status because setup may "
+                "have added the root /.lore/local/ rule before verification failed."
+            ) from exc
     started: list[Move] = []
     changed_refs: list[tuple[Path, bytes]] = []
     staged_actions: list[tuple[str, str]] = []
@@ -745,8 +878,8 @@ def apply_plan(plan: Plan, untrack: bool = False) -> None:
             result = _git(plan.root, "rm", "--cached", "--quiet", "--", *literal_paths)
             if result.returncode != 0:
                 raise ValueError(
-                    "could not stage the exact tracked local index removals: "
-                    f"{result.stderr.strip()}"
+                    "could not stage the exact tracked local index removals for "
+                    f"{', '.join(relative_paths)}: {result.stderr.strip()}"
                 )
     except Exception as failure:
         recovery_errors: list[str] = []
@@ -791,10 +924,28 @@ def apply_plan(plan: Plan, untrack: bool = False) -> None:
                     recovery_errors.append(
                         f"could not restore source {move.source}: {rollback_error}"
                     )
+        if staged_actions:
+            paths = ", ".join(relative for relative, _ in staged_actions)
+            recovery_errors.append(
+                "Git index state for attempted removal path(s) is unverified and "
+                f"was not restored automatically: {paths}"
+            )
         if recovery_errors:
             details = "; ".join(recovery_errors)
-            raise ValueError(f"{failure}; rollback incomplete: {details}") from failure
-        raise
+            raise ValueError(
+                f"apply failed ({failure}); rollback incomplete. STOP: do not rerun "
+                "apply blindly. Manually inspect the listed unresolved paths, "
+                f"source/destination files, references, and `git -C "
+                f"{shlex.quote(str(plan.root))} status --short` / staged diff; "
+                f"recovery errors: {details}"
+            ) from failure
+        raise ValueError(
+            f"apply failed ({failure}); rollback operations completed, but this was "
+            "a best-effort recovery, not proof of an unchanged tree. Inspect source, "
+            "destination, reference paths, and Git status before retrying; preserve "
+            "any remaining content and run a fresh no-write preview only after "
+            "confirming the state."
+        ) from failure
     for relative, destination in staged_actions:
         print(f"STAGED INDEX REMOVAL {relative}; file bytes remain at {destination}")
 
@@ -813,10 +964,12 @@ def main(argv: list[str] | None = None) -> int:
         help="explicitly authorize staged Git index removals for tracked local files",
     )
     args = parser.parse_args(argv)
+    phase = "preflight"
     try:
         plan = build_plan(args.project_root)
         _print_plan(plan, args.apply)
         if args.apply:
+            phase = "apply"
             apply_plan(plan, untrack=args.untrack)
             print(
                 "Migration applied; source bodies were preserved. Review Git "
@@ -824,6 +977,13 @@ def main(argv: list[str] | None = None) -> int:
             )
     except (OSError, ValueError) as exc:
         print(f"migrate_lore: {exc}", file=sys.stderr)
+        if phase == "preflight":
+            print(
+                "No migration moves or reference edits have started. Resolve the "
+                "condition above, then rerun a no-write preview with: "
+                f"{_preview_command(args.project_root)}",
+                file=sys.stderr,
+            )
         return 1
     return 0
 

@@ -211,17 +211,92 @@ def test_apply_normalizes_html_status_and_keeps_original_backup(tmp_path: Path) 
 
 
 def test_unknown_legacy_status_fails_preview_without_mutation(tmp_path: Path) -> None:
-    source = tmp_path / ".lore/issues/unknown.md"
+    root = tmp_path / "project with spaces"
+    source = root / ".lore/issues/unknown.md"
     source.parent.mkdir(parents=True)
     original = b"---\ntitle: Unknown\ndate: 2024-01-01\nstatus: mystery\n---\nBody\n"
+    source.write_bytes(original)
+
+    result = run(root)
+
+    assert result.returncode == 1
+    assert "unknown legacy status 'mystery'" in result.stderr
+    assert f"{source}:4" in result.stderr
+    assert (
+        "explicitly set status to draft, approved, completed, or archived"
+        in result.stderr
+    )
+    assert "never infer approval" in result.stderr
+    assert "rerun the no-write preview" in result.stderr
+    assert "No migration moves or reference edits have started" in result.stderr
+    assert f"'{root}'" in result.stderr
+    assert source.read_bytes() == original
+    assert not (root / ".lore/work/issues/unknown.md").exists()
+    assert not (root / ".gitignore").exists()
+
+
+def test_migrate_skill_translates_blockers_into_safe_recovery() -> None:
+    skill = (SCRIPTS.parent / "skills/migrate/SKILL.md").read_text()
+
+    for guidance in (
+        "Unknown or malformed status",
+        "Never infer `approved`",
+        "Compare both contents",
+        "Inspect both `git -C '<root>' diff",
+        "Ask for explicit user approval",
+        "will not dereference it",
+        "check-ignore -v --no-index",
+        "do not use `sudo` or blanket `chmod`",
+        "Keep the original bytes",
+        "STOP; do not rerun apply blindly",
+        "Offer to help inspect or normalize",
+    ):
+        assert guidance in skill
+
+
+def test_malformed_legacy_status_reports_exact_line_and_safe_choices(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / ".lore/issues/malformed.md"
+    source.parent.mkdir(parents=True)
+    original = (
+        b"---\ntitle: Malformed\ndate: 2024-01-01\nstatus: [unknown, shape]\n"
+        b"---\nBody\n"
+    )
     source.write_bytes(original)
 
     result = run(tmp_path)
 
     assert result.returncode == 1
-    assert "unknown legacy status 'mystery'" in result.stderr
+    assert f"{source}:4" in result.stderr
+    assert "observed 'status: [unknown, shape]'" in result.stderr
+    assert "Choose draft, approved, completed, or archived" in result.stderr
+    assert "never infer approval" in result.stderr
+    assert "rerun the no-write preview" in result.stderr
     assert source.read_bytes() == original
-    assert not (tmp_path / ".lore/work/issues/unknown.md").exists()
+    assert not (tmp_path / ".lore/work/issues/malformed.md").exists()
+
+
+def test_unknown_html_meta_status_reports_source_and_no_conversion(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / ".lore/research/unknown.html"
+    source.parent.mkdir(parents=True)
+    original = (
+        b'<html><head><meta name="status" content="maybe">'
+        b"</head><body>History</body></html>"
+    )
+    source.write_bytes(original)
+
+    result = run(tmp_path)
+
+    assert result.returncode == 1
+    assert f"unknown legacy status 'maybe' in {source}" in result.stderr
+    assert "converted Markdown metadata line" in result.stderr
+    assert "Choose" not in result.stderr
+    assert "draft, approved, completed, or archived" in result.stderr
+    assert source.read_bytes() == original
+    assert not (tmp_path / ".lore/work/research/unknown.md").exists()
 
 
 def test_legacy_status_mapping_is_complete_and_conservative() -> None:
@@ -268,6 +343,8 @@ def test_readonly_reference_is_preflighted_before_any_move(tmp_path: Path) -> No
 
     assert result.returncode == 1
     assert "reference file is not writable" in result.stderr
+    assert "ownership/permissions" in result.stderr
+    assert "without sudo or blanket chmod" in result.stderr
     assert source.read_bytes() == source_bytes
     assert not (tmp_path / ".lore/work/intents/a.md").exists()
     assert reference.read_bytes() == reference_bytes
@@ -293,6 +370,8 @@ def test_staged_only_tracked_source_is_refused_without_mutating_git_or_files(
 
     assert result.returncode == 1
     assert "tracked source has staged or unstaged changes" in result.stderr
+    assert "git -C" in result.stderr and "diff --cached" in result.stderr
+    assert "Do not reset, checkout, or discard" in result.stderr
     assert source.read_bytes() == b"HEAD bytes\r\n"
     assert git(tmp_path, "show", ":.lore/work/plans/plan.md") == staged_blob
     assert git(tmp_path, "status", "--porcelain=v1") == status_before
@@ -343,6 +422,9 @@ def test_collision_refuses_all_work_before_setup_or_any_move(tmp_path: Path) -> 
 
     assert result.returncode == 1
     assert "destination collision" in result.stderr
+    assert str(source) in result.stderr and str(destination) in result.stderr
+    assert "Compare both documents" in result.stderr
+    assert "do not delete or overwrite either automatically" in result.stderr
     assert source.read_text() == "source"
     assert other.read_text() == "other"
     assert destination.read_text() == "destination"
@@ -365,6 +447,7 @@ def test_git_index_destination_collision_refuses_move(tmp_path: Path) -> None:
 
     assert result.returncode == 1
     assert "destination collision in Git index" in result.stderr
+    assert "git ls-files --stage" in result.stderr
     assert source.read_text() == "source"
     assert not target.exists()
 
@@ -380,6 +463,8 @@ def test_symlink_source_refuses_without_following_or_mutating(tmp_path: Path) ->
 
     assert result.returncode == 1
     assert "symlink" in result.stderr
+    assert "will not dereference it" in result.stderr
+    assert "Inspect its link target" in result.stderr
     assert outside.read_text() == "outside"
     assert (source_dir / "link.md").is_symlink()
     assert not (tmp_path / ".lore/local").exists()
@@ -404,6 +489,8 @@ def test_tracked_local_file_requires_approval_and_untracks_only_that_path(
     assert "requires --untrack" in preview.stdout
     refused = run(tmp_path, "--apply")
     assert refused.returncode == 1
+    assert "Ask the user whether they approve" in refused.stderr
+    assert "files stay in .lore/local/" in refused.stderr
     assert plan.read_text() == "tracked plan\n"
     assert git(tmp_path, "ls-files", ".lore/work/plans/plan.md")
 
@@ -438,6 +525,8 @@ def test_dirty_tracked_local_source_fails_before_setup(
 
     assert result.returncode == 1
     assert "tracked source has staged or unstaged changes" in result.stderr
+    assert "git -C" in result.stderr and "diff --cached" in result.stderr
+    assert "Do not reset, checkout, or discard" in result.stderr
     assert plan.read_text() == "changed\n"
     assert not (tmp_path / ".lore/local").exists()
 
@@ -452,8 +541,13 @@ def test_apply_stops_if_ignore_setup_fails_before_move(tmp_path: Path) -> None:
     result = run(tmp_path, "--apply")
 
     assert result.returncode == 1
+    assert "check-ignore -v --no-index" in result.stderr
+    assert "decide whether to edit that exact rule" in result.stderr
+    assert "Do not bypass the guard" in result.stderr
+    assert ".gitignore" in result.stderr
     assert plan.read_text() == "preserve"
     assert not (tmp_path / ".lore/local").exists()
+    assert (tmp_path / ".gitignore").read_text() == "!/.lore/local/\n"
 
 
 def test_link_rewriter_uses_exact_resolvable_destinations(tmp_path: Path) -> None:
@@ -857,8 +951,11 @@ def test_rollback_restore_failure_does_not_skip_moved_source_restoration(
     with pytest.raises(
         ValueError,
         match="rollback incomplete.*injected reference restoration failure",
-    ):
+    ) as failure:
         migrate_lore.apply_plan(plan)
+
+    assert "STOP: do not rerun apply blindly" in str(failure.value)
+    assert str(reference) in str(failure.value)
 
     # Reference recovery failed as injected, but the later rollback actions
     # still restore the historical source bytes and remove the destination.
@@ -886,6 +983,8 @@ def test_html_conversion_collision_or_decode_failure_has_no_mutation(
     failed_conversion = run(tmp_path, "--apply")
     assert failed_conversion.returncode == 1
     assert "cannot safely convert non-UTF-8 HTML" in failed_conversion.stderr
+    assert "Keep the original bytes" in failed_conversion.stderr
+    assert "decide explicitly" in failed_conversion.stderr
     assert source.read_bytes() == b"\xffnot utf-8"
     assert not (tmp_path / ".lore/local/migration-backups").exists()
 
@@ -902,6 +1001,8 @@ def test_html_original_backup_collision_refuses_conversion(tmp_path: Path) -> No
 
     assert result.returncode == 1
     assert "HTML backup collision" in result.stderr
+    assert "Compare the existing backup and source" in result.stderr
+    assert "will not overwrite or delete either file" in result.stderr
     assert source.read_text() == "<h1>Legacy</h1>"
     assert backup.read_text() == "user-owned backup"
     assert not (tmp_path / ".lore/work/intents/nested/auth.md").exists()
