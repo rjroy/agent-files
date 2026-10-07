@@ -25,8 +25,7 @@ def test_formula_has_required_inputs_and_workflow_steps() -> None:
     assert [step["id"] for step in steps] == [
         "research",
         "brainstorm",
-        "specify",
-        "approve-spec",
+        "intent",
         "design",
         "approve-design",
         "plan",
@@ -40,13 +39,14 @@ def test_formula_has_required_inputs_and_workflow_steps() -> None:
 def test_approval_steps_are_human_gates() -> None:
     steps = {step["id"]: step for step in _formula()["steps"]}
 
-    for step_id in ("approve-spec", "approve-design", "approve-plan"):
+    for step_id in ("approve-design", "approve-plan"):
         assert steps[step_id]["gate"]["type"] == "human"
+    assert "gate" not in steps["intent"]
 
 
 def test_approval_steps_block_the_next_phase() -> None:
     steps = {step["id"]: step for step in _formula()["steps"]}
 
-    assert steps["design"]["needs"] == ["approve-spec"]
+    assert steps["design"]["needs"] == ["intent"]
     assert steps["plan"]["needs"] == ["approve-design"]
     assert steps["implement"]["needs"] == ["approve-plan"]
