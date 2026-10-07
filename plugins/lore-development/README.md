@@ -21,8 +21,9 @@ Skills use four `.lore/` zones (`local/`, `work/`, `reference/`, `learned/`) —
 | `/lore-development:design` | Make technical decisions when the "how" is the problem |
 | `/lore-development:prep-plan` | Discuss an evidence-informed approach; optionally record a disposable working plan |
 | `/lore-development:migrate` | Preview and optionally move legacy work specs/plans/tasks/notes into intents and gitignored local paths |
+| `/lore-development:refactor` | Diagnose code smells and discuss bounded cleanup options; does not edit code |
 | `/lore-development:implement` | Orchestrate implementation from the current request, optionally informed by lore context |
-| `/lore-development:simplify` | Orchestrate code cleanup with tests and review |
+| `/lore-development:simplify` | Execute user-selected behavior-preserving cleanup with tests and review |
 | `/lore-development:retro` | Capture what happened in a session as free-form notes |
 | `/lore-development:poke-holes` | Challenge ideas adversarially |
 | `/lore-development:define-validation` | Define AI validation criteria for work in progress |
@@ -132,6 +133,14 @@ Start a new session. Run `/prep-plan` with the artifacts from the explore phase 
 ### Implement (fresh session)
 
 Start a new session for substantial work. Run `/implement` with the current request and any useful context; an optional plan can help, but is not required. The implement skill delegates to sub-agents who get their own fresh context. The orchestrator shouldn't carry exploration history when it needs full attention on dispatching, testing, and reviewing.
+
+### Refactor (diagnose, then choose)
+
+Use `/refactor` to investigate a bounded area for evidenced maintenance smells
+and discuss whether a behavior-preserving cleanup is worthwhile. It is
+read-only; no finding is a valid outcome. If you choose to proceed, `/simplify`
+executes only the selected scope with tests and review. Behavior changes are
+discussed separately rather than bundled into cleanup.
 
 ### Capture (same session)
 
