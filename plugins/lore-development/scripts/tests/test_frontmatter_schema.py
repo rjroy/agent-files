@@ -66,6 +66,23 @@ class TestOptionalFields(unittest.TestCase):
         expected = ["modules", "related"]
         self.assertEqual(OPTIONAL_FIELDS, expected)
 
+    def test_documents_optional_review_annotations_and_safety_guidance(self):
+        root = Path(__file__).resolve().parents[2]
+        schema = " ".join((root / "shared" / "frontmatter-schema.md").read_text().split())
+        for required_text in (
+            "Optional Review Annotations",
+            "Optional list of records, each with string `author`, `at`, and `text`",
+            "Optional list of records, each with string `text` and boolean `done`",
+            "Optional boolean",
+            "not a replacement for Beads task tracking",
+            "preserve its comments, todos, star, and unrelated frontmatter",
+            "Do not add empty annotation fields",
+            "Do not infer approval, completion, or permission to implement",
+            "Do not resolve comments or mark follow-ups done automatically",
+        ):
+            with self.subTest(required_text=required_text):
+                self.assertIn(required_text, schema)
+
 
 class TestFieldTypes(unittest.TestCase):
     def test_covers_all_required_and_optional_fields(self):

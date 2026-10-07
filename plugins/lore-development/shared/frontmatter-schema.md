@@ -64,6 +64,38 @@ All lore documents include these fields:
 
 Array fields (`tags`, `modules`, `related`) use YAML list syntax: `[a, b, c]` inline, or a block list with `-` items.
 
+## Optional Review Annotations
+
+Lore Garden supports optional `comments`, `todos`, and `starred` frontmatter
+fields on work documents. These are annotations for review, not lifecycle
+statuses, approval signals, or implementation authorization:
+
+```yaml
+comments:
+  - author: rjroy
+    at: "2026-10-06"
+    text: Please clarify this point.
+todos:
+  - text: Check the migration boundary
+    done: false
+starred: true
+```
+
+| Field | Required shape | Notes |
+|-------|----------------|-------|
+| comments | Optional list of records, each with string `author`, `at`, and `text` | A comment is review context; it does not approve or authorize work. |
+| todos | Optional list of records, each with string `text` and boolean `done` | Document-level follow-ups only, not a replacement for Beads task tracking. |
+| starred | Optional boolean | A marker for a document; it does not indicate approval or priority authorization. |
+
+Do not add empty annotation fields to new documents. When editing an existing
+document, preserve its comments, todos, star, and unrelated frontmatter unless
+the user explicitly asks to change them. Do not infer approval, completion, or
+permission to implement from comments, checked follow-ups, or a star. Do not
+resolve comments or mark follow-ups done automatically just because the agent
+believes the work is finished; change annotations only when explicitly asked.
+The lifecycle remains `draft`, `approved`, `completed`, or `archived` as defined
+in Status Values above; annotations do not add or replace lifecycle states.
+
 ## Status Values
 
 Every document in all four zones, including nested reference and learned documents, uses exactly these lifecycle values:
