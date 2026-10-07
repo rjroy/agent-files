@@ -20,8 +20,9 @@ Install the plugin's `lore-development` Beads formula into the current project.
    already installed when identical. If it differs, stop and ask whether the user
    wants to replace it. Never overwrite a project-owned formula silently.
 6. Run `bd formula show .beads/formulas/lore-development.formula.toml --json` and
-   verify that the parsed result contains the required variables, all workflow
-   steps, and human gates on `approve-spec`, `approve-design`, and `approve-plan`.
+   verify that the parsed result contains the required variables and workflow
+   steps, with human gates on `approve-design` and `approve-plan`. Intent is
+   conversational context, not an approval gate.
 7. Explain how to use the installed formula. `bd mol pour` can cook a formula
    from the project formula search path directly:
 
@@ -35,10 +36,11 @@ Do not replace human gates with an `approved` variable. Variables provide work
 inputs; they do not establish that a person made a decision. A human gate remains
 open until a person resolves it with `bd gate resolve <gate-id>`.
 
-The formula intentionally gates specification, design, and implementation-plan
-approval. Implementation itself proceeds without a routine approval gate. If the
-implementation skill encounters a plan divergence or a stuck correction loop, it
-must escalate to the user rather than inventing an approval value.
+The formula gates design and implementation-plan approval, not intent. Intent is
+a conversational record of what and why, not a contract requiring approval.
+Implementation proceeds without a routine approval gate. If the implementation
+skill encounters a concrete safety or compatibility concern or a stuck correction
+loop, it must escalate to the user rather than inventing an approval value.
 
 ## Safety
 

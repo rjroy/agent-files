@@ -5,48 +5,79 @@ from pathlib import Path
 PLUGIN_ROOT = Path(__file__).resolve().parents[2]
 
 
-def _prompt() -> str:
+def _guidance() -> str:
     return " ".join(
-        (PLUGIN_ROOT / "skills/simplify/SKILL.md")
-        .read_text(encoding="utf-8")
-        .split()
+        " ".join(
+            (PLUGIN_ROOT / path)
+            .read_text(encoding="utf-8")
+            .split()
+        )
+        for path in (
+            "skills/simplify/SKILL.md",
+            "skills/simplify/scope-resolution.md",
+        )
     )
 
 
 def test_simplify_scope_includes_committed_and_pending_changes() -> None:
-    prompt = _prompt()
+    prompt = _guidance()
 
-    assert "use an integration/target branch only when identified" in prompt
-    assert "find its unique merge-base with `HEAD`" in prompt
-    assert "Ask if the merge-base is ambiguous" in prompt
-    assert "include relevant staged, unstaged, and untracked changes" in prompt
     assert (
-        "explicit work artifact identified by the invocation or current conversation"
+        "integration/target branch only when authoritative repository metadata"
+        in prompt
+    )
+    assert "unique merge-base with `HEAD` as the committed boundary" in prompt
+    assert "ask if ambiguous" in prompt
+    assert "Include relevant staged, unstaged, and untracked changes too" in prompt
+    assert (
+        "explicit work artifact identified by the invocation/current conversation"
         in prompt
     )
     assert "Git base/range" in prompt
-    assert "ask the user for an artifact, Git base/range, or files" in prompt
-    assert "Never assume `HEAD`, the latest commit, or the whole repository" in prompt
+    assert "ask for an artifact, Git base/range, or paths" in prompt
+    assert "do not default to dirty-only or the whole repository" in prompt
     assert "Resolve repo-relative paths against the repository root" in prompt
-    assert "tracking upstream" in prompt
-    assert "Never infer the work boundary solely" in prompt
-    assert "Explicit user-specified refs are supported" in prompt
+    assert "`@{upstream}`" in prompt
+    assert "Never infer scope solely from" in prompt
+    assert "Support explicit user refs" in prompt
 
 
 def test_simplify_preserves_retained_contracts_and_limits_expansion() -> None:
-    prompt = _prompt()
+    prompt = _guidance()
 
-    assert "Retire behavior only when the source artifact explicitly approves" in prompt
-    assert "test count or apparent lack of use is not evidence" in prompt
-    assert "Keep every retained contract protected" in prompt
+    assert "old artifact, which is context rather than binding authority" in prompt
+    assert "The current user's direction governs" in prompt
     assert (
-        "Expand beyond the resolved surface only when necessary and authorized"
+        "Findings are recommendations, not authorization to change behavior" in prompt
+    )
+    assert (
+        "requested retirement or other behavior change must be handled separately"
         in prompt
     )
-    for role in ("Cleanup.", "Test.", "Review."):
-        assert f"**{role}**" in prompt
+    assert "do not make automatic behavior changes" in prompt
+    assert "test count/apparent lack of use makes behavior obsolete" in prompt
+    assert "Keep relevant contracts protected" in prompt
     assert (
-        "governing artifact, resolved scope, retained behavior, approved retirements"
+        "Include necessary adjacent code/tests without absorbing unrelated work"
         in prompt
     )
-    assert "validation criteria" in prompt
+    for phase in (
+        "**cleanup** (delegated edits)",
+        "**test** (read-only verification)",
+        "**review** (read-only review)",
+    ):
+        assert phase in prompt
+    assert "user-selected findings" in prompt
+    assert (
+        "paths/scope, intended structural improvement, preserved behaviors, and checks"
+        in prompt
+    )
+    assert "No plan, spec, or behavior matrix is required" in prompt
+    assert "standalone scope" in prompt
+    assert "material maintenance cost" in prompt
+    assert "read-only verification" in prompt
+    assert "read-only review" in prompt
+    assert (
+        "two failed attempts on an issue, or three total correction rounds" in prompt
+    )
+    assert "no note is mandatory" in prompt

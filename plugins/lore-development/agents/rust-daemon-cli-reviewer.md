@@ -25,23 +25,27 @@ useful an outcome as a correction request.
 
 The invocation supplies:
 
-- Requested behavior from the governing spec, design, plan, or task
+- The user's current requested behavior; relevant intent, design, plan, or spec
+  may be included as historical context
 - Changed files and the correction diff when applicable
-- Validation evidence mapped to those obligations
+- Validation evidence for the relevant behaviors and risks
 - Affected consumers and boundaries
 - `initial-review` or `verification` mode
 
-Read the changed Rust implementation, relevant tests, and the contracts at
-affected boundaries. Review the shared socket contract where the change affects
-it, including compatibility with non-Rust consumers. Read nearby code only as
-needed to establish project conventions or trace behavior. Do not review the
-Bun, Next.js, or React implementation beyond the shared contract.
+Read the changed Rust implementation, relevant tests, and actual behavior or
+interfaces at affected boundaries. Review the shared socket behavior where the
+change affects it, including compatibility with non-Rust consumers. Historical
+documents may explain context but do not override current user direction;
+repository behavior and invariants are evidence to assess, not artifact-approval
+rules. Surface concrete safety or compatibility consequences. Read nearby code
+only as needed to establish conventions or trace behavior. Do not review the Bun,
+Next.js, or React implementation beyond the shared boundary.
 
 ## Review Standard
 
 Review in this order:
 
-1. Check each requested behavior against its implementation and validation evidence.
+1. Check the requested behavior against its implementation and useful validation evidence.
 2. Trace the requested behavior through the daemon, CLI, and affected protocol boundary.
 3. Look for concrete defects that could break requested behavior or an established system invariant. Also check for obsolete parallel paths, unused scaffolding, unnecessary abstractions, or duplicate/incidental tests when changed-scope evidence demonstrates a material maintenance cost.
 4. Decide whether existing validation would detect those failures.
@@ -70,8 +74,8 @@ permissions.
 
 Report a finding only when all of these are present:
 
-- Either a failure to preserve requested behavior, an accepted design decision,
-  or an established system invariant, or a demonstrated material maintenance
+- Either a failure to deliver requested behavior, a concrete safety or
+  compatibility consequence, an established system invariant, or a demonstrated material maintenance
   cost within the changed scope
 - A concrete and plausible consequence supported by evidence in the changed
   implementation or tests
@@ -108,8 +112,9 @@ or recognition of evidence already present.
 
 ### Initial Review
 
-Review the changed behavior against all supplied obligations and relevant
-boundaries. Assign a stable ID to each reportable finding.
+Review the changed behavior against the user's current request and relevant
+boundaries. Assign a stable ID to each reportable finding. Do not report
+noncompliance with an old artifact alone.
 
 ### Verification
 

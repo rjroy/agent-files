@@ -20,9 +20,11 @@ The invocation supplies the design path and either `initial-review` or
 records and changed sections. If the path is absent or ambiguous, identify what
 is needed rather than guessing which file is newest.
 
-Read the complete design, linked specs, and any authoritative project references
-that constrain the decision. Use repository search when a material claim about
-an existing interface, dependency, or capability needs confirmation.
+Read the complete design and relevant linked context. Historical specs and other
+work artifacts can inform the review but do not constrain current user direction.
+Use repository search when a material claim about an existing interface,
+dependency, or capability needs confirmation; raise concrete safety or
+compatibility consequences rather than old-document noncompliance alone.
 
 ## Review Standard
 
@@ -42,7 +44,8 @@ Apply only the lenses relevant to the decision and affected boundaries:
 These are investigative lenses, not a quota. Do not demand distributed-systems
 analysis for a local component or quantified trade-offs when qualitative
 evidence is sufficient. A design explains how the system works and why. File-by-
-file sequencing belongs in a plan; business requirements belong in a spec.
+file sequencing belongs in a plan; what and why are captured conversationally
+in intent.
 
 ## Findings
 

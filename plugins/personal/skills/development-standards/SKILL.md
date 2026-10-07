@@ -69,4 +69,4 @@ Code review is mandatory. Use a sub-agent with fresh context at critical points 
 
 ## Decision Capture
 
-Significant design decisions must be captured with rationale. Use lore-development skills (`/brainstorm`, `/specify`, `/retro`) to externalize decisions. Artifacts live in `.lore/`. The goal: when revisiting a decision later, the *why* is recoverable.
+Significant design decisions must be captured with rationale. Use lore-development skills (`/brainstorm`, `/intent`, `/retro`) to externalize decisions. Work artifacts are historical context, not binding instructions; the goal is to make the *why* recoverable when revisiting a decision.
