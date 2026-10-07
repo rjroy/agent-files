@@ -261,7 +261,8 @@ def test_intent_schema_keeps_legacy_specs_historical_only() -> None:
 
     assert "`.lore/work/specs/`" in schema
     assert "legacy_status" in schema
-    assert "Neither marker makes a document newly authored or confers" in schema
+    assert "requirement IDs and validation sections do not make them authoritative for current work" in schema
+    assert "does not make a document newly authored or confer authority" in schema
 
 
 def test_implementation_does_not_block_on_old_artifact_conflict_alone() -> None:
