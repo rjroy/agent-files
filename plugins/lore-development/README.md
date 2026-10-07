@@ -17,27 +17,20 @@ Skills use four `.lore/` zones (`local/`, `work/`, `reference/`, `learned/`) —
 | `/lore-development:research` | Gather context from outside the project |
 | `/lore-development:brainstorm` | Explore ideas, record "what if" thinking |
 | `/lore-development:intent` | Think through what to build and why; record conversational intent |
+| `/lore-development:vision` | Capture project-level purpose and direction |
 | `/lore-development:design` | Make technical decisions when the "how" is the problem |
 | `/lore-development:prep-plan` | Discuss an evidence-informed approach; optionally record a disposable working plan |
 | `/lore-development:migrate` | Preview and optionally move legacy work specs/plans/tasks/notes into intents and gitignored local paths |
 | `/lore-development:implement` | Orchestrate implementation from the current request, optionally informed by lore context |
 | `/lore-development:simplify` | Orchestrate code cleanup with tests and review |
 | `/lore-development:retro` | Capture what happened in a session as free-form notes |
-| `/lore-development:learn` | Record a mistake worth not repeating; user-invoked dialog writing to `.lore/learned/` |
 | `/lore-development:poke-holes` | Challenge ideas adversarially |
-| `/lore-development:distill` | Promote what the code cannot say into reference docs (two seed modes: `code`, `work`) |
-| `/lore-development:ddp` | **Draw the Damn Picture** - visualize flows and relationships with Mermaid |
 | `/lore-development:define-validation` | Define AI validation criteria for work in progress |
 | `/lore-development:install-formula` | Install the reusable Beads workflow formula in a project |
-| `/lore-development:tend` | Periodic hygiene to maintain document status accuracy |
-| `/lore-development:stratify` | Reorganize a stable lore directory into layered subdirectories with a navigational index |
-| `/lore-development:update-stubs` | Scan legacy specs for stubs and generate an outstanding stub index |
-| `/lore-development:update-lore-agents` | Build/update the project's agent registry |
-| `/lore-development:review-ideas` | Process captured ideas into structured issues |
 
 ## Idea Capture
 
-The plugin includes a hook that captures ideas without invoking the AI. Start any prompt with `idea:` and the text is appended to a daily file under `.lore/work/ideas/` (one file per date, e.g. `2026-04-24.md`). Use `/review-ideas` to process accumulated ideas into structured issues.
+The plugin includes a hook that captures ideas without invoking the AI. Start any prompt with `idea:` and the text is appended to a daily file under `.lore/work/ideas/` (one file per date, e.g. `2026-04-24.md`). Review captured ideas there and process selected items into structured issues using your project workflow.
 
 ## Artifact Storage
 
@@ -65,14 +58,14 @@ Context lives in `.lore/` across four zones. Each has a different purpose, audie
 │   ├── validation/     # Validation criteria
 │   ├── stubs/          # Outstanding stub index from specs
 │   ├── diagrams/       # Visual representations (Mermaid) — promote to reference/diagrams/ when stable
-│   └── excavations/    # /distill session tracking
+│   └── excavations/    # Historical distillation session tracking
 │
 ├── reference/      # Solidified, system-oriented — what the code cannot say
 │   ├── vision.md       # Project vision (if defined)
 │   ├── <feature>.md    # Distilled feature documentation
 │   └── diagrams/       # Promoted, stable diagrams
 │
-├── learned/        # Mistakes worth not repeating — worker-oriented, born on first /learn
+├── learned/        # Operational mistakes worth preserving — worker-oriented
 │
 └── lore-agents.md  # Agent registry (optional, cross-plugin surface)
 ```
@@ -86,7 +79,7 @@ Legacy files under `.lore/work/` remain discoverable historical material; do not
 delete or untrack them as part of adopting local storage. To initialize local
 storage in a project, run `python3 <path-to-lore-development>/scripts/ensure_local.py <project-root>`. It creates `.lore/local/` and adds `/.lore/local/` to the project root's `.gitignore` without replacing existing content. In a Git worktree it verifies effective ignore behavior and fails without rewriting explicit `.lore/local` negations; in a non-Git project it prepares the rule for future Git initialization. If Git is unavailable, the helper warns that effective ignore behavior could not be verified. When invoked from a lore-development skill, resolve the helper relative to that installed skill, not the project working directory. Field-guide's init can invoke it when the plugins are installed as siblings; separately installed plugins do not assume a shared source tree. Static skill guidance cannot force a model to execute the helper; direct setup is available for non-skill workflows.
 
-**Layered subdirectories in stable zones.** When `reference/` or `learned/` accumulates enough docs that "all in one place" hinders navigation, run `/lore-development:stratify <path>` to reorganize the directory into dependency-ordered subdirectories with a `README.md` index at the top. The index uses standard lore frontmatter (`title`, `date`, `status`, `tags`) and explains reading order, layer dependencies, and what each subdirectory holds.
+**Layered reference directories.** When `.lore/reference/` outgrows its flat layout, use the sibling `/field-guide:stratify` skill to group reference pages and repair their links. It changes page locations, not page contents or frontmatter. The `.lore/learned/` zone remains available for operational learning and is maintained explicitly rather than by an active skill.
 
 ### Migrating from the old layout
 
@@ -94,7 +87,7 @@ Pre-work-layout projects may have legacy directories directly under `.lore/` (`s
 
 ## Agents
 
-The plugin ships with agents that skills invoke automatically:
+The plugin ships with these agents for skills to invoke when appropriate:
 
 | Agent | Purpose |
 |-------|---------|
@@ -103,17 +96,15 @@ The plugin ships with agents that skills invoke automatically:
 | `design-reviewer` | Review design documents for weak decisions and gaps |
 | `plan-reviewer` | Review plans for infeasible steps and scope creep |
 | `intent-reviewer` | Check that intent notes faithfully capture what the user wants and why |
-| `fresh-lore` | Fresh-context analysis when the current session is too deep in the weeds |
-| `surface-surveyor` | Quick codebase reconnaissance to find entry points |
+| `rust-daemon-cli-reviewer` | Review Rust daemon and CLI implementations against requested behavior |
 
 ## Agent Registry
 
 Beyond the built-in agents, skills can leverage project-specific agents for domain concerns (security, performance, architecture, etc.). Instead of hardcoding agent names into every skill, the plugin uses a project-level registry.
 
 **How it works**:
-1. Run `/lore-development:update-lore-agents` to scan available agents
-2. The skill creates `.lore/lore-agents.md` with agents relevant to your project
-3. Other skills check this file and invoke agents when appropriate
+1. Create or update `.lore/lore-agents.md` with agents relevant to your project
+2. Other skills check this file and invoke agents when appropriate
 
 **Benefits**:
 - Add new agents without updating the plugin
@@ -148,7 +139,7 @@ Run `/retro` at the end of any session where something worth capturing happened.
 
 Retros aren't only for implement sessions. An explore session that surfaced a surprising constraint, or a plan session that revealed a spec gap, are both worth a `/retro` before closing out.
 
-If a specific mistake is worth not repeating, run `/learn` to record it. `/learn` is a user-invoked dialog that writes to `.lore/learned/`. It does not auto-trigger from `/retro` or any other skill, and it does not propose candidates from notes — the user names the mistake. See the skill itself for the framing.
+`.lore/learned/` is reserved for useful operational mistakes worth preserving. `/retro` writes free-form notes to `.lore/work/retros/`; it does not automatically promote material into the learned zone.
 
 ### Why break context
 
@@ -199,9 +190,10 @@ modules: [affected-modules]
 
 The `lore-researcher` can find documents without frontmatter through body-text
 search, but treats them as lower-confidence legacy material because lifecycle
-and module metadata are unavailable. Review legacy material with `/tend`; do
-not rewrite project histories en masse. Use the optional `/migrate` skill for
-preview-first layout transition and status normalization of mapped legacy files.
+and module metadata are unavailable. Do not rewrite project histories en masse.
+Use the optional `/migrate` skill for preview-first layout transition and status
+normalization of mapped legacy files. Field-guide's `/field-guide:stratify`
+organizes reference pages without changing their contents or lifecycle metadata.
 
 Document bodies are Markdown by default. Embed raw inline HTML only where a visual carries meaning Markdown cannot (color-coding, inline-`<svg>` charts, side-by-side comparison) — never inside a fenced code block, and with no `<script>` or external resources. See the "Body Format" section of `shared/frontmatter-schema.md`.
 

@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 import subprocess
 from pathlib import Path
 
@@ -328,6 +329,29 @@ def test_lore_search_contract_includes_lower_confidence_body_matches() -> None:
     for document in (schema, readme):
         assert "body" in document
         assert "lower-confidence legacy material" in document
+
+
+def test_readme_skill_table_matches_active_inventory_and_shared_lifecycle() -> None:
+    readme = _normalized("README.md")
+    schema = _normalized("shared/frontmatter-schema.md")
+
+    table = readme.split("## Skills", maxsplit=1)[1].split("## ", maxsplit=1)[0]
+    listed_skills = set(re.findall(r"`/lore-development:([^`]+)`", table))
+    active_skills = {
+        path.parent.name for path in (PLUGIN_ROOT / "skills").glob("*/SKILL.md")
+    }
+    assert listed_skills == active_skills
+    assert "`/field-guide:stratify`" in readme
+    assert (PLUGIN_ROOT.parent / "field-guide/skills/stratify/SKILL.md").is_file()
+
+    agent_table = readme.split("## Agents", maxsplit=1)[1].split("## ", maxsplit=1)[0]
+    listed_agents = set(re.findall(r"\| `([^`]+)` \|", agent_table))
+    active_agents = {path.stem for path in (PLUGIN_ROOT / "agents").glob("*.md")}
+    assert listed_agents == active_agents
+    assert "learned/" in readme
+    assert "no lore-development skill currently writes it" in schema
+    assert "Shared four-value lifecycle across all lore zones" in schema
+    assert "Document-type-specific" not in schema
 
 
 def test_retired_plan_breakdown_is_not_an_active_skill_or_implement_path(

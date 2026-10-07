@@ -45,7 +45,7 @@ Render target is local editors (Obsidian, VS Code preview, pandoc, browser), whe
 - **`.lore/local/`** — disposable, gitignored plans, implementation notes, and generic task context. New plans and notes go here; task artifacts are not automatic implementation phases.
 - **`.lore/work/`** — shared historical conversations and work. Intents, brainstorms, legacy specs, designs, research, retros, issues, ideas, validation, stubs, excavation indices, and session diagrams remain discoverable. Existing tracked content is preserved. Legacy plans, tasks, and notes remain readable historical context, not binding instructions.
 - **`.lore/reference/`** — solidified, system-oriented documentation. What the code cannot say. Distilled feature docs, vision, current-state diagrams.
-- **`.lore/learned/`** — operational imperatives, mistakes-only, worker-oriented. Written by `/learn`.
+- **`.lore/learned/`** — operational imperatives, mistakes-only, worker-oriented. This zone is reserved for useful operational learning; no lore-development skill currently writes it.
 
 All lore uses the same four lifecycle statuses (see "Status Values" below). Initialize local storage with `python3 <path-to-lore-development>/scripts/ensure_local.py <project-root>` before writing local artifacts. The helper creates the directory, adds a root-anchored ignore rule, and verifies effective ignore behavior in Git worktrees.
 
@@ -57,7 +57,7 @@ All lore documents include these fields:
 |-------|----------|-------|
 | title | Yes | Used for search; repeated in body as `# H1` |
 | date | Yes | Creation or completion date, `YYYY-MM-DD` |
-| status | Yes | Document-type-specific (see below) |
+| status | Yes | Shared four-value lifecycle across all lore zones (see below) |
 | tags | Yes | List of kebab-case keywords |
 | modules | No | List of kebab-case module names |
 | related | No | List of paths to related lore documents |
