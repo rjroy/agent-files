@@ -259,10 +259,6 @@ def _source_mapping(root: Path) -> tuple[list[Move], dict[str, str], tuple[str, 
                         "unmigrated. No lossy conversion was attempted."
                     ) from exc
                 converted_markdown = conversion.markdown
-                if legacy_spec:
-                    converted_markdown = _legacy_frontmatter(
-                        converted_markdown, source.with_suffix(".md")
-                    )
                 warnings = conversion.warnings
                 destination = destination.with_suffix(".md")
                 backup = lore / "local/migration-backups" / source.relative_to(lore)
@@ -591,22 +587,6 @@ def _rewrite_document(
     return updated, changed
 
 
-def _legacy_frontmatter(text: str, source: Path) -> str:
-    if source.suffix.lower() != ".md" or not text.startswith(("---\n", "---\r\n")):
-        return text
-    newline = "\r\n" if text.startswith("---\r\n") else "\n"
-    lines = text.splitlines(keepends=True)
-    close = next(
-        (i for i in range(1, len(lines)) if lines[i].rstrip("\r\n") == "---"), None
-    )
-    if close is None or any(
-        line.startswith("legacy_source_type:") for line in lines[1:close]
-    ):
-        return text
-    lines.insert(close, f"legacy_source_type: spec{newline}")
-    return "".join(lines)
-
-
 def _assert_editable_reference(path: Path) -> None:
     try:
         mode = path.stat().st_mode
@@ -695,12 +675,6 @@ def build_plan(project_root: Path) -> Plan:
                 original = original_bytes.decode("utf-8")
             except UnicodeDecodeError:
                 continue
-            if (
-                move is not None
-                and move.legacy_spec
-                and move.destination.suffix.lower() == ".md"
-            ):
-                original = _legacy_frontmatter(original, move.destination)
         if move is not None:
             original = _normalize_legacy_status(original, move.source)
         destination_document = move_destinations.get(document, document)

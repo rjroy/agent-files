@@ -37,7 +37,6 @@ FIELD_TYPES = {
     "related": "list",
     "source": "string",
     "sequence": "integer",
-    "legacy_source_type": "string",
     "legacy_status": "string",
 }
 

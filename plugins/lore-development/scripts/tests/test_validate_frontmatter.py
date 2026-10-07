@@ -341,6 +341,15 @@ class TestStatusValues(unittest.TestCase):
             self.assertEqual(len(status_errs), 1)
             self.assertIn("open", status_errs[0]["message"])
 
+    def test_existing_legacy_marker_is_accepted_as_extra_frontmatter(self):
+        marked = (
+            "---\ntitle: Historical\ndate: 2024-01-01\nstatus: approved\n"
+            "tags: [legacy]\nlegacy_source_type: spec\n---\n# Historical\n"
+        )
+        with tempfile.TemporaryDirectory() as tmpdir:
+            lore = _make_lore_tree(tmpdir, {"work/intents/legacy.md": marked})
+            self.assertEqual(scan_directory(lore), [])
+
     def test_valid_status_for_brainstorm(self):
         with tempfile.TemporaryDirectory() as tmpdir:
             lore = _make_lore_tree(tmpdir, {"work/brainstorm/test.md": VALID_BRAINSTORM_FM})

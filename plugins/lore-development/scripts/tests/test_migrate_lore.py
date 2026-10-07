@@ -87,9 +87,7 @@ def test_apply_preserves_nested_bytes_rewrites_exact_links_and_is_idempotent(
 
     assert result.returncode == 0, result.stderr
     moved_spec = tmp_path / ".lore/work/intents/nested/old.md"
-    assert moved_spec.read_text() == original.replace(
-        "tags: [legacy]\n", "tags: [legacy]\nlegacy_source_type: spec\n"
-    )
+    assert moved_spec.read_text() == original
     assert "status: approved" in moved_spec.read_text()
     assert (
         tmp_path / ".lore/local/plans/nested/p.md"
@@ -131,7 +129,7 @@ def test_apply_preserves_nested_bytes_rewrites_exact_links_and_is_idempotent(
     assert "No legacy files found" in second.stdout
 
 
-def test_approved_crlf_spec_gets_legacy_marker_without_body_normalization(
+def test_approved_crlf_spec_stays_marker_free_without_body_normalization(
     tmp_path: Path,
 ) -> None:
     source = tmp_path / ".lore/work/specs/crlf.md"
@@ -148,11 +146,7 @@ def test_approved_crlf_spec_gets_legacy_marker_without_body_normalization(
 
     destination = tmp_path / ".lore/work/intents/crlf.md"
     assert result.returncode == 0, result.stderr
-    expected = original.replace(
-        b"tags: [legacy]\r\n---\r\n",
-        b"tags: [legacy]\r\nlegacy_source_type: spec\r\n---\r\n",
-    )
-    assert destination.read_bytes() == expected
+    assert destination.read_bytes() == original
     assert destination.read_bytes().endswith(body)
     findings = subprocess.run(
         [sys.executable, str(SCRIPTS / "validate_frontmatter.py"), str(destination)],
@@ -162,6 +156,37 @@ def test_approved_crlf_spec_gets_legacy_marker_without_body_normalization(
     )
     assert findings.returncode == 0, findings.stdout + findings.stderr
     assert '"error_type": "invalid_status"' not in findings.stdout
+
+
+def test_migration_preserves_existing_legacy_marker_and_other_metadata(
+    tmp_path: Path,
+) -> None:
+    source = tmp_path / ".lore/specs/marked.md"
+    source.parent.mkdir(parents=True)
+    original = (
+        "---\ntitle: Historical\ndate: 2024-01-01\nstatus: active\n"
+        "tags: [legacy]\nlegacy_source_type: spec\ncustom-field: retain\n"
+        "---\n# Historical body\nExact body.\n"
+    )
+    source.write_text(original)
+
+    result = run(tmp_path, "--apply")
+
+    destination = tmp_path / ".lore/work/intents/marked.md"
+    assert result.returncode == 0, result.stderr
+    migrated = destination.read_text()
+    assert "legacy_source_type: spec\n" in migrated
+    assert "custom-field: retain\n" in migrated
+    assert "status: completed\n" in migrated
+    assert "legacy_status: active\n" in migrated
+    assert migrated.endswith("# Historical body\nExact body.\n")
+    findings = subprocess.run(
+        [sys.executable, str(SCRIPTS / "validate_frontmatter.py"), str(destination)],
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    assert findings.returncode == 0, findings.stdout + findings.stderr
 
 
 @pytest.mark.parametrize("newline", ["\n", "\r\n"])
@@ -768,7 +793,7 @@ def test_html_apply_previews_backup_conversion_and_rewrites_links(
     backup = tmp_path / ".lore/local/migration-backups/specs/auth.html"
     assert backup.read_bytes() == original
     converted = destination.read_text()
-    assert "legacy_source_type: spec" in converted
+    assert "legacy_source_type:" not in converted
     assert 'status: "approved"' in converted
     assert "[design](../design/oauth.md#flow)" in converted
     assert not (tmp_path / ".lore/work/intents/oauth.md").exists()
@@ -857,7 +882,7 @@ def test_spec_assets_move_as_bytes_without_frontmatter_decoding(
     assert result.returncode == 0, result.stderr
     assert (tmp_path / ".lore/work/intents/diagram.png").read_bytes() == image_bytes
     migrated_spec = (tmp_path / ".lore/work/intents/spec.md").read_text()
-    assert "legacy_source_type: spec" in migrated_spec
+    assert "legacy_source_type:" not in migrated_spec
     assert "# Historical" in migrated_spec
     assert not spec.exists() and not image.exists()
 

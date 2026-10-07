@@ -186,9 +186,9 @@ not chosen an implementation; discuss options and useful validation in the plan.
 Older `.lore/work/specs/` documents remain discoverable historical context. Their
 requirement IDs and validation sections do not make them authoritative for
 current work. Explicit migration normalizes old lifecycle status to the four
-values and records the original in optional `legacy_status`; `legacy_source_type`
-is provenance only. Neither marker makes a document newly authored or confers
-authority. Do not rewrite project histories merely to normalize status.
+values and records a changed original value in optional `legacy_status`. This
+does not make a document newly authored or confer authority. Do not rewrite
+project histories merely to normalize status.
 
 On explicitly migrated artifacts, old `draft`/`open`/`pending`/`in_progress`
 become `draft`; `approved` stays `approved`; `completed`/`complete`/
