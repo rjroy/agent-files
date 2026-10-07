@@ -746,6 +746,10 @@ class TestAnalyzeMidiStructure:
         assert isinstance(data["detected_form"], str)
         assert isinstance(data["section_sequence"], list)
 
+        assert [(section["start_measure"], section["end_measure"])
+                for section in data["sections"]] == [(1, 4), (5, 8), (9, 12)]
+        assert output["duration_seconds"] == pytest.approx(24.0)
+
         # Each section should have required fields
         for section in data["sections"]:
             assert "label" in section
@@ -762,6 +766,11 @@ class TestAnalyzeMidiStructure:
 
         assert returncode == 0, f"Script failed: {stderr}"
         assert_valid_success_json(output, "midi_structure")
+
+        sections = output["data"]["sections"]
+        assert [(section["start_measure"], section["end_measure"])
+                for section in sections] == [(1, 2)]
+        assert output["duration_seconds"] == pytest.approx(4.0)
 
     def test_structure_missing_file(self, scripts_dir, test_midi_dir):
         """Test structure analysis with non-existent file."""

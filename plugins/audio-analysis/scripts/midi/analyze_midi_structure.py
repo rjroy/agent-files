@@ -189,12 +189,13 @@ def segment_by_measures(score, segment_length_measures: int, time_signature: str
     Returns:
         List of (segment_stream, start_measure, end_measure) tuples
     """
-    # Flatten to single stream
+    # Capture measure containers before flattening: flatten() removes them,
+    # which previously made ordinary parsed MIDI appear to have no measures.
+    measures = score.recurse().getElementsByClass('Measure')
     flat_stream = score.flatten()
 
     # Get total measures
     # In music21, measures are numbered starting from 1
-    measures = flat_stream.getElementsByClass('Measure')
     if not measures:
         # If no explicit measures, estimate based on time signature
         # For now, treat the entire piece as one segment
@@ -203,7 +204,9 @@ def segment_by_measures(score, segment_length_measures: int, time_signature: str
         quarters_per_measure = numerator  # Simplified assumption
         total_measures = int(total_quarter_length / quarters_per_measure)
     else:
-        total_measures = len(measures)
+        # Each part contains its own copy of simultaneous measures, so use
+        # the highest measure number rather than counting containers.
+        total_measures = max(measure.number for measure in measures)
 
     segments = []
     current_measure = 1
@@ -249,7 +252,7 @@ def label_sections(segment_similarities: List[Tuple[int, int, float]]) -> Dict[i
     num_segments = max(max(s[0], s[1]) for s in segment_similarities) + 1 if segment_similarities else 0
 
     if num_segments == 0:
-        return []
+        return {}
 
     # Group similar segments together
     segment_groups = []  # List of sets, each set contains similar segment indices
