@@ -132,7 +132,7 @@ def analyze_beats(y, sr):
         if mean_beat_interval > 0:
             tempo_estimate = 60.0 / mean_beat_interval
         else:
-            tempo_estimate = float(tempo)
+            tempo_estimate = float(np.asarray(tempo).reshape(-1)[0])
 
         # Format output data
         data = {

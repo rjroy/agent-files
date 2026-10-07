@@ -112,7 +112,8 @@ def extract_tempo(y, sr):
     """
     onset_env = librosa.onset.onset_strength(y=y, sr=sr)
     tempo, _ = librosa.beat.beat_track(onset_envelope=onset_env, sr=sr)
-    return float(tempo)
+    # librosa 0.10+ returns a one-element ndarray for the estimated tempo.
+    return float(np.asarray(tempo).reshape(-1)[0])
 
 
 def compute_chromagram(y, sr):
@@ -358,12 +359,10 @@ def compare_audio_files(file1: Path, file2: Path):
                 "duration_seconds": round(duration2, 2),
                 "truncated": truncated2
             },
-            "similarity": {
-                "tempo_similarity": round(tempo_similarity, 3),
-                "key_similarity": round(key_similarity, 3),
-                "chroma_similarity": round(chroma_similarity, 3),
-                "overall_similarity": round(overall_similarity, 3)
-            }
+            "tempo_similarity": round(float(tempo_similarity), 3),
+            "key_similarity": round(float(key_similarity), 3),
+            "chroma_similarity": round(float(chroma_similarity), 3),
+            "overall_similarity": round(float(overall_similarity), 3)
         }
 
         # Collect warnings

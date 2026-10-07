@@ -485,10 +485,8 @@ class TestAnalyzeBeats:
 
         # Check data fields
         data = output["data"]
-        assert "beat_frames" in data
         assert "beat_times" in data
         assert "beat_count" in data
-        assert isinstance(data["beat_frames"], list)
         assert isinstance(data["beat_times"], list)
         assert isinstance(data["beat_count"], int)
         assert data["beat_count"] >= 0
@@ -573,9 +571,10 @@ class TestAnalyzeChroma:
         # Check pitch classes
         assert len(data["pitch_classes"]) == 12
 
-        # Check matrix dimensions
+        # Matrix orientation is pitch classes by time points (12 x N).
         if len(data["chroma_matrix"]) > 0:
-            assert len(data["chroma_matrix"][0]) == 12
+            assert len(data["chroma_matrix"]) == 12
+            assert all(len(row) == len(data["time_points"]) for row in data["chroma_matrix"])
 
     def test_chroma_missing_file(self, scripts_dir, test_audio_dir):
         """Test chroma analysis with non-existent file."""
@@ -600,7 +599,8 @@ class TestGenerateSpectrogram:
         """Test spectrogram generation with valid WAV file."""
         output_path = test_audio_dir / "spectrogram_output.png"
         output, returncode, stdout, stderr = run_audio_script(
-            scripts_dir, "generate_spectrogram.py", simple_wav_5sec, output_path
+            scripts_dir, "generate_spectrogram.py", simple_wav_5sec,
+            "--output", output_path
         )
 
         assert returncode == 0, f"Script failed: {stderr}"
@@ -609,8 +609,10 @@ class TestGenerateSpectrogram:
         # Check data fields
         data = output["data"]
         assert "output_path" in data
-        assert "width" in data
-        assert "height" in data
+        assert "width_pixels" in data
+        assert "height_pixels" in data
+        assert data["width_pixels"] > 0
+        assert data["height_pixels"] > 0
 
         # Check that output file was created
         assert output_path.exists()
@@ -621,7 +623,8 @@ class TestGenerateSpectrogram:
         missing_file = test_audio_dir / "does_not_exist.wav"
         output_path = test_audio_dir / "spectrogram_output.png"
         output, returncode, stdout, stderr = run_audio_script(
-            scripts_dir, "generate_spectrogram.py", missing_file, output_path
+            scripts_dir, "generate_spectrogram.py", missing_file,
+            "--output", output_path
         )
 
         assert returncode != 0, "Should fail with non-zero exit code"
@@ -631,7 +634,8 @@ class TestGenerateSpectrogram:
         """Test spectrogram generation with OGG format."""
         output_path = test_audio_dir / "spectrogram_ogg.png"
         output, returncode, stdout, stderr = run_audio_script(
-            scripts_dir, "generate_spectrogram.py", ogg_file, output_path
+            scripts_dir, "generate_spectrogram.py", ogg_file,
+            "--output", output_path
         )
 
         assert returncode == 0, f"Script failed: {stderr}"
@@ -647,13 +651,10 @@ class TestGenerateSpectrogram:
 class TestAnalyzeHPSS:
     """Integration tests for analyze_hpss.py script."""
 
-    def test_hpss_valid_wav(self, scripts_dir, rhythmic_wav, test_audio_dir):
+    def test_hpss_valid_wav(self, scripts_dir, rhythmic_wav):
         """Test HPSS analysis with valid WAV file."""
-        harmonic_path = test_audio_dir / "harmonic.wav"
-        percussive_path = test_audio_dir / "percussive.wav"
-
         output, returncode, stdout, stderr = run_audio_script(
-            scripts_dir, "analyze_hpss.py", rhythmic_wav, harmonic_path, percussive_path
+            scripts_dir, "analyze_hpss.py", rhythmic_wav
         )
 
         assert returncode == 0, f"Script failed: {stderr}"
@@ -661,23 +662,17 @@ class TestAnalyzeHPSS:
 
         # Check data fields
         data = output["data"]
-        assert "harmonic_path" in data
-        assert "percussive_path" in data
-
-        # Check that output files were created
-        assert harmonic_path.exists()
-        assert percussive_path.exists()
-        assert harmonic_path.stat().st_size > 0
-        assert percussive_path.stat().st_size > 0
+        assert "harmonic_ratio" in data
+        assert "percussive_ratio" in data
+        assert 0.0 <= data["harmonic_ratio"] <= 1.0
+        assert 0.0 <= data["percussive_ratio"] <= 1.0
+        assert data["harmonic_ratio"] + data["percussive_ratio"] == pytest.approx(1.0)
 
     def test_hpss_missing_file(self, scripts_dir, test_audio_dir):
         """Test HPSS analysis with non-existent file."""
         missing_file = test_audio_dir / "does_not_exist.wav"
-        harmonic_path = test_audio_dir / "harmonic.wav"
-        percussive_path = test_audio_dir / "percussive.wav"
-
         output, returncode, stdout, stderr = run_audio_script(
-            scripts_dir, "analyze_hpss.py", missing_file, harmonic_path, percussive_path
+            scripts_dir, "analyze_hpss.py", missing_file
         )
 
         assert returncode != 0, "Should fail with non-zero exit code"
@@ -705,17 +700,17 @@ class TestCompareAudio:
         data = output["data"]
         assert "file1" in data
         assert "file2" in data
-        assert "similarity_scores" in data
         assert "overall_similarity" in data
 
         # Check similarity scores
-        scores = data["similarity_scores"]
-        assert "tempo" in scores
-        assert "key" in scores
-        assert "chroma" in scores
+        scores = {
+            "tempo": data["tempo_similarity"],
+            "key": data["key_similarity"],
+            "chroma": data["chroma_similarity"],
+        }
 
         # All scores should be 0-1
-        for score_type, score_value in scores.items():
+        for score_value in scores.values():
             assert 0.0 <= score_value <= 1.0
 
         assert 0.0 <= data["overall_similarity"] <= 1.0

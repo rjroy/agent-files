@@ -132,7 +132,9 @@ def analyze_tempo(y, sr):
 
         # Format output data
         data = {
-            "tempo_bpm": float(tempo),
+            # librosa 0.10+ returns tempo as a one-element ndarray even for
+            # mono input; unwrap it explicitly for JSON serialization.
+            "tempo_bpm": float(np.asarray(tempo).reshape(-1)[0]),
             "confidence": round(confidence, 2),
             "beat_frames": beat_frames.tolist(),
             "beat_times": [round(t, 3) for t in beat_times.tolist()]
