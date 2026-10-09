@@ -45,21 +45,78 @@ Do not create requirement IDs, exhaustive mappings, or one test per step or goal
 
 ### 2. Execute Phases
 
-For each phase:
+Use the phases supplied by a useful plan; the phase is the unit of scope, not
+one large implementation handoff. Within each phase, make as many small,
+testable-behavior cycles as useful. Prefer narrow slices with observable
+behavior; do not combine separate behaviors merely to reduce agent handoffs.
 
 Only one agent may operate on a phase's files at a time. Await each result before
-dispatching the next role. Testing and review agents are read-only: they return
-evidence or findings and never edit files. Do not test or review a moving worktree.
+dispatching the next role; never test or review a moving worktree. The
+orchestrator does not write code, tests, or review code. Testing and review
+agents are read-only: they return evidence or findings and never edit files.
 
-**a. Implement.** Dispatch to an implementation agent with the host's subagent capability. Include the requested outcome, relevant paths, affected consumers, consequential constraints or authorized behavior changes, and useful prior-phase findings. When relevant, identify existing behavior to reuse, replace, or remove. Keep handoffs concise but sufficient to avoid contradicting the current direction. One agent at a time on the same files; await its result before continuing.
+For each testable behavior, follow this agent-run red-green cycle:
 
-**b. Test.** Dispatch a read-only testing agent with changed files, the requested behavior, project-specific checks and risks, and test commands. Expect the result, commands or observations, and behavioral evidence. The suite passing does not substitute for focused checks when those are needed to prove the requested outcome.
+1. **Red — establish a focused failing test.** Dispatch a write-capable
+   test-author agent first to inspect relevant existing tests. Reuse an adequate
+   existing failing behavioral test when it validly demonstrates the missing
+   behavior; otherwise have the agent write a focused behavioral test without
+   implementing production behavior. A separate, read-only testing agent runs
+   it and confirms RED because the requested behavior is missing. A failure from
+   setup, imports, or an unrelated defect is not RED evidence: fix that
+   test/setup problem or choose an adequate failing test. A test that already
+   passes is not RED evidence. Do not weaken an assertion or test to manufacture
+   a failure or obtain GREEN.
+2. **Green — implement only what is needed.** Dispatch a production
+   implementation agent with the requested outcome, relevant paths, affected
+   consumers, consequential constraints or authorized behavior changes, the
+   failing test and its confirmed behavior-specific failure, and useful
+   prior-phase findings. Identify existing behavior to reuse, replace, or
+   remove where relevant. It changes production behavior only, no speculative
+   scaffolding or unrelated scope.
+3. **Verify.** A separate read-only testing agent runs the focused test and
+   relevant regressions, confirming GREEN and reporting commands and behavioral
+   evidence. The full suite passing does not substitute for focused evidence
+   when needed to prove the requested outcome.
+4. **Optional refactor.** If useful, dispatch a behavior-preserving refactor
+   writer after GREEN. The read-only tester reruns the checks for the changed
+   surface; retain the refactor only if behavior remains verified.
+5. **Review.** Dispatch a read-only reviewer in `initial-review` mode for a
+   material-defect review of the resulting behavior and relevant boundaries.
+   Include the behavior, changed files, red/green evidence, and affected
+   consumers. Review actual behavior and relevant invariants, not historical
+   artifacts as authority over current direction. Report only concrete material
+   defects or risks with consequences and bounded outcomes; give each finding a
+   stable ID. Accept adequate work without optional hardening or ceremonial
+   coverage. An obsolete parallel path or unused scaffolding is a finding only
+   when evidence shows material maintenance or behavior cost, not a cleanup
+   quota. A request for another test must identify a plausible defect current
+   evidence would miss and the observable check needed.
 
-**c. Review.** Dispatch a read-only review agent in initial-review mode. Include changed files, current requested behavior, validation evidence, and affected consumers/boundaries. Review actual behavior and relevant system invariants; do not treat historical documents as authority over current user direction. Report a finding only for a concrete material defect or risk with a consequence and bounded required outcome; give each finding a stable ID for correction. An obsolete parallel path or unused scaffolding is a finding only when evidence shows material maintenance or behavior cost, not a cleanup quota. A request for another test must identify a plausible defect current evidence would miss and the observable check needed. Accept adequate work without optional hardening or ceremonial coverage.
+The write-capable test author may be a separate invocation of the implementation
+agent or another suitable writer. Keep test-authoring, production implementation,
+and optional refactor assignments explicit and separate; only the assigned
+writer edits during that turn. Testing and review remain read-only.
 
-**d. Handle failures.** Route failures back to an implementation agent for correction and await completion. Re-dispatch only the failed checks and a verification review with the complete unresolved finding records and correction diff. Inspect the changed surface and report any newly encountered material issue, but do not reopen unrelated accepted surfaces. After two failed attempts on one finding, or three correction rounds in a phase, escalate to the user.
+Not every change has an executable failing-test cycle. For pure refactors, use
+existing characterization/regression evidence to show behavior before and
+after; do not demand an artificial RED. For non-executable changes such as
+prompts, documentation, or visual work, record concrete before/after evidence
+for the requested change instead of inventing a failing test. These exceptions
+do not excuse skipping red-green TDD for testable code.
 
-**e. Record.** Share concise results and evidence with the caller. Update existing notes when useful for resumption; do not create phase trackers or obligation maps as ceremony.
+**Failure and correction.** Treat a failed red confirmation as a test/setup
+problem unless the failure demonstrates the requested missing behavior. Route
+implementation defects back through a focused test-first correction cycle; do
+not skip directly to an untested patch. After changes, rerun the failed check
+and relevant regression evidence, then use a read-only verification review
+with the finding and correction context. Preserve stable finding IDs and the
+existing limits: escalate after two failed attempts on one finding, or three
+correction rounds in a phase. Do not reopen accepted unrelated surfaces.
+
+**Record.** Share concise results and evidence with the caller. Update existing
+notes when useful for resumption; do not create phase trackers or obligation
+maps as ceremony.
 
 ### 3. Validate
 

@@ -35,6 +35,10 @@ Apply only the lenses relevant to the target and changed surface:
 
 - **Direction:** Does the approach address what the user currently wants? Does
   any step add behavior the user has not asked for or that lacks a useful reason?
+  When an intent is supplied, does the plan preserve its material outcomes and
+  boundaries, or identify and explain a material omission, conflict, or departure
+  from that direction? Treat intent as useful direction, not an exhaustive
+  checklist or authority over newer user input.
 - **Feasibility:** Are dependencies ordered, prerequisites available, and the
   named files, modules, or external systems real? Use project search to verify
   consequential claims, not merely a token sample.
@@ -58,9 +62,11 @@ affect execution.
 Consider whether the planned validation and review are meaningful for the
 project-specific behavior and risks. Existing evidence may cover several changes;
 do not require exhaustive obligation mapping, acceptance matrices, or one test per
-requirement, task, or layer. Raise an issue only when a distinct plausible defect
-or risk would likely escape the proposed evidence. A command name alone may be
-insufficient when it does not show what outcome it checks, but do not demand
+requirement, task, or layer. Planning should make useful project-specific
+validation executable, while the intent's description of what success means need
+not be replaced by test mechanics. Raise an issue only when a distinct plausible
+defect or risk would likely escape the proposed evidence. A command name alone may
+be insufficient when it does not show what outcome it checks, but do not demand
 ceremonial detail beyond what makes the check understandable.
 
 ## Findings

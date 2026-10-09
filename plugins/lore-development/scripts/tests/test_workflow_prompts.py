@@ -30,12 +30,35 @@ def _frontmatter(relative_path: str) -> dict[str, object]:
 
 
 def test_implementation_roles_are_serialized_and_read_only() -> None:
-    prompt = _read("skills/implement/SKILL.md")
+    prompt = _normalized("skills/implement/SKILL.md")
 
     assert "Only one agent may operate on a phase's files at a time" in prompt
     assert "Testing and review agents are read-only" in prompt
     assert "Await each result before" in prompt
     assert "dispatching the next role" in prompt
+    assert "orchestrator does not write code, tests, or review code" in prompt
+    assert "write-capable test-author agent first" in prompt
+    assert "separate, read-only testing agent" in prompt
+    assert "production behavior only" in prompt
+    assert "read-only reviewer in `initial-review` mode" in prompt
+
+
+def test_implementation_uses_focused_red_green_cycles_and_honest_evidence() -> None:
+    prompt = _normalized("skills/implement/SKILL.md")
+
+    assert "as many small, testable-behavior cycles as useful" in prompt
+    assert "do not combine separate behaviors merely to reduce agent handoffs" in prompt
+    assert "confirms RED because the requested behavior is missing" in prompt
+    assert "A failure from setup, imports, or an unrelated defect is not RED evidence" in prompt
+    assert "A test that already passes is not RED evidence" in prompt
+    assert "Do not weaken an assertion or test" in prompt
+    assert "confirming GREEN" in prompt
+    assert "Optional refactor" in prompt
+    assert "characterization/regression evidence" in prompt
+    assert "concrete before/after evidence" in prompt
+    assert "do not excuse skipping red-green TDD for testable code" in prompt
+    assert "two failed attempts on one finding" in prompt
+    assert "three correction rounds in a phase" in prompt
 
 
 def test_implementation_uses_proportionate_behavioral_evidence() -> None:
@@ -173,6 +196,9 @@ def test_prep_plan_prompts_collaborative_evidence_driven_planning() -> None:
     assert "as suggestions or historical context" in prompt
     assert "Plans and notes are not promoted to reference material" in prompt
     assert "exhaustive obligation maps, coverage matrices" in prompt
+    assert "check the proposed plan against its stated problem, outcomes, examples, and preserve/change boundaries" in prompt
+    assert "material omissions, conflicts, or departures" in prompt
+    assert "the current user direction prevails" in prompt
     assert "does not add an approval requirement" in prompt
     for forbidden_rule in [
         "Map the goal or requirements to concrete implementation steps",
@@ -192,6 +218,9 @@ def test_plan_reviewer_avoids_exhaustive_mapping_and_historical_authority() -> N
     assert "meaningful for the project-specific behavior and risks" in reviewer
     assert "Do not report old-artifact noncompliance alone" in reviewer
     assert "one test per requirement" in reviewer
+    assert "material outcomes and boundaries" in reviewer
+    assert "identify and explain a material omission, conflict, or departure" in reviewer
+    assert "intent's description of what success means" in reviewer
 
 
 def test_bun_typescript_reviewer_requires_material_traceable_findings() -> None:
@@ -212,19 +241,30 @@ def test_bun_typescript_reviewer_requires_material_traceable_findings() -> None:
     assert "A request for another test must identify" in implementation
 
 
-def test_intent_prompt_is_conversational_and_nonbinding() -> None:
+def test_intent_prompt_captures_substantive_revisable_direction() -> None:
     prompt = _normalized("skills/intent/SKILL.md")
 
     assert "what to build and why" in prompt
-    assert "conversational" in prompt
-    assert "not a binding contract" in prompt
-    assert "The plan is where" in prompt
+    assert "Work with the user to establish the present direction" in prompt
+    assert "means to understand and refine that direction" in prompt
+    assert "not immutable governance" in prompt
+    assert "not material to transcribe" in prompt
+    assert "Concrete, inspectable outcomes in substance" in prompt
+    assert "Clarifying examples" in prompt
+    assert "What should be preserved and what should change" in prompt
+    assert "Which direction is settled and which choices remain open" in prompt
+    assert "What success means to the user" in prompt
+    assert "revise the intent rather than preserving an outdated account" in prompt
+    assert "material departures" in prompt
+    assert "without making a fresh-eyes intent review or approval gate mandatory" in prompt
     assert "current direction takes priority" in prompt
     assert "historical context" in prompt
-    assert "## Requirements" not in prompt
-    assert "## Validation" not in prompt
     assert "REQ-" not in prompt
-    assert "acceptance matrix" in prompt
+    assert "Do not add requirement IDs" in prompt
+    assert (
+        "detailed implementation steps and executable validation design belong in planning"
+        in prompt.lower()
+    )
 
 
 def test_intent_reviewer_has_fresh_context_modes_without_contract_checks() -> None:
@@ -285,7 +325,7 @@ def test_implementation_accepts_direct_requests_and_keeps_notes_optional() -> No
     assert "do not create one by default" in prompt
     assert "Do not ask for confirmation between phases" in prompt
     assert "read-only testing agent" in prompt
-    assert "read-only review agent" in prompt
+    assert "read-only reviewer" in prompt
     assert "Route material findings to implementation for correction" in prompt
     assert "repeat only the failed checks" in prompt
     assert "terminal review to catch interactions" in prompt

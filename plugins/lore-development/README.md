@@ -16,7 +16,7 @@ Skills use four `.lore/` zones (`local/`, `work/`, `reference/`, `learned/`) —
 |-------|---------|
 | `/lore-development:research` | Gather context from outside the project |
 | `/lore-development:brainstorm` | Explore ideas, record "what if" thinking |
-| `/lore-development:intent` | Think through what to build and why; record conversational intent |
+| `/lore-development:intent` | Establish the present problem, intended outcomes, boundaries, and why |
 | `/lore-development:vision` | Capture project-level purpose and direction |
 | `/lore-development:design` | Make technical decisions when the "how" is the problem |
 | `/lore-development:prep-plan` | Discuss an evidence-informed approach; optionally record a disposable working plan |
@@ -122,9 +122,9 @@ Skills flow from exploration to implementation. The key decision is when to star
 
 ### Explore (same session)
 
-Run `/brainstorm`, `/research`, `/intent`, and `/design` in the same conversation. These phases are conversational. The value is in the back-and-forth, the rejected ideas, the "not that because X" reasoning. Let context accumulate.
+Run `/brainstorm`, `/research`, `/intent`, and `/design` in the same conversation when useful. `/brainstorm` explores possibilities; `/intent` establishes the present direction in a clear, substantive record: the problem and why, intended outcomes, examples, preserve/change boundaries, and what success means. Keep the discussion conversational, but do not make the saved intent a transcript. It can distinguish settled choices from options that remain open.
 
-When `/design` or `/intent` completes, you have historical context in `.lore/`. Intent records what and why, not a contract. A disposable plan can explore implementation and validation, but is optional; `/implement` follows the user's current request.
+When `/design` or `/intent` completes, you have historical context in `.lore/`. Intent gives planning meaningful direction but is revisable, not immutable governance; newer user direction prevails, and material departures should be surfaced. A disposable plan decides delivery and executable evidence, but is optional; `/implement` follows the user's current request.
 
 ### Plan (fresh session)
 
