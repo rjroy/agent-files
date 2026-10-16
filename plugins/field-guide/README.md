@@ -2,7 +2,7 @@
 
 <img src="logo.webp" align="right" width="128" height="128" alt="Field Guide Logo">
 
-A Claude Code plugin for distilling useful project understanding into a searchable `.lore/reference/` wiki.
+An OpenCode skill collection for distilling useful project understanding into a searchable `.lore/reference/` wiki.
 
 ## What It Does
 
@@ -16,7 +16,7 @@ For an optional preview-first move of legacy `.lore/work/specs/`, `plans/`, `tas
 
 | Skill | Purpose |
 |-------|---------|
-| `/field-guide:init` | Bootstrap the wiki directory and register a scheduled daily lint job |
+| `/field-guide:init` | Bootstrap the wiki directory; recurring lint scheduling is unavailable and lint is manual |
 | `/field-guide:ingest` | Compile one or more `.lore/` artifacts into wiki pages |
 | `/field-guide:update-evidence` | Attach living code/test anchors to reference pages |
 | `/field-guide:resolve-drift` | Compare reference pages against evidence and reconcile semantic drift |
@@ -26,7 +26,7 @@ For an optional preview-first move of legacy `.lore/work/specs/`, `plans/`, `tas
 
 ## Workflow
 
-`/field-guide:init` can create `.lore/reference/` and register a daily lint job when desired; no ritual is required to use or maintain reference knowledge.
+`/field-guide:init` can create `.lore/reference/`. Recurring lint scheduling is not supported by the available OpenCode tools; run `/field-guide:lint` manually when useful. No ritual is required to use or maintain reference knowledge.
 
 **Distill when useful.** `/field-guide:ingest` can take historical brainstorms, designs, intents, research, and retros as candidate leads. It independently checks current claims against code/tests, skips knowledge already apparent there, and retains only material that can help a future change. Plans, notes, and tasks (including local plans) are not reference sources; at most they can suggest where to investigate. No candidate need produce a page.
 
@@ -47,7 +47,7 @@ Wiki pages live in `.lore/reference/`. New pages are Markdown by default, and ex
 ```
 .lore/reference/
 ├── index.md                # Catalog of all wiki pages, grouped by type
-├── .field-guide.json       # Scheduled lint job ID and schedule config
+├── .field-guide.json       # Optional legacy scheduling metadata; init does not create or update it
 └── <wiki-pages>.md         # Generated pages
 ```
 
@@ -95,4 +95,4 @@ Markdown pages carry YAML frontmatter. HTML pages carry equivalent `<meta name="
 
 ## Dependencies
 
-The `init` skill requires `CronCreate` and `CronList` from the Claude Code harness to register the scheduled lint job. If those tools are unavailable, the wiki directory and `index.md` are still created, but scheduling will not be set up.
+The `init` skill creates or preserves the wiki directory and index. OpenCode does not provide the `CronCreate` and `CronList` scheduling tools expected by the legacy workflow, so no recurring lint job is created or managed. Run `/field-guide:lint` manually when useful; do not infer active scheduling from a pre-existing `.field-guide.json` file.

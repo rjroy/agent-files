@@ -1,7 +1,7 @@
 [project]
 name = "audio-analysis-plugin"
 version = "1.0.0"
-description = "Audio and MIDI file analysis capabilities for Claude Code"
+description = "Audio and MIDI file analysis tools with standalone Python scripts"
 authors = [
     {name = "Ronald Roy", email = "gsdwig@gmail.com"}
 ]

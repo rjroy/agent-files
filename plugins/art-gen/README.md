@@ -2,14 +2,16 @@
 
 <img src="art-gen-logo.png" align="right" width="128" height="128" alt="Vibe Garden Logo">
 
-**AI-powered image and video generation for Claude Code via Replicate API**
+**AI-powered image and video generation through the Replicate API**
+
+In OpenCode, use the `generate-image` skill for image/video processing workflows and `art-gen-setup` when you explicitly want to install the collection's Bun dependencies. Setup does not generate media.
 
 
-Art-Gen MCP enables Claude Code users to generate stunning AI images and animated videos through natural language prompts. Create static images from text descriptions, then bring them to life with image-to-video animation using state-of-the-art AI models.
+Art-Gen provides image and video generation scripts for the OpenCode `generate-image` skill. Create static images from text descriptions, edit existing images, animate images, or remove backgrounds. The skill resolves its references and scripts relative to its loader-provided canonical directory.
 
 [![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/rjroy/vibe-garden/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
+[![Bun](https://img.shields.io/badge/Bun-1.0+-blue.svg)](https://bun.sh/)
 [![MCP](https://img.shields.io/badge/protocol-MCP-purple.svg)](https://modelcontextprotocol.io/)
 
 ---
@@ -22,7 +24,7 @@ Art-Gen MCP enables Claude Code users to generate stunning AI images and animate
 - ⚡ **Fast Performance** - Sub-500ms server overhead on top of API response time
 - 📁 **Smart File Management** - Auto-incrementing filenames prevent overwriting
 - 🔒 **Secure** - OAuth via Replicate API tokens, never stores sensitive data
-- 🎯 **Claude Code Plugin** - Install via `/plugin install art-gen-mcp@vibe-garden`
+- 🧰 **OpenCode Skills** - Use `generate-image` for media workflows and `art-gen-setup` only when installing Bun dependencies
 - 🔄 **Log Rotation** - 10MB max per file, 5 backup files maintained
 - 🛠️ **Model Discovery** - Query available parameters for any model
 
@@ -30,12 +32,9 @@ Art-Gen MCP enables Claude Code users to generate stunning AI images and animate
 
 ## Quick Start (5 Minutes)
 
-### 1. Install Plugin
+### 1. Load the Skills
 
-```bash
-# In Claude Code, run:
-/plugin install art-gen-mcp@vibe-garden
-```
+Use the OpenCode skill loader to make `generate-image` and `art-gen-setup` available. No plugin manifest is provided.
 
 ### 2. Set Up Replicate API
 
@@ -46,13 +45,13 @@ Art-Gen MCP enables Claude Code users to generate stunning AI images and animate
    REPLICATE_API_TOKEN=r8_your_token_here
    ```
 
-### 3. Use in Claude Code
+### 3. Use in OpenCode
 
 **Image Generation:**
 ```
 You: Generate an image of a serene mountain landscape at sunset
 
-Claude: [Uses art-gen-mcp generate_image tool]
+OpenCode: [Follows the generate-image skill and invokes the matching script]
 ✓ Image saved to: ./mountain-sunset.png
 ```
 
@@ -60,7 +59,7 @@ Claude: [Uses art-gen-mcp generate_image tool]
 ```
 You: Animate my character.png with gentle breathing motion
 
-Claude: [Uses art-gen-mcp generate_video tool]
+OpenCode: [Follows the generate-image skill and invokes the matching script after confirmation]
 ✓ Video saved to: ./character-breathing.mp4
 ```
 
@@ -73,7 +72,7 @@ Claude: [Uses art-gen-mcp generate_video tool]
 ```
 You: Generate 3 variations of a logo concept: minimalist tech startup with circuits
 
-Claude: [Generates 3 images with different interpretations]
+OpenCode: [Generates 3 images with different interpretations]
 ```
 
 ### Content Creation
@@ -81,7 +80,7 @@ Claude: [Generates 3 images with different interpretations]
 ```
 You: Create a hero image for a blog post about renewable energy - solar panels in a field
 
-Claude: [Generates high-resolution image optimized for web]
+OpenCode: [Generates high-resolution image optimized for web]
 ```
 
 ### Visual Brainstorming
@@ -89,7 +88,7 @@ Claude: [Generates high-resolution image optimized for web]
 ```
 You: Show me what a futuristic office space might look like in 2050
 
-Claude: [Generates conceptual visualization]
+OpenCode: [Generates conceptual visualization]
 ```
 
 ### Rapid Iteration
@@ -97,7 +96,7 @@ Claude: [Generates conceptual visualization]
 ```
 You: Generate a cyberpunk cityscape, then make it more neon, then add rain
 
-Claude: [Iterates through 3 versions based on feedback]
+OpenCode: [Iterates through 3 versions based on feedback]
 ```
 
 ### Character Animation
@@ -105,7 +104,7 @@ Claude: [Iterates through 3 versions based on feedback]
 ```
 You: Generate a portrait of a fantasy elf, then animate it with a gentle head turn
 
-Claude: [Generates image, then creates 5-second video with motion]
+OpenCode: [Generates image, then creates 5-second video with motion after confirmation]
 ```
 
 ### Product Demos
@@ -113,7 +112,7 @@ Claude: [Generates image, then creates 5-second video with motion]
 ```
 You: Take my product-shot.png and animate it rotating 360 degrees
 
-Claude: [Uses video generation to create rotating product showcase]
+OpenCode: [Uses video generation to create rotating product showcase after confirmation]
 ```
 
 ### Social Media Content
@@ -121,12 +120,14 @@ Claude: [Uses video generation to create rotating product showcase]
 ```
 You: Animate my logo.png with a pulsing glow effect for Instagram
 
-Claude: [Creates 5-second looping video optimized for social]
+OpenCode: [Creates 5-second looping video optimized for social after confirmation]
 ```
 
 ---
 
-## Tools Available
+## Legacy MCP Tool Reference
+
+The following tool schemas describe the retired MCP integration and are retained as historical reference only. They are not callable in the current OpenCode skill workflow; use the `generate-image` skill and its CLI scripts instead.
 
 ### `generate_image`
 
@@ -393,13 +394,13 @@ mountain_2.png      # Third generation
 
 ### Path Resolution
 
-- **Relative paths**: Resolved from `ART_INVOKE_DIR` (where you launched Claude)
+- **Relative paths**: Resolved from `ART_INVOKE_DIR` (the directory captured when the script was invoked)
 - **Absolute paths**: Used as-is
 - **Parent directories**: Created automatically if they don't exist
 
 **Example**:
 ```
-# You launch Claude from: /home/user/projects/
+# Invocation directory: /home/user/projects/
 # Request: output_file_name="images/sunset.png"
 # Saved to: /home/user/projects/images/sunset.png
 ```
@@ -435,8 +436,8 @@ Logs are written to `art-gen-mcp.log` in the current working directory.
 
 ## Requirements
 
-- **Python**: 3.10 or higher
-- **Claude Code**: Latest version
+- **Bun**: Required to install and run the local TypeScript scripts
+- **OpenCode**: Skill loader and shell tool available
 - **Replicate Account**: Free tier available
 - **API Token**: From replicate.com/account/api-tokens
 
@@ -447,25 +448,10 @@ Logs are written to `art-gen-mcp.log` in the current working directory.
 ```bash
 # Clone repository
 git clone https://github.com/rjroy/vibe-garden.git
-cd vibe-garden/art-gen-mcp
+cd vibe-garden/plugins/art-gen
 
-# Create virtual environment
-python -m venv server/venv
-
-# Activate virtual environment
-source server/venv/bin/activate  # Linux/macOS
-# or
-server\venv\Scripts\activate     # Windows
-
-# Install dependencies
-cd servers
-pip install -e .
-
-# Create .env file
-echo "REPLICATE_API_TOKEN=r8_your_token_here" > .env
-
-# Test the server
-python -m art_gen_mcp.server
+# Install the Bun dependencies used by the scripts
+bun install
 ```
 
 ---
@@ -537,10 +523,10 @@ python -m art_gen_mcp.server
 - Verify write permissions in target directory
 - Review `art-gen-mcp.log` for detailed errors
 
-### Claude Code Doesn't Show Tools
-- Restart Claude Code after plugin installation
-- Verify `.claude-plugin/plugin.json` configuration
-- Check MCP server started successfully in logs
+### OpenCode Skill or Script Is Unavailable
+- Confirm the collection's skills are available through the OpenCode skill loader
+- Use `art-gen-setup` to install Bun dependencies if needed
+- Resolve catalogs and scripts from the loaded `generate-image` skill's canonical directory, not the current working directory
 
 ---
 
@@ -567,7 +553,6 @@ MIT License - see [LICENSE](../LICENSE) file for details.
 - [Model Context Protocol Specification](https://spec.modelcontextprotocol.io/)
 - [Replicate Documentation](https://replicate.com/docs)
 - [Replicate Model Explorer](https://replicate.com/explore)
-- [Claude Code](https://claude.ai/code)
 - [Vibe Garden Repository](https://github.com/rjroy/vibe-garden)
 
 ---

@@ -1,10 +1,10 @@
 # Audio Analysis Plugin
 
-A Claude Code plugin that provides audio and MIDI file analysis capabilities through standalone Python scripts.
+An OpenCode skill collection that provides audio and MIDI file analysis capabilities through standalone Python scripts.
 
 ## Overview
 
-This plugin enables Claude to extract musical information from audio and MIDI files, including:
+The `audio-analyzer` and `midi-analyzer` skills invoke the collection's scripts through OpenCode's shell tool to extract information from audio and MIDI files, including:
 
 **Audio Analysis (librosa-based):**
 - Tempo/BPM detection
@@ -26,10 +26,10 @@ This plugin enables Claude to extract musical information from audio and MIDI fi
 
 ## Installation
 
-### 1. Install Python Dependencies
+### Install Python Dependencies
 
 ```bash
-cd audio-analysis-plugin
+cd plugins/audio-analysis
 pip install -r requirements.txt
 ```
 
@@ -43,30 +43,17 @@ pip install librosa numpy scipy scikit-learn matplotlib soundfile
 pip install music21
 ```
 
-### 2. Configure Claude Code
-
-Add the plugin to your Claude Code configuration by adding the path to your settings:
-
-```json
-{
-  "plugins": [
-    "/path/to/wyrd-gateway/audio-analysis-plugin"
-  ]
-}
-```
-
-### 3. Verify Installation
+### Verify Installation
 
 ```bash
-# Verify plugin loads
-claude --debug
-
 # Run tests
-cd audio-analysis-plugin
+cd plugins/audio-analysis
 pytest tests/ -v
 ```
 
 ## Usage
+
+Resolve the collection root from the loaded skill's canonical directory (two directories above the skill directory). The skills invoke scripts from this root using OpenCode's shell tool; the examples below are shown with the collection root as the working directory.
 
 ### Audio Analysis
 
@@ -166,7 +153,7 @@ All scripts output JSON to stdout with a consistent envelope:
 
 ## Skills
 
-This plugin provides two skills for Claude:
+This collection provides two OpenCode skills:
 
 - **audio-analyzer:** Invoked when users ask about analyzing audio files
 - **midi-analyzer:** Invoked when users ask about analyzing MIDI files
@@ -176,9 +163,7 @@ Each skill includes decision guidance mapping user questions to the appropriate 
 ## Project Structure
 
 ```
-audio-analysis-plugin/
-├── .claude-plugin/
-│   └── plugin.json          # Plugin manifest
+audio-analysis/
 ├── scripts/
 │   ├── shared/              # Shared utilities
 │   │   ├── __init__.py

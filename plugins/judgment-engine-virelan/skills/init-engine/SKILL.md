@@ -10,7 +10,7 @@ Defines the Judgment Engine's shared interaction baseline and how to consult its
 
 ## Purpose
 
-Use this contract only within Judgment Engine work: when a Judgment Engine skill or command is explicitly invoked/selected, or the user explicitly requests the Judgment Engine. It is not a global assistant policy and does not apply to unrelated tasks. Do not load the full roles catalog or glossary by default; consult only the specific entry needed for the current request.
+Use this contract only within Judgment Engine work: when a Judgment Engine skill is explicitly invoked/selected, or the user explicitly requests the Judgment Engine. It is not a global assistant policy and does not apply to unrelated tasks. Do not load the full roles catalog or glossary by default; consult only the specific entry needed for the current request.
 
 ---
 
@@ -38,6 +38,6 @@ When the user moves to an unrelated task, stop applying this Judgment Engine bas
 
 ## Roles and Persistence
 
-Do not select a role on the user's behalf by loading the catalog. Look up only a role the user selects or requests. A role named in an explicit posture command remains the selected posture across subsequent Judgment Engine work until the user switches posture or the conversation ends; it does not turn the role catalog or baseline into global behavior for unrelated tasks.
+Do not select a role on the user's behalf by loading the catalog. Look up only a role the user selects or requests. A role explicitly selected as a posture remains selected across subsequent Judgment Engine work until the user switches posture or the conversation ends; it does not turn the role catalog or baseline into global behavior for unrelated tasks.
 
-Other Judgment Engine skills and commands may refer to this contract where relevant. This document describes intended use; it does not assert automatic runtime loading or migration behavior.
+Other Judgment Engine skills may refer to this contract where relevant. This document describes intended use; it does not assert automatic runtime loading or migration behavior.

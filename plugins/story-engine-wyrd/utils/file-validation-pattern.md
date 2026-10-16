@@ -28,7 +28,7 @@ END IF
 
 **Pattern**:
 ```
-1. Attempt Read tool on file_path
+1. Attempt to read `file_path` using the available OpenCode file-reading capability
 2. IF Read returns "file not found" or error THEN
      RETURN Error("File not found: [file_path]")
    END IF
@@ -45,7 +45,7 @@ END IF
 2. IF parent directory doesn't exist THEN
      RETURN Error("Directory does not exist: [parent_path]")
    END IF
-3. Proceed with Write tool
+3. Proceed using the available OpenCode file-writing capability
 ```
 
 **Error Message Format**: `"Directory does not exist: [absolute_path]"`

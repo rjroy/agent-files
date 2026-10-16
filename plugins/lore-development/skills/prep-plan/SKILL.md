@@ -19,7 +19,7 @@ Think through how to make the user's present what and why real. Discuss the appr
 
 **Record if useful.** If a written plan will help the work, save concise, disposable context after discussing the approach. Do not require a particular template or mandatory sections. The user can proceed, revise, or set the plan aside; it does not lock implementation choices or supersede current direction. Plans and notes are not promoted to reference material.
 
-**Fresh-eyes review.** When an independent review would materially improve the plan, use the `plan-reviewer` in initial-review mode. If unavailable, use a general-purpose reviewer with the role from `agents/plan-reviewer.md`. Address material findings in proportion to the work; do not repeat broad review or require review ceremony for its own sake. A review cannot make historical artifacts binding or reject a plan only because it departs from them.
+**Fresh-eyes review.** When an independent review would materially improve the plan, use the `plan-reviewer` in initial-review mode. If unavailable, use a general-purpose reviewer with the role from `../../../../omo-slim-agents/plan-reviewer.md` (resolved from this skill's base directory). Address material findings in proportion to the work; do not repeat broad review or require review ceremony for its own sake. A review cannot make historical artifacts binding or reject a plan only because it departs from them.
 
 ## Saving
 

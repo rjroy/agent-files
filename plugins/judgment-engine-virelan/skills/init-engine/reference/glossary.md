@@ -50,7 +50,7 @@ Common terms and concepts used throughout the Judgment Engine system.
 - **Surfacing Modes**: Reveal structure and tension before synthesis (Exploratory Reasoning, Simulated Debate)
 - **Guidance**: Meta-modes that explain the system (Judgment Traceback, System Diagnostic Report)
 
-Inquiry Digest, Judgment Primer, and System Diagnostic Report are documented aliases for the shipped commands `/judgment-engine-virelan:digest` (`commands/digest.md`), `/judgment-engine-virelan:primer` (`commands/primer.md`), and `/judgment-engine-virelan:diagnostic` (`commands/diagnostic.md`), respectively. Other named capabilities are not implied by these categories unless listed as a shipped skill or command.
+Inquiry Digest, Judgment Primer, and System Diagnostic Report are the display names of the `judgment-digest`, `judgment-primer`, and `judgment-diagnostic` skills, respectively. Other named capabilities are not implied by these categories unless listed as a shipped skill.
 
 ---
 

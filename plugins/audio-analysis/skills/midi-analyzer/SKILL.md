@@ -7,7 +7,7 @@ description: Use this skill when the user asks about analyzing MIDI files for mu
 
 ## Overview
 
-This skill provides capabilities for extracting musical information from MIDI files (.mid, .midi). Each analysis script uses music21 for parsing and outputs structured JSON to stdout via the Bash tool.
+This skill provides capabilities for extracting musical information from MIDI files (.mid, .midi). Each analysis script uses music21 for parsing and outputs structured JSON to stdout via OpenCode's shell tool.
 
 ## Decision Guidance
 
@@ -24,10 +24,10 @@ This skill provides capabilities for extracting musical information from MIDI fi
 
 ## Quick Reference
 
-All scripts are located in `audio-analysis-plugin/scripts/midi/` and follow this pattern:
+Use the absolute directory supplied by the OpenCode skill loader as the canonical skill base. The collection root is two directories above the loaded skill directory; scripts are under `<collection-root>/scripts/midi/`. Resolve script paths from that base rather than the process working directory. Invoke them with Python 3 through the shell tool:
 
 ```bash
-python scripts/midi/<script_name>.py <file_path>
+python3 <collection-root>/scripts/midi/<script_name>.py <file_path>
 ```
 
 ### 1. Key Detection (`analyze_midi_key.py`)
@@ -35,7 +35,7 @@ python scripts/midi/<script_name>.py <file_path>
 Identifies key/mode using Krumhansl-Schmuckler algorithm with modulation tracking.
 
 ```bash
-python scripts/midi/analyze_midi_key.py /path/to/file.mid
+python3 <collection-root>/scripts/midi/analyze_midi_key.py /path/to/file.mid
 ```
 
 **Output Fields:**
@@ -49,7 +49,7 @@ python scripts/midi/analyze_midi_key.py /path/to/file.mid
 Extracts chord progression with Roman numeral notation.
 
 ```bash
-python scripts/midi/analyze_midi_chords.py /path/to/file.mid
+python3 <collection-root>/scripts/midi/analyze_midi_chords.py /path/to/file.mid
 ```
 
 **Output Fields:**
@@ -67,7 +67,7 @@ python scripts/midi/analyze_midi_chords.py /path/to/file.mid
 Identifies recurring melodic motifs and patterns.
 
 ```bash
-python scripts/midi/analyze_midi_melody.py /path/to/file.mid
+python3 <collection-root>/scripts/midi/analyze_midi_melody.py /path/to/file.mid
 ```
 
 **Output Fields:**
@@ -82,7 +82,7 @@ python scripts/midi/analyze_midi_melody.py /path/to/file.mid
 Analyzes time signature, tempo, durations, and syncopation.
 
 ```bash
-python scripts/midi/analyze_midi_rhythm.py /path/to/file.mid
+python3 <collection-root>/scripts/midi/analyze_midi_rhythm.py /path/to/file.mid
 ```
 
 **Output Fields:**
@@ -97,7 +97,7 @@ python scripts/midi/analyze_midi_rhythm.py /path/to/file.mid
 Identifies formal structure (A-B-A form, verse/chorus sections).
 
 ```bash
-python scripts/midi/analyze_midi_structure.py /path/to/file.mid
+python3 <collection-root>/scripts/midi/analyze_midi_structure.py /path/to/file.mid
 ```
 
 **Output Fields:**
@@ -115,7 +115,7 @@ python scripts/midi/analyze_midi_structure.py /path/to/file.mid
 Calculates composition complexity statistics.
 
 ```bash
-python scripts/midi/analyze_midi_metrics.py /path/to/file.mid
+python3 <collection-root>/scripts/midi/analyze_midi_metrics.py /path/to/file.mid
 ```
 
 **Output Fields:**
@@ -171,19 +171,19 @@ To analyze a MIDI composition comprehensively:
 
 ```bash
 # Detect key (including modulations)
-python scripts/midi/analyze_midi_key.py composition.mid
+python3 <collection-root>/scripts/midi/analyze_midi_key.py composition.mid
 
 # Extract chord progression
-python scripts/midi/analyze_midi_chords.py composition.mid
+python3 <collection-root>/scripts/midi/analyze_midi_chords.py composition.mid
 
 # Find recurring melodic patterns
-python scripts/midi/analyze_midi_melody.py composition.mid
+python3 <collection-root>/scripts/midi/analyze_midi_melody.py composition.mid
 
 # Analyze formal structure
-python scripts/midi/analyze_midi_structure.py composition.mid
+python3 <collection-root>/scripts/midi/analyze_midi_structure.py composition.mid
 
 # Get complexity metrics
-python scripts/midi/analyze_midi_metrics.py composition.mid
+python3 <collection-root>/scripts/midi/analyze_midi_metrics.py composition.mid
 ```
 
-For detailed script documentation, see @midi-script-guide.md
+For detailed script documentation, read `reference/midi-script-guide.md` relative to this loaded skill's canonical directory.

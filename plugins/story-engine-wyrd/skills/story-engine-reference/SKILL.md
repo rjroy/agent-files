@@ -1,10 +1,10 @@
 ---
-description: Reference library providing access to all story creation resources - worlds, theory modules, lenses, and format guidelines. Commands invoke this skill to load reference materials.
+description: Reference library providing access to all story creation resources - worlds, theory modules, lenses, and format guidelines. Other story skills use this reference library to load relevant materials.
 ---
 
 # Story Engine Reference Skill
 
-This skill is a **passive reference library** for the story-engine-wyrd plugin. It should be invoked by commands to access materials, not presented directly to users. Commands handle user interaction and workflow orchestration.
+This skill is a **passive reference library** for the story-engine-wyrd collection. Story skills consult it to access materials; it is not presented directly to users. The consuming skill handles user interaction and workflow orchestration.
 
 ## Purpose
 
@@ -47,11 +47,11 @@ story-engine-reference/
         └── format-serialized.md
 ```
 
-## Usage by Commands
+## Usage by Story Skills
 
-Commands should:
+Story skills should:
 
-1. **Invoke this skill first** using the Skill tool
+1. **Consult this skill** and load only the needed resource files
 2. **Load story/base.md** to understand system architecture
 3. **Load materials contextually** based on workflow phase:
    - Phase 1 (Concept): world + lens + theory-narrative-structure + format
@@ -103,11 +103,10 @@ Modular narrative craft fundamentals:
 
 Each agent loads only the theory modules relevant to its task:
 
-- **concept-developer** → `theory-narrative-structure.md` + world file + lens file (if applicable)
-- **character-builder** → `theory-character-development.md` + world file
-- **prose-writer** → `theory-prose-craft.md` + `theory-dialogue-and-voice.md`
-- **quality-checker** → reads rubrics file (no theory needed)
-- **continuity-validator** → reads story bible files (no theory needed)
+- **story-engine-wyrd-concept-developer** → `theory-narrative-structure.md` + world file + lens file (if applicable)
+- **story-engine-wyrd-character-builder** → `theory-character-development.md` + world file
+- **story-engine-wyrd-prose-writer** → `theory-prose-craft.md` + `theory-dialogue-and-voice.md`
+- **story-engine-wyrd-story-reviewer** → loads only the requested review-mode procedure and reads the relevant story files (no theory needed)
 
 ### Format Guidelines
 
@@ -119,13 +118,12 @@ Story length and structure specifications:
 
 ## Integration Pattern
 
-**Example workflow (from write-story command):**
+**Example workflow (from `story-write-story`):**
 
 ```markdown
 ## Step 1: Load Reference Skill
 
-Use the Skill tool:
-- command: "story-engine-wyrd:story-engine-reference"
+Consult this reference skill and load only relevant resources.
 
 ## Step 2: Load Core Architecture
 
@@ -149,11 +147,11 @@ Based on user selections, read:
 4. **Modular combination** - World + Lens + Format creates infinite variety
 5. **Theory grounding** - All creation decisions reference loaded theory
 
-## Commands That Use This Skill
+## Story Skills That Use This Reference
 
-- `/story-engine-wyrd:write-story` - Main story creation workflow
-- `/story-engine-wyrd:develop-character` - Character development helper
-- `/story-engine-wyrd:plan-plot` - Plot structure planning
+- `story-write-story` - Main story creation workflow
+- `story-develop-character` - Character development helper
+- `story-plan-plot` - Plot structure planning
 
 ## Note on User Interaction
 

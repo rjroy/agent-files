@@ -1,17 +1,20 @@
 ---
 name: init
-description: Use when setting up field-guide on a project for the first time, or to refresh the scheduled lint job after it expires. Triggers include "init field-guide", "set up field-guide", "refresh field-guide lint schedule", and "bootstrap the wiki".
+description: Use when setting up the field-guide wiki on a project for the first time. Triggers include "init field-guide", "set up field-guide", and "bootstrap the wiki".
 ---
 
 # Init
 
-Bootstrap the project wiki, ensure disposable local lore output is ignored when
-the lore-development setup helper is available, and register a scheduled lint job.
+Bootstrap the project wiki and ensure disposable local lore output is ignored
+when the lore-development setup helper is available. Scheduled lint is not
+available through the supported OpenCode tools; lint remains a manual skill.
 
 ## Dependencies
 
-CronCreate and CronList are only required for scheduling. Project/wiki setup
-does not depend on Cron availability. The local-lore ignore setup is provided
+Project/wiki setup does not depend on scheduling. OpenCode does not provide the
+CronCreate/CronList scheduling tools expected by the legacy workflow; do not
+attempt to call them, emulate them, or claim a recurring job was registered.
+The local-lore ignore setup is provided
 by lore-development's `scripts/ensure_local.py`; when plugins are installed as
 siblings, resolve `../../../lore-development/scripts/ensure_local.py` relative
 to this skill's installed location, then run it with `python3 <resolved-helper-path>
@@ -52,41 +55,11 @@ Never overwrite an existing index. If `index.html` already exists and `index.md`
 
 Use the shared lore lifecycle values: new agent-created documents start `draft`; `approved` requires explicit user approval (including editing to approve) or a request for the relevant next process step; arbitrary edits are not approval. `completed` records completed agent work, not user approval. Lifecycle `status` is separate from field-guide `fg-status` freshness. Current direction can revise approved artifacts; do not ask for approval on minor transitions or every document.
 
-**2. Check for an existing lint job.**
+**2. Report wiki setup and manual lint availability.**
 
-CronCreate jobs auto-delete when they expire, so any job present in CronList is by definition active. The check is simply: is the job ID present in the CronList results?
-
-Proceed as follows:
-
-1. Read `.lore/reference/.field-guide.json`. If it contains a `lint_job_id`, call CronList and check whether that ID appears in the results. If it does, skip to the summary step — do not create a second job.
-2. If `.field-guide.json` is absent, unreadable, or contains no `lint_job_id`, call CronList and scan for any job whose prompt is `/field-guide:lint`. If one is found, write its ID to `.field-guide.json` (preserving any existing `schedule` value, or omitting it if unknown), then skip to the summary step.
-3. Only proceed to CronCreate if no matching job was found by either path.
-
-**3. Translate the schedule value.**
-
-Before calling CronCreate, convert the user's requested schedule to a 5-field cron expression:
-
-- `daily` → `"3 8 * * *"` (08:03 every day)
-- `weekly` → `"3 8 * * 1"` (08:03 every Monday)
-- A raw 5-field cron expression → pass through unchanged
-- No schedule provided → default to `"3 8 * * *"`
-
-**4. Register the lint job.**
-
-If no active job was found, call CronCreate with:
-
-- `prompt`: `/field-guide:lint`
-- `durable`: `true`
-- `schedule`: the translated cron expression from step 3
-
-Store the returned job ID in `.lore/reference/.field-guide.json`:
-
-```json
-{ "lint_job_id": "<id>", "schedule": "<schedule>" }
-```
-
-**5. Tell the user what happened.**
-
-Confirm whether the directory and index were created or already existed. If an existing HTML index was found, mention that it was preserved for compatibility. Confirm whether a new lint job was registered or an existing one was found. Report the job ID and schedule.
-
-Include this notice: recurring CronCreate jobs expire after 7 days. Re-run `/field-guide:init` to refresh the scheduled lint job before it lapses.
+Confirm whether the directory and index were created or already existed. If an
+existing HTML index was found, mention that it was preserved for compatibility.
+Tell the user that recurring lint scheduling is unavailable in this OpenCode
+environment and that `/field-guide:lint` can be run manually when useful. Do
+not create or update `.field-guide.json` for scheduling; preserve any existing
+file without treating it as evidence that a job is active.

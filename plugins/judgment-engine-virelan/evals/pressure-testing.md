@@ -4,7 +4,7 @@ These are copy-ready manual regression cases for the judgment-engine-virelan gui
 
 ## Manual Execution Procedure
 
-1. Start a fresh model conversation with the relevant skill or command available.
+1. Start a fresh model conversation with the relevant skill available.
 2. Copy one prompt below exactly, then save the complete response with the case name and model identifier.
 3. Compare the response against that case's pass/fail assertions. Mark the case failed if any required assertion is absent or a prohibited behavior occurs.
 4. Record the result, date, model identifier, and response location in the review or issue that requested the execution.

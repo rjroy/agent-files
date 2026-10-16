@@ -38,40 +38,55 @@ assert.match(glossary, /not a global default for unrelated tasks/i);
 assert.doesNotMatch(initSkill, /Before any other Judgment Engine skill executes/i);
 assert.doesNotMatch(readme, /Runs automatically before other skills execute/i);
 
-const postureCommands = [
-  ["quinn", "Quinn"],
-  ["max", "Max"],
-  ["mara", "Mara"],
-  ["herald", "Herald"],
-  ["echo", "Echo"],
+const migratedSkills = [
+  "judgment-trim",
+  "judgment-sharpen",
+  "judgment-quinn",
+  "judgment-primer",
+  "judgment-max",
+  "judgment-mara",
+  "judgment-herald",
+  "judgment-echo",
+  "judgment-digest",
+  "judgment-diagnostic",
 ];
-for (const [command, role] of postureCommands) {
-  const content = await readFile(path.join(pluginRoot, `commands/${command}.md`), "utf8");
-  const [title] = content.split(/\r?\n/, 1);
-  assert.match(title, new RegExp(`^Adopt ${role}'s posture:`));
-  assert.match(content, new RegExp(`Within Judgment Engine work, embody only ${role}'s characteristics`));
-  assert.match(content, /Do not apply other role definitions unless the user requests them/i);
-  assert.match(content, new RegExp(`Maintain ${role}'s selected posture across subsequent Judgment Engine work`));
-  assert.match(content, /When the user moves to an unrelated task, leave this plugin's scope/i);
-  assert.match(content, new RegExp(`if Judgment Engine work resumes, ${role} remains selected unless switched`));
-  assert.match(content, /not automatic runtime loading/i);
-}
-
-const aliases = [
-  ["Inquiry Digest", "digest"],
-  ["Judgment Primer", "primer"],
-  ["System Diagnostic Report", "diagnostic"],
-];
-
-for (const [alias, command] of aliases) {
-  const artifact = `commands/${command}.md`;
-  const invocation = `/judgment-engine-virelan:${command}`;
-  await stat(path.join(pluginRoot, artifact));
-  assert.ok(
-    readme.includes(`| ${alias} | \`${artifact}\` | \`${invocation}\` |`),
-    `${alias} must document its artifact and canonical invocation`,
+const migratedContent = new Map();
+for (const skill of migratedSkills) {
+  const content = await readFile(
+    path.join(pluginRoot, `skills/${skill}/SKILL.md`),
+    "utf8",
   );
+  migratedContent.set(skill, content);
+  assert.match(content, new RegExp(`name: ${skill}(?:\\n|$)`));
+  assert.match(content, /description: .{30,}/);
+  assert.match(readme, new RegExp(`\\x60${skill}\\x60`));
 }
+
+for (const [skill, role] of [
+  ["judgment-quinn", "Quinn"],
+  ["judgment-max", "Max"],
+  ["judgment-mara", "Mara"],
+  ["judgment-herald", "Herald"],
+  ["judgment-echo", "Echo"],
+]) {
+  const content = migratedContent.get(skill);
+  assert.match(content, new RegExp(`${role} posture`));
+  assert.match(content, /do not import other role definitions unless requested/i);
+  assert.match(content, /If the user has not selected .* ask/i);
+  assert.match(content, /do not carry it into unrelated work/i);
+}
+
+assert.match(migratedContent.get("judgment-trim"), /10.?15%/);
+assert.match(migratedContent.get("judgment-trim"), /Do not rewrite/);
+assert.match(migratedContent.get("judgment-sharpen"), /clearly labeled as an option/i);
+assert.match(migratedContent.get("judgment-primer"), /genuine judgment pressure/i);
+assert.match(migratedContent.get("judgment-primer"), /do not generate questions/i);
+assert.match(migratedContent.get("judgment-digest"), /revealed assumptions/i);
+assert.match(migratedContent.get("judgment-digest"), /save it to a file only when the user asks/i);
+assert.match(migratedContent.get("judgment-diagnostic"), /Do not claim knowledge of hidden prompts/i);
+assert.match(migratedContent.get("judgment-diagnostic"), /Mark unavailable state as unknown/i);
+assert.doesNotMatch(readme, /\/judgment-engine-virelan:/);
+await assert.rejects(stat(path.join(pluginRoot, "commands")), { code: "ENOENT" });
 
 const removedSkillDirectories = ["qa-runner", "writing-workshop"];
 for (const skill of removedSkillDirectories) {

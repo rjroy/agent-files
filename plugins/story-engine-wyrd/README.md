@@ -31,41 +31,29 @@ Instead of single outputs, the engine generates 5 distinct candidate approaches 
 ### Persistent State
 All work saves to `.story-state/` with metadata tracking, allowing resumption from any chapter or creative phase.
 
-## Commands
+## Skills
 
-### `/story-engine-wyrd:write-story`
-Main entry point for story creation. Orchestrates multi-agent workflow for concept development, character building, prose writing, quality checking, and continuity validation.
+- **`story-write-story`** — Main resumable story-creation workflow, with user approval gates for concept selection, plan approval, and chapter-quality decisions.
+- **`story-review-story`** — Informational, read-only continuity review of an existing story bible.
+- **`story-plan-plot`** — Collaborative plot planning, structure troubleshooting, and outline refinement.
+- **`story-develop-character`** — Collaborative character creation and refinement.
 
-**Input formats:**
-- Natural language: `/story-engine-wyrd:write-story A cyberpunk heist across 12 chapters`
-- File reference: `/story-engine-wyrd:write-story ./my-outline.md`
-- Resume: `/story-engine-wyrd:write-story continue .story-state/Cyberpunk-Heist/PLAN.md`
-
-### `/story-engine-wyrd:plan-plot`
-Develop a structured plot outline before writing. Creates a chapter-by-chapter breakdown with conflict escalation and thematic arcs.
-
-### `/story-engine-wyrd:develop-character`
-Build deep character profiles with backstory, motivation, voice patterns, and relationship maps. Generates character-world interactions.
-
-### `/story-engine-wyrd:review-story`
-Comprehensive multi-pass review covering narrative structure, continuity, prose quality, character consistency, and thematic coherence. Provides revision guidance.
+Invoke a skill conversationally by asking for its described task; provide a story directory, outline, or resume plan path when relevant. Slash-command syntax is no longer used.
 
 ## Specialized Agents
 
-The system delegates creative work to specialized agents:
+The system delegates concept development, character building, and prose generation to three retained agents:
 
-- **Concept Developer** — Explores story premise, identifies core conflicts, and validates world fit
-- **Character Builder** — Develops detailed character profiles with depth and consistency
-- **Prose Writer** — Executes chapter writing with attention to voice, pacing, and sensory detail
-- **Sampling Curator** — Evaluates 5 candidate approaches and recommends the strongest direction
-- **Quality Checker** — Line-edits for prose quality, grammar, and style consistency
-- **Continuity Validator** — Tracks character development, plot threads, and world consistency across chapters
-- **Final Review** — Holistic assessment of narrative completeness and thematic resonance
+- **`story-engine-wyrd-concept-developer`** — Explores story premise, identifies core conflicts, and validates world fit
+- **`story-engine-wyrd-character-builder`** — Develops detailed character profiles with depth and consistency
+- **`story-engine-wyrd-prose-writer`** — Executes chapter writing with attention to voice, pacing, and sensory detail
+
+The `story-write-story` parent handles all sample selection and workflow state. The shared **`story-engine-wyrd-story-reviewer`** is invoked fresh in quality, continuity, or final-review mode; it is read-only and returns findings. The parent applies review outcomes to schema-defined frontmatter/metadata and handles any user-approved revisions. Review does not grant permission to edit story files without user approval.
 
 ## Skills
 
 ### `story-engine-reference`
-Passive reference library providing access to story worlds, narrative theory modules, genre lenses, and format guidelines. Invoked by commands to load contextual materials.
+Passive reference library providing access to story worlds, narrative theory modules, genre lenses, and format guidelines. The story planning and character skills load relevant materials as needed.
 
 ### `story-compiler`
 Aggregates completed chapters into final story documents with metadata, formatting, and optional export.
@@ -92,14 +80,14 @@ Stories store work in `.story-state/[StoryName]/`:
 └── ...
 ```
 
-Resume any story by referencing its PLAN.md file.
+Resume any story by asking to continue and providing its PLAN.md path.
 
 ## Getting Started
 
-1. **Write a story:** `/story-engine-wyrd:write-story Your story concept here`
+1. **Write a story:** Ask for a story in natural language and include any format, world, or premise details you already know.
 2. **Let the engine guide you:** Respond to format and world questions
 3. **Make creative decisions:** Select between 5 candidate approaches for each chapter
-4. **Review and iterate:** Use the review command to assess and refine
+4. **Review and iterate:** Ask for an informational continuity review of the story directory
 
 ## Theory and Craft
 

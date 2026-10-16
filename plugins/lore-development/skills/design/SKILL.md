@@ -17,7 +17,7 @@ Write the body Markdown-first per the "Body Format" section of `../../shared/fro
 
 After saving, invoke the `design-reviewer` subagent with the host's subagent capability in
 `initial-review` mode on the saved design. If unavailable, dispatch the host's
-general-purpose subagent with the role from `agents/design-reviewer.md`. If
+general-purpose subagent with the role from `../../../../omo-slim-agents/design-reviewer.md` (resolved from this skill's base directory). If
 findings are corrected, invoke `verification` mode with the complete unresolved
 finding records and changed sections. After those findings close, run one
 terminal broad acceptance review. Corrections from that review receive targeted

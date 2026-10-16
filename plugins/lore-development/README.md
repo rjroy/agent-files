@@ -35,7 +35,7 @@ The plugin includes a hook that captures ideas without invoking the AI. Start an
 
 ## Artifact Storage
 
-Context lives in `.lore/` across four zones. Each has a different purpose, audience, and lifetime. The only file at the `.lore/` root is `lore-agents.md`, a cross-plugin agent registry surface (see below).
+Context lives in `.lore/` across four zones. Each has a different purpose, audience, and lifetime. The only file at the `.lore/` root is `lore-agents.md`, an optional project-specific agent recommendation surface (see below).
 
 ```
 .lore/
@@ -68,7 +68,7 @@ Context lives in `.lore/` across four zones. Each has a different purpose, audie
 │
 ├── learned/        # Operational mistakes worth preserving — worker-oriented
 │
-└── lore-agents.md  # Agent registry (optional, cross-plugin surface)
+└── lore-agents.md  # Project-specific agent recommendations (optional)
 ```
 
 **Why four zones?** `local/` holds disposable, gitignored plans, notes, and task context for active execution. `work/` preserves shared historical conversations (including intents, brainstorms, and older work artifacts) as searchable, nonbinding context. `reference/` holds selectively maintained descriptions of what code and tests cannot explain. `learned/` is narrowly scoped to operational mistakes and remains unchanged. Each has a different decay rate and reader.
@@ -86,22 +86,26 @@ storage in a project, run `python3 <path-to-lore-development>/scripts/ensure_loc
 
 Pre-work-layout projects may have legacy directories directly under `.lore/` (`specs/`, `design/`, `retros/`, `plans/`, and others). Use optional `/lore-development:migrate` to preview moving recognized historical folders into `work/` and local `plans/`, `tasks/`, and `notes/`. Legacy HTML artifacts are converted to Markdown with original-byte backups in ignored local storage. Unmapped data is reported and left untouched; migration requires explicit confirmation and is not needed to use current skills.
 
-## Agents
+## Agent prompt bodies
 
-The plugin ships with these agents for skills to invoke when appropriate:
+The six lore prompt bodies live as flat Markdown files in the repository-root
+`../../omo-slim-agents/` directory. For OpenCode activation, the Slim config will
+own IDs, models, permissions, skills/MCP access, and routing; these prompt files
+contain bodies only. A later setup step will link the global Slim prompt
+directory to that repository directory. Do not duplicate runtime metadata here.
 
 | Agent | Purpose |
 |-------|---------|
-| `lore-researcher` | Search `.lore/` for useful historical context before intents or plans |
-| `bun-typescript-reviewer` | Review Bun/TypeScript daemon, Unix-socket, CLI, Next.js, and React implementations against requested behavior |
-| `design-reviewer` | Review design documents for weak decisions and gaps |
-| `plan-reviewer` | Review plans for infeasible steps and scope creep |
-| `intent-reviewer` | Check that intent notes faithfully capture what the user wants and why |
-| `rust-daemon-cli-reviewer` | Review Rust daemon and CLI implementations against requested behavior |
+| [`lore-researcher`](../../omo-slim-agents/lore-researcher.md) | Search `.lore/` for useful historical context before intents or plans |
+| [`bun-typescript-reviewer`](../../omo-slim-agents/bun-typescript-reviewer.md) | Review Bun/TypeScript daemon, Unix-socket, CLI, Next.js, and React implementations against requested behavior |
+| [`design-reviewer`](../../omo-slim-agents/design-reviewer.md) | Review design documents for weak decisions and gaps |
+| [`plan-reviewer`](../../omo-slim-agents/plan-reviewer.md) | Review plans for infeasible steps and scope creep |
+| [`intent-reviewer`](../../omo-slim-agents/intent-reviewer.md) | Check that intent notes faithfully capture what the user wants and why |
+| [`rust-daemon-cli-reviewer`](../../omo-slim-agents/rust-daemon-cli-reviewer.md) | Review Rust daemon and CLI implementations against requested behavior |
 
-## Agent Registry
+## Project-specific agent recommendations
 
-Beyond the built-in agents, skills can leverage project-specific agents for domain concerns (security, performance, architecture, etc.). Instead of hardcoding agent names into every skill, the plugin uses a project-level registry.
+Skills can use this optional file to learn which existing agents are relevant to a project's domain concerns (security, performance, architecture, etc.). It is conversational routing guidance, not a second registry of Slim agent IDs, models, or permissions.
 
 **How it works**:
 1. Create or update `.lore/lore-agents.md` with agents relevant to your project

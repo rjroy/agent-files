@@ -4,16 +4,13 @@ Repository of reference materials for the Suno AI 5.0 songwriting system. This s
 
 ## Purpose
 
-This skill serves as the reference library for music creation commands and workflows. When invoked, it makes available all theme files, theory modules, lens transformations, and supporting materials needed for the two-phase songwriting system.
+This skill serves as the reference library for music creation workflows. It provides theme files, theory modules, lens transformations, and supporting materials for the two-phase songwriting system.
 
-## When to Invoke
+## When to Use
 
-This skill should be invoked by music engine commands (like `/write-lyrics`) to access reference materials. It is NOT intended for direct user interaction but rather as a resource repository that other commands can utilize.
+Use this reference library when a music workflow needs theme, lens, theory, image, or video guidance. It is primarily supporting material rather than a standalone creative workflow.
 
-Commands should invoke this skill using:
-```
-Skill tool with command: "music-engine-rowan:music-engine-reference"
-```
+Skills and agents should read only the relevant materials from this library. Resolve resource paths relative to this skill's installed directory; never assume the process working directory is the collection root.
 
 ## Available Reference Materials
 
@@ -23,7 +20,7 @@ Skill tool with command: "music-engine-rowan:music-engine-reference"
 - Unified Suno 5.0 songwriting system
 - Two-phase creation workflow (Concept Development → Song Execution)
 - Core requirements and quality standards
-- Quick start commands and error prevention
+- Quick-start guidance and error prevention
 
 ### Theory Modules (Load Contextually During Workflow)
 
@@ -197,10 +194,10 @@ music-engine-reference/
 
 ## Usage Pattern
 
-When a command like `/write-lyrics` is invoked:
+When a songwriting workflow such as `music-write-lyrics` is used:
 
-1. **Command invokes this skill** to load it into context
-2. **Command accesses reference files** from this skill's directory
+1. **Workflow reads this reference skill** for needed context
+2. **Workflow accesses reference files** from this skill's directory
 3. **Theory modules loaded contextually** during the two-phase workflow:
    - Phase 1: Load base.md + theme/lens + story theory
    - Phase 2A: Load lyrical craft theory
@@ -208,9 +205,9 @@ When a command like `/write-lyrics` is invoked:
    - Phase 2C: Load formatting theory
 4. **Drop previous modules** when moving to next step
 
-## Integration with Commands
+## Integration with Workflows
 
-Commands reference files using relative paths from this skill directory, e.g. `Read music/theory/theory-lyrical-craft.md from music-engine-reference skill`. The same pattern applies to any path under `music/`, `images/`, or `video/` listed above.
+Workflows reference files relative to this skill directory, e.g. read `music/theory/theory-lyrical-craft.md` from this reference skill. The same pattern applies to any path under `music/`, `images/`, or `video/` listed above. Use the supported OpenCode skill-loading and file-reading capabilities, resolving resources from this reference skill's directory.
 
 ## Maintenance Notes
 
@@ -222,4 +219,4 @@ Commands reference files using relative paths from this skill directory, e.g. `R
 
 ## External Resources
 
-- **art-gen MCP**: Used by cover-art-generator agent for image generation
+- **Optional media generation**: A separately available image or video generation integration may be used by the corresponding specialist when present; otherwise those workflows return copy-paste-ready prompts.

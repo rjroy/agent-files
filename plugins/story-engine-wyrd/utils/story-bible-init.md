@@ -244,7 +244,7 @@ After the user approves the plan, the orchestrator updates `metadata.json` with:
 
 ## Instructions
 
-This checklist is used by the quality-checker agent to validate each chapter. All criteria must pass for a chapter to be marked complete. Users may edit this file to add story-specific criteria or adjust standards.
+This checklist is used by the story-engine-wyrd-story-reviewer in quality mode to validate each chapter. All criteria must pass for a chapter to be marked complete. Users may edit this file to add story-specific criteria or adjust standards.
 
 ---
 
@@ -411,7 +411,7 @@ END FUNCTION
 **Usage Example** (in orchestrator):
 
 ```
-// User invokes: /write-story A 30-chapter novel about cyberpunk rebellion
+// User asks for a 30-chapter novel about cyberpunk rebellion.
 
 raw_title = extract_title_from_input("A 30-chapter novel about cyberpunk rebellion")
 // raw_title = "Cyberpunk Rebellion"
@@ -452,14 +452,14 @@ RETURN Error("Invalid path: directory traversal not allowed")
 
 **Trigger**: `.story-state/[Sanitized-Title]/` directory already exists on filesystem
 
-**Example**: User runs `/write-story Cyberpunk Rebellion` twice
+**Example**: User asks to start "Cyberpunk Rebellion" twice.
 
 **Expected Behavior**:
 ```
 RETURN Error("Story directory already exists: .story-state/Cyberpunk-Rebellion\nUse resume command to continue existing story, or choose different title.")
 ```
 
-**Orchestrator Response**: Display error message, suggest resume command: `/write-story continue .story-state/Cyberpunk-Rebellion/PLAN.md`
+**Orchestrator Response**: Display an error message and suggest asking to continue the story with `.story-state/Cyberpunk-Rebellion/PLAN.md`.
 
 ---
 
@@ -555,12 +555,12 @@ After initialization completes successfully, the following structure and files M
 ## Integration with Orchestrator Workflow
 
 **When to Call**: Orchestrator calls `initialize_story_bible()` after:
-1. Parsing user input (`/write-story [input]`)
+1. Parsing the user's conversational story request and any supplied file reference
 2. Extracting story title (from natural language or file reference)
 3. Detecting this is a new story (not a resume operation)
 
 **What Happens Next**: After successful initialization:
-1. Orchestrator spawns `concept-developer` agent to generate PLAN.md
+1. Orchestrator spawns `story-engine-wyrd-concept-developer` agent to generate PLAN.md
 2. Concept-developer writes PLAN.md to `.story-state/[Title]/PLAN.md`
 3. Orchestrator presents plan to user for approval
 4. After approval, orchestrator updates `metadata.json` with `format` and `total_chapters` from PLAN.md
@@ -673,7 +673,7 @@ use_parts = false
 Error("Story directory already exists: .story-state/The-Cyberpunk-Rebellion\nUse resume command to continue existing story, or choose different title.")
 ```
 
-**Orchestrator suggests**: `/write-story continue .story-state/The-Cyberpunk-Rebellion/PLAN.md`
+**Orchestrator suggests**: Ask to continue the story using `.story-state/The-Cyberpunk-Rebellion/PLAN.md`.
 
 ---
 
@@ -758,15 +758,15 @@ Ok(".story-state/The-Incredibly-Long-and-Elaborate-Title-That-Goes-On-and-On-Abo
 
 ## Notes for Orchestrator Implementation
 
-**Language-Agnostic Design**: This document describes algorithms in pseudocode. The orchestrator (implemented in markdown as a Claude Code command) will use natural language instructions to Claude to achieve the same results via Write, Read, and Bash tools.
+**Language-Agnostic Design**: This document describes algorithms in pseudocode. The `story-write-story` skill applies them using the file and filesystem capabilities available in its OpenCode session.
 
 **Recommended Orchestrator Approach**:
-1. Use Write tool to create directories and files
-2. Use Read tool to verify creation succeeded
-3. Handle errors by checking Write tool responses
-4. Use Bash tool for directory operations if needed (mkdir, rm -rf for cleanup)
+1. Use available OpenCode filesystem capabilities to create directories and files
+2. Use available OpenCode file-reading capabilities to verify creation succeeded
+3. Handle errors by checking the file-operation results
+4. Use the filesystem or shell capabilities available in the OpenCode session for directory operations; limit cleanup to the partially initialized `.story-state/[Title]/` directory.
 
-**Example Orchestrator Implementation Pattern** (in `/write-story` command):
+**Example Orchestrator Implementation Pattern** (in the `story-write-story` skill):
 
 ```markdown
 ## Story Bible Initialization
@@ -783,7 +783,7 @@ When creating a new story, follow these steps to initialize the story bible:
    - If `.story-state/[Sanitized-Title]/` exists, return error suggesting resume command
    - Do NOT overwrite existing stories
 
-3. **Create directory structure** using Write tool:
+3. **Create directory structure** using available OpenCode filesystem capabilities:
    - Create `.story-state/[Sanitized-Title]/`
    - Create subdirectories: `characters/`, `world-state/`, `plot-threads/`, `chapters/`
 

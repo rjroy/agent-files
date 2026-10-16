@@ -2,37 +2,38 @@
 
 <img src="assets/logo.png" width="160" align="right" alt="Music Engine of Rowan">
 
-A Claude Code plugin for songwriting and media generation targeting Suno AI. Produces lyrics, production design, cover art, and video hooks through a multi-agent pipeline with verbalized sampling at every creative stage.
+A songwriting and media-prompt collection for OpenCode/Slim, targeting Suno AI. Produces lyrics, production design, cover-art prompts, and video-hook prompts through a multi-agent pipeline with verbalized sampling at creative stages.
 
-## Commands
+## Skills
 
 | Command | What it does |
 |---------|--------------|
-| `/music-engine-rowan:write-lyrics` | Full two-phase songwriting pipeline: concept → lyrics → production → review → Suno-formatted output |
-| `/music-engine-rowan:get-image-prompt` | Generates k=3 image prompt samples for cover art, with theme-specific art style guidance |
-| `/music-engine-rowan:get-video-prompt` | Generates k=3 motion prompt samples for animating a static image into a video hook |
+| `music-write-lyrics` | Full two-phase songwriting pipeline: concept → lyrics → production → review → Suno-formatted output |
+| `music-image-prompt` | Generates k=3 image prompt samples for cover art, with theme-specific art style guidance |
+| `music-video-prompt` | Generates k=3 motion prompt samples for animating a static image into a video hook |
+| `music-suno-output` | Formats reviewed songs for Suno; optional studio mode prepares per-segment style entries (text only) |
+| `music-artwork` | Image and video artwork modes; paid rendering requires separate explicit approval |
 
 ## Songwriting Pipeline
 
-`/write-lyrics` orchestrates eight agents in sequence:
+`music-write-lyrics` delegates creative work to three retained agents; the parent skill handles selection and invokes output/artwork skills:
 
 ```
 Phase 1 (you + user)
   Concept Development → k=5 concepts → user selects → save concept-approved.md
 
-Phase 2 (sub-agents)
-  lyric-writer       → k=5 lyric approaches → sampling-curator → lyrics selected
-  production-designer → k=5 production designs → sampling-curator → production selected
-  song-reviewer      → fresh-eyes quality check → user approves fixes
-  suno-formatter     → copy-paste ready Suno Custom Mode output
+Phase 2 (three sub-agents)
+  music-engine-rowan-lyric-writer        → k=5 lyric approaches → parent confirms selection
+  music-engine-rowan-production-designer → k=5 production designs → parent confirms selection
+  music-engine-rowan-song-reviewer       → fresh-eyes quality check → user approves fixes
+  music-suno-output                      → copy-paste ready Suno Custom Mode output
 
 Optional
-  cover-art-generator → image prompts via get-image-prompt → art-gen → final image
-  hook-art-generator  → video prompts via get-video-prompt → art-gen → final video
-  studio-prep         → per-segment style entries for Suno's studio editor
+  music-artwork                          → image/video prompts via prompt skills; rendering separately approved
+  music-suno-output (studio mode)         → per-segment style entries for Suno's studio editor
 ```
 
-Each creative stage uses verbalized sampling: agents generate k=5 genuinely distinct approaches (not variations), then the `sampling-curator` auto-recommends and lets you select before the next stage runs. The song reviewer enters with no prior context from the creative process, which catches issues the creative agents missed while too close to the work.
+Each creative stage uses verbalized sampling: agents generate k=5 genuinely distinct approaches (not variations), then the parent workflow recommends and presents alternatives for user selection before proceeding. It preserves full selected content, leaves samples/state unchanged on cancellation, and cleans up samples only after a successful write. The song reviewer enters with no prior context from the creative process, which catches issues the creative agents missed while too close to the work.
 
 ## Themed Universes
 
@@ -67,21 +68,21 @@ Combine freely: Epic + Telveran, Lo-fi + Hope's Reach, Comedy + Virelan.
 
 If you have a MIDI file, the `midi-lyric-analyzer` skill extracts melodic motifs, phrase lengths, syllable counts, and stress patterns before writing begins. The resulting Lyrical Blueprint becomes a binding constraint for all five lyric samples, ensuring lyrics fit the melody naturally rather than fighting it.
 
-Invoke from within the `/write-lyrics` flow when asked about MIDI sources.
+Use from within the `music-write-lyrics` flow when a MIDI source should constrain the lyrics.
 
 ## Skills
 
 | Skill | Role |
 |-------|------|
-| `music-engine-reference` | Reference library: all theme files, lens files, theory modules, image guidance, video guidance. Loaded by commands, not interacted with directly. |
+| `music-engine-reference` | Reference library: theme files, lens files, theory modules, image guidance, and video guidance. |
 | `midi-lyric-analyzer` | Analyzes MIDI files and generates a Lyrical Blueprint for syllable-accurate lyric writing. |
 
 ## Output Files
 
 Songs are saved to `song-[title-slug]-[YYYYMMDD]/concept-approved.md` in your working directory, with phase metadata tracking progress through the pipeline. Samples files (`lyrics-samples.md`, `production-samples.md`) are created and then deleted by the curator after selection.
 
-Image and video prompt samples are written to the current directory as `image-prompt-samples-[concept-slug]-[date].md` and `video-prompt-samples-[concept-slug]-[date].md`.
+Image and video prompt samples are written to the workspace as `image-prompt-samples-[concept-slug]-[date].md` and `video-prompt-samples-[concept-slug]-[date].md`.
 
 ## Dependencies
 
-Cover art and video generation require the `art-gen-mcp` plugin, which provides `generate_image_replicate` and `generate_video_replicate` tools.
+Prompt skills produce prompt samples only. `music-artwork` rendering requires a separately available integration and explicit user approval for each generation and retry; prompt selection is not rendering permission.

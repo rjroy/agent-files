@@ -1,12 +1,11 @@
 """Regression tests for workflow safeguards encoded in plugin prompts."""
 
+import hashlib
 import json
 import os
 import re
 import subprocess
 from pathlib import Path
-
-import yaml
 
 PLUGIN_ROOT = Path(__file__).resolve().parents[2]
 REPOSITORY_ROOT = PLUGIN_ROOT.parents[1]
@@ -20,13 +19,33 @@ def _normalized(relative_path: str) -> str:
     return " ".join(_read(relative_path).split())
 
 
-def _frontmatter(relative_path: str) -> dict[str, object]:
-    prompt = _read(relative_path)
-    opening, frontmatter, _body = prompt.split("---", maxsplit=2)
-    assert opening == ""
-    parsed = yaml.safe_load(frontmatter)
-    assert isinstance(parsed, dict)
-    return parsed
+def _read_agent(name: str) -> str:
+    return (REPOSITORY_ROOT / "omo-slim-agents" / f"{name}.md").read_text(
+        encoding="utf-8"
+    )
+
+
+def _normalized_agent(name: str) -> str:
+    return " ".join(_read_agent(name).split())
+
+
+def _run_setup(config_home: Path, *args: str) -> subprocess.CompletedProcess[str]:
+    return subprocess.run(
+        ["node", str(REPOSITORY_ROOT / "scripts/setup-opencode.mjs"), *args],
+        capture_output=True,
+        check=True,
+        env={**os.environ, "XDG_CONFIG_HOME": str(config_home)},
+        text=True,
+    )
+
+
+def _assert_setup_links(config_dir: Path) -> None:
+    instructions = config_dir / "AGENTS.md"
+    slim_prompts = config_dir / "oh-my-opencode-slim"
+    assert instructions.is_symlink()
+    assert instructions.resolve() == REPOSITORY_ROOT / "COMMON.md"
+    assert slim_prompts.is_symlink()
+    assert slim_prompts.resolve() == REPOSITORY_ROOT / "omo-slim-agents"
 
 
 def test_implementation_roles_are_serialized_and_read_only() -> None:
@@ -76,8 +95,8 @@ def test_implementation_uses_proportionate_behavioral_evidence() -> None:
 def test_review_workflows_distinguish_initial_and_verification_modes() -> None:
     prompts = [
         _read("skills/implement/SKILL.md"),
-        _read("agents/design-reviewer.md"),
-        _read("agents/plan-reviewer.md"),
+        _read_agent("design-reviewer"),
+        _read_agent("plan-reviewer"),
     ]
 
     for prompt in prompts:
@@ -86,10 +105,10 @@ def test_review_workflows_distinguish_initial_and_verification_modes() -> None:
         assert "stable ID" in prompt
 
     for path in [
-        "agents/design-reviewer.md",
-        "agents/plan-reviewer.md",
+        "design-reviewer",
+        "plan-reviewer",
     ]:
-        prompt = _normalized(path)
+        prompt = _normalized_agent(path)
         assert "complete unresolved finding records" in prompt
         assert "newly encountered material issue" in prompt
         assert "do not populate a fixed template" in prompt
@@ -97,10 +116,10 @@ def test_review_workflows_distinguish_initial_and_verification_modes() -> None:
 
 def test_document_reviewers_do_not_force_ceremonial_output() -> None:
     for path in [
-        "agents/design-reviewer.md",
-        "agents/plan-reviewer.md",
+        "design-reviewer",
+        "plan-reviewer",
     ]:
-        prompt = _normalized(path)
+        prompt = _normalized_agent(path)
         assert "guessing which file is newest" in prompt
         assert "force one finding per lens" in prompt
         assert "Reviewed: [timestamp]" not in prompt
@@ -108,7 +127,7 @@ def test_document_reviewers_do_not_force_ceremonial_output() -> None:
 
 
 def test_lore_researcher_surfaces_context_without_binding_history() -> None:
-    prompt = _normalized("agents/lore-researcher.md")
+    prompt = _normalized_agent("lore-researcher")
 
     assert "shared/frontmatter-schema.md" in prompt
     assert "schema owns document types and lifecycle statuses" in prompt
@@ -138,8 +157,10 @@ def test_local_lore_paths_setup_and_legacy_discovery_are_documented() -> None:
         assert ".lore/work/" in prompt
         assert any(term in prompt for term in ("fall back", "falling back", "fallback"))
     init_path = REPOSITORY_ROOT / "plugins/field-guide/skills/init/SKILL.md"
-    init = Path(init_path).read_text()
-    assert "CronCreate and CronList are only required for scheduling" in init
+    init = " ".join(Path(init_path).read_text(encoding="utf-8").split())
+    assert "Scheduled lint is not available through the supported OpenCode tools" in init
+    assert "`/field-guide:lint` can be run manually when useful" in init
+    assert "Do not create or update `.field-guide.json` for scheduling" in init
     assert "Do not require the helper or Cron for wiki/index setup" in init
     assert "do not claim `.lore/local/` is ready" in init
     schema = _read("shared/frontmatter-schema.md")
@@ -209,7 +230,7 @@ def test_prep_plan_prompts_collaborative_evidence_driven_planning() -> None:
 
 
 def test_plan_reviewer_avoids_exhaustive_mapping_and_historical_authority() -> None:
-    reviewer = _normalized("agents/plan-reviewer.md")
+    reviewer = _normalized_agent("plan-reviewer")
 
     assert "fits the user's current direction" in reviewer
     assert "do not override current user direction" in reviewer
@@ -224,7 +245,7 @@ def test_plan_reviewer_avoids_exhaustive_mapping_and_historical_authority() -> N
 
 
 def test_bun_typescript_reviewer_requires_material_traceable_findings() -> None:
-    reviewer = _normalized("agents/bun-typescript-reviewer.md")
+    reviewer = _normalized_agent("bun-typescript-reviewer")
     implementation = _normalized("skills/implement/SKILL.md")
 
     assert "A review that finds no material non-conformance is successful" in reviewer
@@ -268,7 +289,7 @@ def test_intent_prompt_captures_substantive_revisable_direction() -> None:
 
 
 def test_intent_reviewer_has_fresh_context_modes_without_contract_checks() -> None:
-    reviewer = _normalized("agents/intent-reviewer.md")
+    reviewer = _normalized_agent("intent-reviewer")
 
     assert "initial-review" in reviewer
     assert "verification" in reviewer
@@ -278,8 +299,8 @@ def test_intent_reviewer_has_fresh_context_modes_without_contract_checks() -> No
 
 
 def test_intent_reviewer_and_researcher_treat_legacy_specs_as_history() -> None:
-    reviewer = _normalized("agents/intent-reviewer.md")
-    researcher = _normalized("agents/lore-researcher.md")
+    reviewer = _normalized_agent("intent-reviewer")
+    researcher = _normalized_agent("lore-researcher")
 
     assert "historical context, not a binding contract" in reviewer
     assert "The user's current direction prevails" in reviewer
@@ -290,7 +311,7 @@ def test_intent_reviewer_and_researcher_treat_legacy_specs_as_history() -> None:
     assert "do not override the user's present direction" in researcher
     assert "old-document noncompliance alone is not a blocker" in researcher
 
-    design_reviewer = _normalized("agents/design-reviewer.md")
+    design_reviewer = _normalized_agent("design-reviewer")
     assert "Historical specs and other work artifacts" in design_reviewer
     assert "do not constrain current user direction" in design_reviewer
     assert "old-document noncompliance alone" in design_reviewer
@@ -343,10 +364,10 @@ def test_implementation_reviewers_follow_current_direction() -> None:
     assert "mapped source obligations" not in implementation
     assert "obligation-to-evidence mapping" not in implementation
     for path in [
-        "agents/bun-typescript-reviewer.md",
-        "agents/rust-daemon-cli-reviewer.md",
+        "bun-typescript-reviewer",
+        "rust-daemon-cli-reviewer",
     ]:
-        reviewer = _normalized(path)
+        reviewer = _normalized_agent(path)
         assert "user's current requested behavior" in reviewer
         assert "do not override current user direction" in reviewer
         assert "Do not report noncompliance with an old artifact alone" in reviewer
@@ -385,10 +406,18 @@ def test_readme_skill_table_matches_active_inventory_and_shared_lifecycle() -> N
     assert "`/field-guide:stratify`" in readme
     assert (PLUGIN_ROOT.parent / "field-guide/skills/stratify/SKILL.md").is_file()
 
-    agent_table = readme.split("## Agents", maxsplit=1)[1].split("## ", maxsplit=1)[0]
-    listed_agents = set(re.findall(r"\| `([^`]+)` \|", agent_table))
-    active_agents = {path.stem for path in (PLUGIN_ROOT / "agents").glob("*.md")}
-    assert listed_agents == active_agents
+    agent_table = readme.split("## Agent prompt bodies", maxsplit=1)[1].split("## ", maxsplit=1)[0]
+    listed_agents = set(re.findall(r"\[`([^`]+)`\]\(", agent_table))
+    prompt_bodies = REPOSITORY_ROOT / "omo-slim-agents"
+    assert listed_agents == {
+        "lore-researcher",
+        "bun-typescript-reviewer",
+        "design-reviewer",
+        "plan-reviewer",
+        "intent-reviewer",
+        "rust-daemon-cli-reviewer",
+    }
+    assert all((prompt_bodies / f"{name}.md").is_file() for name in listed_agents)
     assert "learned/" in readme
     assert "no lore-development skill currently writes it" in schema
     assert "Shared four-value lifecycle across all lore zones" in schema
@@ -406,22 +435,21 @@ def test_retired_plan_breakdown_is_not_an_active_skill_or_implement_path(
     assert "Task file detection" not in implementation
     assert "task's exact Validation section" not in implementation
 
-    # Setup discovers skills from source directories. A dangling config symlink
-    # cannot restore a removed skill, and must remain untouched as user data.
+    # Setup adds repository skill roots to existing config; it does not install
+    # individual skill links or restore removed skills from stale registrations.
     config_home = tmp_path / "config"
+    config_dir = config_home / "opencode"
     skills_dir = config_home / "opencode/skills"
     skills_dir.mkdir(parents=True)
+    (config_dir / "opencode.json").write_text(json.dumps({"skills": []}), encoding="utf-8")
     stale_registration = skills_dir / "plan-breakdown"
     stale_registration.symlink_to(tmp_path / "missing-plan-breakdown")
-    setup = REPOSITORY_ROOT / "scripts/setup-opencode.sh"
-    result = subprocess.run(
-        [str(setup)], capture_output=True, check=True,
-        env={**os.environ, "XDG_CONFIG_HOME": str(config_home)}, text=True,
-    )
+    result = _run_setup(config_home, "--apply")
 
     assert stale_registration.is_symlink()
     assert not stale_registration.exists()
     assert "plan-breakdown" not in result.stdout
+    _assert_setup_links(config_dir)
 
 
 def test_commit_handoff_revalidates_changes_after_review() -> None:
@@ -443,64 +471,82 @@ def test_design_inputs_use_relevant_evidence_without_exhaustive_mapping() -> Non
     assert "Do not create requirement IDs, exhaustive mappings" in prompt
 
 
-def test_opencode_agent_frontmatter_is_read_only_with_explicit_models() -> None:
-    agent_models = {
-        "agents/bun-typescript-reviewer.md": "openai/gpt-6.1-sol#high",
-        "agents/design-reviewer.md": "openai/gpt-6-astra#high",
-        "agents/lore-researcher.md": "openai/gpt-6-luna#medium",
-        "agents/plan-reviewer.md": "openai/gpt-6-astra#high",
-        "agents/rust-daemon-cli-reviewer.md": "openai/gpt-6.1-sol#high",
-        "agents/intent-reviewer.md": "openai/gpt-6-astra#high",
+def test_lore_prompt_bodies_are_flat_and_runtime_metadata_free() -> None:
+    names = (
+        "plan-reviewer",
+        "rust-daemon-cli-reviewer",
+        "lore-researcher",
+        "intent-reviewer",
+        "design-reviewer",
+        "bun-typescript-reviewer",
+    )
+    for name in names:
+        prompt = _read_agent(name)
+        assert prompt.strip()
+        assert not prompt.startswith("---\n")
+        assert "\nmodel:" not in prompt
+        assert "\npermission:" not in prompt
+        assert not (PLUGIN_ROOT / "agents" / f"{name}.md").exists()
+
+
+def test_modeler_prompt_bodies_match_existing_inline_prompts() -> None:
+    expected_sha256 = {
+        "modeler-sol": "bc17f9e9441009f1d072855cd4e791ce7f06bfa4f6b09e87a133ed7f7e53917b",
+        "modeler-astra": "c13ee153410065868aae4e8801b7c33b80f3524b9757cb7d832b898ff446053a",
     }
-
-    for path, model in agent_models.items():
-        frontmatter = _frontmatter(path)
-        assert frontmatter["mode"] == "subagent"
-        assert frontmatter["permission"] == {"edit": "deny", "bash": "deny"}
-        assert frontmatter["model"] == model
-        assert "tools" not in frontmatter
+    for name, expected_hash in expected_sha256.items():
+        prompt = (REPOSITORY_ROOT / "omo-slim-agents" / f"{name}.md").read_bytes()
+        assert hashlib.sha256(prompt.rstrip(b"\n")).hexdigest() == expected_hash
 
 
-def test_setup_registers_lore_agents_without_overwriting(tmp_path: Path) -> None:
+def test_active_claude_setup_packaging_is_removed_and_beads_guidance_remains() -> None:
+    assert not (REPOSITORY_ROOT / ".claude-plugin" / "marketplace.json").exists()
+    assert not (REPOSITORY_ROOT / ".claude" / "settings.json").exists()
+    assert not (REPOSITORY_ROOT / ".claude" / "settings.local.json").exists()
+    assert not (REPOSITORY_ROOT / "scripts" / "setup-claude.sh").exists()
+    for collection in (
+        "lore-development",
+        "judgment-engine-virelan",
+        "music-engine-rowan",
+        "story-engine-wyrd",
+    ):
+        assert not (PLUGIN_ROOT.parent / collection / ".claude-plugin" / "plugin.json").exists()
+
+    instructions = (REPOSITORY_ROOT / "AGENTS.md").read_text(encoding="utf-8")
+    assert "bd prime" in instructions
+
+
+def test_setup_creates_only_shared_links_without_legacy_definition_installs(
+    tmp_path: Path,
+) -> None:
     config_home = tmp_path / "config"
-    env = {**os.environ, "XDG_CONFIG_HOME": str(config_home)}
-    setup = REPOSITORY_ROOT / "scripts/setup-opencode.sh"
+    config_dir = config_home / "opencode"
+    config_dir.mkdir(parents=True)
+    config_file = config_dir / "opencode.json"
+    config_file.write_text(json.dumps({"skills": []}), encoding="utf-8")
 
     conflicting_agent = config_home / "opencode/agents/intent-reviewer.md"
     conflicting_agent.parent.mkdir(parents=True)
     conflicting_agent.write_text("user-owned\n", encoding="utf-8")
+    conflicting_command = config_dir / "commands/init.md"
+    conflicting_command.parent.mkdir(parents=True)
+    conflicting_command.write_text("user-owned command\n", encoding="utf-8")
 
-    first = subprocess.run(
-        [str(setup)], capture_output=True, check=True, env=env, text=True
-    )
-    second = subprocess.run(
-        [str(setup)], capture_output=True, check=True, env=env, text=True
-    )
+    _run_setup(config_home, "--apply")
+    applied_config = config_file.read_bytes()
+    _run_setup(config_home, "--apply")
 
-    registered = sorted((config_home / "opencode/agents").iterdir())
-    source_agents = sorted((PLUGIN_ROOT / "agents").iterdir())
-    expected_agent_names = [path.name for path in source_agents]
-    for collection in ("music-engine-rowan", "story-engine-wyrd"):
-        expected_agent_names.extend(
-            f"{collection}-{path.name}"
-            for path in (REPOSITORY_ROOT / "plugins" / collection / "agents").iterdir()
-        )
-
-    assert not (config_home / "opencode/opencode.json").exists()
-    assert [path.name for path in registered] == sorted(expected_agent_names)
+    assert sorted(path.name for path in (config_dir / "agents").iterdir()) == ["intent-reviewer.md"]
     assert conflicting_agent.read_text(encoding="utf-8") == "user-owned\n"
-    assert all(path.is_symlink() for path in registered if path != conflicting_agent)
-    registered_count = sum(
-        (config_home / "opencode/agents" / path.name).is_symlink()
-        for path in source_agents
-    )
-    expected = f"Registered {registered_count} lore-development agents definition(s)"
-    assert expected in first.stdout
-    assert expected in second.stdout
-    assert "preserving existing OpenCode agent" in first.stderr
+    assert conflicting_command.read_text(encoding="utf-8") == "user-owned command\n"
+    assert [path.name for path in (config_dir / "commands").iterdir()] == ["init.md"]
+    assert not (config_dir / "skills").exists()
+    assert config_file.read_bytes() == applied_config
+    assert isinstance(json.loads(applied_config)["skills"], list)
+    _assert_setup_links(config_dir)
 
 
-def test_setup_preserves_skill_array_and_registers_commands(
+def test_setup_preserves_skill_array_and_user_command_collision(
     tmp_path: Path,
 ) -> None:
     config_home = tmp_path / "config"
@@ -514,25 +560,15 @@ def test_setup_preserves_skill_array_and_registers_commands(
     conflicting_command.parent.mkdir(parents=True)
     conflicting_command.write_text("user-owned\n", encoding="utf-8")
 
-    setup = REPOSITORY_ROOT / "scripts/setup-opencode.sh"
-    result = subprocess.run(
-        [str(setup)],
-        capture_output=True,
-        check=True,
-        env={**os.environ, "XDG_CONFIG_HOME": str(config_home)},
-        text=True,
-    )
+    _run_setup(config_home, "--apply")
 
     config = json.loads(config_file.read_text(encoding="utf-8"))
-    assert config["skills"] == skills
+    assert isinstance(config["skills"], list)
+    assert config["skills"][: len(skills)] == skills
     assert conflicting_command.read_text(encoding="utf-8") == "user-owned\n"
-    assert (config_dir / "commands/digest.md").is_symlink()
-    assert (config_dir / "commands/write-lyrics.md").is_symlink()
-    assert (config_dir / "commands/review-story.md").is_symlink()
-    assert (config_dir / "skills/implement").is_symlink()
-    assert (config_dir / "skills/intent").is_symlink()
-    assert not os.path.lexists(config_dir / "skills/specify")
-    assert "preserving existing OpenCode command" in result.stderr
+    assert sorted(path.name for path in (config_dir / "commands").iterdir()) == ["init.md"]
+    assert not (config_dir / "skills").exists()
+    _assert_setup_links(config_dir)
 
 
 def test_setup_preserves_dangling_definition_and_skill_collisions(
@@ -549,18 +585,11 @@ def test_setup_preserves_dangling_definition_and_skill_collisions(
     dangling_agent.symlink_to(tmp_path / "missing-agent.md")
     dangling_skill.symlink_to(tmp_path / "missing-skill")
 
-    setup = REPOSITORY_ROOT / "scripts/setup-opencode.sh"
-    result = subprocess.run(
-        [str(setup)],
-        capture_output=True,
-        check=True,
-        env={**os.environ, "XDG_CONFIG_HOME": str(config_home)},
-        text=True,
-    )
+    (config_dir / "opencode.json").write_text(json.dumps({"skills": []}), encoding="utf-8")
+    _run_setup(config_home, "--apply")
 
     assert dangling_agent.is_symlink()
     assert dangling_agent.readlink() == tmp_path / "missing-agent.md"
     assert dangling_skill.is_symlink()
     assert dangling_skill.readlink() == tmp_path / "missing-skill"
-    assert f"preserving existing OpenCode agent: {dangling_agent}" in result.stderr
-    assert f"preserving existing OpenCode skill: {dangling_skill}" in result.stderr
+    _assert_setup_links(config_dir)

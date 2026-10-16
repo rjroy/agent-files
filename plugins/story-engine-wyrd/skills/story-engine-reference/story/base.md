@@ -262,9 +262,9 @@ Every story should **explore a question or truth**, not just present events.
 
 ---
 
-## Command Integration
+## Story Skill Integration
 
-### Primary Command: write-story
+### Primary Skill: `story-write-story`
 
 Implements full three-phase workflow:
 1. User selects world, lens (optional), format
@@ -272,10 +272,10 @@ Implements full three-phase workflow:
 3. Phase 2: Load character-development → create characters → get approval
 4. Phase 3: Load prose-craft + dialogue-voice → write story → quality check → present
 
-### Supporting Commands
+### Supporting Skills
 
-- **develop-character** - Standalone character worksheet (loads character-development theory)
-- **plan-plot** - Plot structure helper (loads narrative-structure theory)
+- **story-develop-character** - Standalone character worksheet (loads character-development theory)
+- **story-plan-plot** - Plot structure helper (loads narrative-structure theory)
 
 ---
 
@@ -307,7 +307,7 @@ Use loaded theory for **internal validation**, not user presentation:
 ### Auto-Save Pattern
 
 After presenting final story:
-1. Use Write tool to save to markdown file
+1. Save the markdown file with the available OpenCode file-writing capability after confirming the destination with the user
 2. Naming: `story-[world]-[lens]-[title-slug]-[timestamp].md`
 3. Include frontmatter:
    ```yaml
@@ -358,7 +358,7 @@ Create `story/formats/format-[name].md` with:
 ```
 User Request
     ↓
-/write-story command
+`story-write-story` skill
     ↓
 Load story-engine-reference skill
     ↓

@@ -119,7 +119,7 @@ Generate k=5 production approaches exploring:
 - Instrumentation palettes (acoustic, electronic, hybrid, minimal)
 - Atmospheric arc variations (build, strip-down, wave, steady)
 
-Save to `production-samples.md`, await curator selection.
+Save to `production-samples.md`, then return it to the `music-write-lyrics` parent workflow for user-confirmed selection.
 
 **Step 2C: Technical Implementation** *(Load formatting theory)*
 - Apply Custom Mode field separation rules
@@ -132,16 +132,15 @@ Save to `production-samples.md`, await curator selection.
 - Note any significant deviations from original concept
 - Highlight particularly successful story/music integrations
 
-## Sampling Curator Integration
+## Parent-Owned Sample Selection
 
-After each VS-generating step, the `sampling-curator` agent:
-1. Parses the samples file
-2. Auto-recommends the highest probability sample
-3. Presents alternatives to user
-4. Writes selected content to song file
-5. Cleans up the samples file
+After each VS-generating step, the `music-write-lyrics` parent workflow:
+1. Parses the samples file and presents the highest-probability recommendation with alternatives
+2. Waits for the user's explicit selection; cancellation leaves state and samples unchanged
+3. Writes the selected sample's full content and updates the phase
+4. Deletes the samples file only after the write succeeds
 
-This ensures user agency at each creative decision point without overwhelming them with choices.
+Only the lyric writer, production designer, and song reviewer are Phase 2 subagents. This ensures user agency at each creative decision point without a separate curator agent.
 
 ## Quick Start Commands
 
@@ -200,7 +199,7 @@ This ensures user agency at each creative decision point without overwhelming th
 ### Process Errors to Avoid:
 - ✗ Creating songs without concept development phase
 - ✗ Generating single outputs instead of k samples
-- ✗ Skipping curator selection between phases
+- ✗ Skipping parent-owned, user-confirmed selection between phases
 - ✗ Deviating from approved concept without noting changes
 
 ### VS Errors to Avoid:

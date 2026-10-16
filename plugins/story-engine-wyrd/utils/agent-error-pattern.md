@@ -50,7 +50,7 @@ ERROR: Agent spawn failed
 
 Context:
 - Operation: Spawning [agent-name] for [purpose]
-- Agent Path: story-engine-wyrd/agents/[agent-name].md
+- Slim prompt: repository-root `omo-slim-agents/story-engine-wyrd-[agent-name].md`
 
 Diagnostic Details:
 - First attempt: [error message]

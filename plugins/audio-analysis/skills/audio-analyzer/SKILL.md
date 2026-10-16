@@ -7,7 +7,7 @@ description: Use this skill when the user asks about analyzing audio files for m
 
 ## Overview
 
-This skill provides capabilities for extracting musical information from audio files (WAV, MP3, FLAC, OGG, M4A). Each analysis script outputs structured JSON to stdout and can be invoked via the Bash tool.
+This skill provides capabilities for extracting musical information from audio files (WAV, MP3, FLAC, OGG, M4A). Each analysis script outputs structured JSON to stdout and can be invoked with OpenCode's shell tool.
 
 ## Decision Guidance
 
@@ -26,10 +26,10 @@ This skill provides capabilities for extracting musical information from audio f
 
 ## Quick Reference
 
-All scripts are located in `audio-analysis-plugin/scripts/audio/` and follow this pattern:
+Use the absolute directory supplied by the OpenCode skill loader as the canonical skill base. The collection root is two directories above the loaded skill directory; scripts are under `<collection-root>/scripts/audio/`. Resolve script paths from that base rather than the process working directory. Invoke them with Python 3 through the shell tool:
 
 ```bash
-python scripts/audio/<script_name>.py <file_path> [options]
+python3 <collection-root>/scripts/audio/<script_name>.py <file_path> [options]
 ```
 
 ### 1. Tempo Analysis (`analyze_tempo.py`)
@@ -37,7 +37,7 @@ python scripts/audio/<script_name>.py <file_path> [options]
 Extracts BPM and beat positions using librosa's beat tracker.
 
 ```bash
-python scripts/audio/analyze_tempo.py /path/to/audio.wav
+python3 <collection-root>/scripts/audio/analyze_tempo.py /path/to/audio.wav
 ```
 
 **Output Fields:**
@@ -51,7 +51,7 @@ python scripts/audio/analyze_tempo.py /path/to/audio.wav
 Identifies musical key and mode using Krumhansl-Schmuckler algorithm.
 
 ```bash
-python scripts/audio/analyze_key.py /path/to/audio.mp3
+python3 <collection-root>/scripts/audio/analyze_key.py /path/to/audio.mp3
 ```
 
 **Output Fields:**
@@ -65,7 +65,7 @@ python scripts/audio/analyze_key.py /path/to/audio.mp3
 Returns precise beat timestamp array for rhythm analysis.
 
 ```bash
-python scripts/audio/analyze_beats.py /path/to/audio.flac
+python3 <collection-root>/scripts/audio/analyze_beats.py /path/to/audio.flac
 ```
 
 **Output Fields:**
@@ -79,7 +79,7 @@ python scripts/audio/analyze_beats.py /path/to/audio.flac
 Identifies song sections (intro, verse, chorus, etc.) using feature similarity.
 
 ```bash
-python scripts/audio/analyze_structure.py /path/to/audio.ogg
+python3 <collection-root>/scripts/audio/analyze_structure.py /path/to/audio.ogg
 ```
 
 **Output Fields:**
@@ -94,7 +94,7 @@ python scripts/audio/analyze_structure.py /path/to/audio.ogg
 Extracts pitch class distribution over time (limited to 200 time points).
 
 ```bash
-python scripts/audio/analyze_chroma.py /path/to/audio.m4a
+python3 <collection-root>/scripts/audio/analyze_chroma.py /path/to/audio.m4a
 ```
 
 **Output Fields:**
@@ -107,7 +107,7 @@ python scripts/audio/analyze_chroma.py /path/to/audio.m4a
 Creates mel spectrogram visualization as PNG image.
 
 ```bash
-python scripts/audio/generate_spectrogram.py /path/to/audio.wav --output /path/to/output.png
+python3 <collection-root>/scripts/audio/generate_spectrogram.py /path/to/audio.wav --output /path/to/output.png
 ```
 
 **Options:**
@@ -123,7 +123,7 @@ python scripts/audio/generate_spectrogram.py /path/to/audio.wav --output /path/t
 Separates harmonic and percussive components, reports energy ratios.
 
 ```bash
-python scripts/audio/analyze_hpss.py /path/to/audio.wav
+python3 <collection-root>/scripts/audio/analyze_hpss.py /path/to/audio.wav
 ```
 
 **Output Fields:**
@@ -137,7 +137,7 @@ python scripts/audio/analyze_hpss.py /path/to/audio.wav
 Compares two audio files across tempo, key, and chroma dimensions.
 
 ```bash
-python scripts/audio/compare_audio.py /path/to/audio1.wav /path/to/audio2.wav
+python3 <collection-root>/scripts/audio/compare_audio.py /path/to/audio1.wav /path/to/audio2.wav
 ```
 
 **Output Fields:**
@@ -189,16 +189,16 @@ To analyze a song comprehensively:
 
 ```bash
 # Get tempo and beats
-python scripts/audio/analyze_tempo.py song.wav
+python3 <collection-root>/scripts/audio/analyze_tempo.py song.wav
 
 # Detect key
-python scripts/audio/analyze_key.py song.wav
+python3 <collection-root>/scripts/audio/analyze_key.py song.wav
 
 # Find song structure
-python scripts/audio/analyze_structure.py song.wav
+python3 <collection-root>/scripts/audio/analyze_structure.py song.wav
 
 # Generate visualization
-python scripts/audio/generate_spectrogram.py song.wav --output song_spectrogram.png
+python3 <collection-root>/scripts/audio/generate_spectrogram.py song.wav --output song_spectrogram.png
 ```
 
-For detailed script documentation, see @audio-script-guide.md
+For detailed script documentation, read `reference/audio-script-guide.md` relative to this loaded skill's canonical directory.

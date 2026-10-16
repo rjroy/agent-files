@@ -11,7 +11,7 @@ If `.lore/reference/vision.md` already exists, load it and offer to review or re
 
 ## Two Paths
 
-**Existing codebase**: Read broadly first — source code, `.lore/` artifacts, `CLAUDE.md`, README. Look for implicit values: what gets built, what gets rejected, what wins when things conflict. Draft from evidence. Where it's ambiguous, say so rather than inventing coherence.
+**Existing codebase**: Read broadly first — source code, `.lore/` artifacts, repository instructions such as `AGENTS.md` or `COMMON.md`, and README. Look for implicit values: what gets built, what gets rejected, what wins when things conflict. Draft from evidence. Where it's ambiguous, say so rather than inventing coherence.
 
 **New project**: Walk through questions to pull the vision out. Adapt based on responses.
 
