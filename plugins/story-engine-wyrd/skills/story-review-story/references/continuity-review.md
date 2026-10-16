@@ -323,7 +323,7 @@ Missing Files:
 - characters/protagonist-aria.md (required for character trait validation)
 - world-state/mechanics.md (required for world rule validation)
 
-Recommendation: Ensure story-engine-wyrd-concept-developer and story-engine-wyrd-character-builder agents have created
+Recommendation: Ensure the `developer` handler has completed the concept-developer and character-builder procedures
 story bible files before running continuity validation.
 ```
 

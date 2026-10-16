@@ -86,22 +86,32 @@ storage in a project, run `python3 <path-to-lore-development>/scripts/ensure_loc
 
 Pre-work-layout projects may have legacy directories directly under `.lore/` (`specs/`, `design/`, `retros/`, `plans/`, and others). Use optional `/lore-development:migrate` to preview moving recognized historical folders into `work/` and local `plans/`, `tasks/`, and `notes/`. Legacy HTML artifacts are converted to Markdown with original-byte backups in ignored local storage. Unmapped data is reported and left untouched; migration requires explicit confirmation and is not needed to use current skills.
 
-## Agent prompt bodies
+## Agent prompt bodies and procedures
 
-The six lore prompt bodies live as flat Markdown files in the repository-root
-`../../omo-slim-agents/` directory. For OpenCode activation, the Slim config will
-own IDs, models, permissions, skills/MCP access, and routing; these prompt files
-contain bodies only. A later setup step will link the global Slim prompt
-directory to that repository directory. Do not duplicate runtime metadata here.
+The repository-root `../../omo-slim-agents/` directory contains the four generic
+role handlers and the three unchanged standalone agents (`lore-researcher` and
+the two modelers). Configuration owns the seven registered IDs, models,
+permissions, skills/MCP access, and routing. The twelve specialist workflows
+are passive procedures, not additional registered agents.
 
-| Agent | Purpose |
-|-------|---------|
-| [`lore-researcher`](../../omo-slim-agents/lore-researcher.md) | Search `.lore/` for useful historical context before intents or plans |
-| [`bun-typescript-reviewer`](../../omo-slim-agents/bun-typescript-reviewer.md) | Review Bun/TypeScript daemon, Unix-socket, CLI, Next.js, and React implementations against requested behavior |
-| [`design-reviewer`](../../omo-slim-agents/design-reviewer.md) | Review design documents for weak decisions and gaps |
-| [`plan-reviewer`](../../omo-slim-agents/plan-reviewer.md) | Review plans for infeasible steps and scope creep |
-| [`intent-reviewer`](../../omo-slim-agents/intent-reviewer.md) | Check that intent notes faithfully capture what the user wants and why |
-| [`rust-daemon-cli-reviewer`](../../omo-slim-agents/rust-daemon-cli-reviewer.md) | Review Rust daemon and CLI implementations against requested behavior |
+Review specializations are passive procedures, not agent IDs. Their canonical
+catalog is `plugins/personal/skills/agent-procedures/references/index.md`; the
+loader resolves it from its installed skill base rather than through a
+repository-relative path. The catalog maps each procedure to its allowed role
+and required inputs. Lore-development procedures are:
+
+| Procedure ID | Role | Purpose |
+|--------------|------|---------|
+| `design-reviewer` | `reviewer` | Review design documents for material gaps and weak decisions |
+| `plan-reviewer` | `reviewer` | Review plans for feasibility, scope, and material omissions |
+| `intent-reviewer` | `reviewer` | Check that intent notes faithfully capture the user's direction |
+| `bun-typescript-reviewer` | `code-reviewer` | Review matching Bun/TypeScript daemon, Unix-socket, CLI, Next.js, and React changes |
+| `rust-daemon-cli-reviewer` | `code-reviewer` | Review matching Rust daemon and CLI changes |
+
+These procedure IDs select specialization within a generic role; do not dispatch
+the retired specialist names as agents. `lore-researcher` remains unchanged and
+continues to search `.lore/` for useful historical context before intents or
+plans.
 
 ## Project-specific agent recommendations
 

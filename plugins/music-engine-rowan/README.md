@@ -16,16 +16,16 @@ A songwriting and media-prompt collection for OpenCode/Slim, targeting Suno AI. 
 
 ## Songwriting Pipeline
 
-`music-write-lyrics` delegates creative work to three retained agents; the parent skill handles selection and invokes output/artwork skills:
+`music-write-lyrics` delegates creative work through shared roles and explicit passive procedures; the parent skill handles selection and invokes output/artwork skills:
 
 ```
 Phase 1 (you + user)
   Concept Development → k=5 concepts → user selects → save concept-approved.md
 
 Phase 2 (three sub-agents)
-  music-engine-rowan-lyric-writer        → k=5 lyric approaches → parent confirms selection
-  music-engine-rowan-production-designer → k=5 production designs → parent confirms selection
-  music-engine-rowan-song-reviewer       → fresh-eyes quality check → user approves fixes
+  writer + music-engine-rowan-lyric-writer procedure → k=5 lyric approaches → parent confirms selection
+  developer + music-engine-rowan-production-designer procedure → k=5 production designs → parent confirms selection
+  reviewer + music-engine-rowan-song-reviewer procedure → fresh-eyes quality check → user approves fixes
   music-suno-output                      → copy-paste ready Suno Custom Mode output
 
 Optional
@@ -33,7 +33,7 @@ Optional
   music-suno-output (studio mode)         → per-segment style entries for Suno's studio editor
 ```
 
-Each creative stage uses verbalized sampling: agents generate k=5 genuinely distinct approaches (not variations), then the parent workflow recommends and presents alternatives for user selection before proceeding. It preserves full selected content, leaves samples/state unchanged on cancellation, and cleans up samples only after a successful write. The song reviewer enters with no prior context from the creative process, which catches issues the creative agents missed while too close to the work.
+Each creative call has an explicit procedure, scope, request, and inputs envelope. Legacy specialist IDs identify passive procedures, never dispatch targets. Each stage uses verbalized sampling: handlers generate k=5 genuinely distinct approaches (not variations), then the parent workflow recommends and presents alternatives for user selection before proceeding. It preserves full selected content, leaves samples/state unchanged on cancellation, and cleans up samples only after a successful write. The song reviewer uses a fresh invocation for each review, with no reused reviewer session.
 
 ## Themed Universes
 
@@ -79,7 +79,7 @@ Use from within the `music-write-lyrics` flow when a MIDI source should constrai
 
 ## Output Files
 
-Songs are saved to `song-[title-slug]-[YYYYMMDD]/concept-approved.md` in your working directory, with phase metadata tracking progress through the pipeline. Samples files (`lyrics-samples.md`, `production-samples.md`) are created and then deleted by the curator after selection.
+Songs are saved to `song-[title-slug]-[YYYYMMDD]/concept-approved.md` in your working directory, with phase metadata tracking progress through the pipeline. Samples files (`lyrics-samples.md`, `production-samples.md`) are created by the authorized writer/developer procedure and deleted by the parent only after selection is successfully written and verified.
 
 Image and video prompt samples are written to the workspace as `image-prompt-samples-[concept-slug]-[date].md` and `video-prompt-samples-[concept-slug]-[date].md`.
 

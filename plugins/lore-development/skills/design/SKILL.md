@@ -15,11 +15,20 @@ Save to `.lore/work/design/[topic].md` using kebab-case. Load `../../shared/fron
 
 Write the body Markdown-first per the "Body Format" section of `../../shared/frontmatter-schema.md (resolved from this skill's base directory)`. Reach for embedded inline HTML when topology or trade-offs need it — inline-SVG architecture or flow diagrams that beat prose, and side-by-side visual comparison of competing options.
 
-After saving, invoke the `design-reviewer` subagent with the host's subagent capability in
-`initial-review` mode on the saved design. If unavailable, dispatch the host's
-general-purpose subagent with the role from `../../../../omo-slim-agents/design-reviewer.md` (resolved from this skill's base directory). If
-findings are corrected, invoke `verification` mode with the complete unresolved
-finding records and changed sections. After those findings close, run one
-terminal broad acceptance review. Corrections from that review receive targeted
-verification with their complete finding records; do not run another broad
-review unless accepted scope changed.
+After saving, invoke the registered `reviewer` with this request envelope:
+
+- `procedure`: `design-reviewer`
+- `scope`: the saved design
+- `request`: perform an independent review of the design
+- `inputs`: the design path and relevant context
+- `mode`: `initial-review`
+
+For fallback, resolve that procedure through the shared `agent-procedures` base;
+do not load a retired root prompt directly. If findings are corrected, start a
+fresh reviewer invocation with `verification` mode, the same procedure and scope,
+a request to verify the corrections, and inputs containing the complete
+unresolved finding records and changed sections. After those findings close,
+start a fresh terminal broad acceptance review using `initial-review` mode.
+Corrections from that review receive fresh targeted verification with their
+complete finding records and changed sections. Do not reuse a prior reviewer
+session or run another broad review unless accepted scope changed.

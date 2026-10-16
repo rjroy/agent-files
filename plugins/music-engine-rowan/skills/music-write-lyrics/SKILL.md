@@ -19,12 +19,12 @@ Phase 1: VS-Concept Development (this agent - dialog with user)
     ↓ Auto-recommend top choice, user confirms/selects
     ↓ Save selected concept (phase: concept-approved)
 
-Phase 2: VS-Song Execution (three retained sub-agents)
-    ├── music-engine-rowan-lyric-writer → lyrics-samples.md (k=5)
+Phase 2: VS-Song Execution (three shared-role procedures)
+    ├── writer + music-engine-rowan-lyric-writer procedure → lyrics-samples.md (k=5)
     │   ↓ parent presents and confirms selection → update song file
-    ├── music-engine-rowan-production-designer → production-samples.md (k=5)
+    ├── developer + music-engine-rowan-production-designer procedure → production-samples.md (k=5)
     │   ↓ parent presents and confirms selection → update song file
-    └── music-engine-rowan-song-reviewer → Fresh-eyes quality review (phase: reviewed)
+    └── reviewer + music-engine-rowan-song-reviewer procedure → fresh quality review (phase: reviewed)
         ↓ music-suno-output skill → Final formatted output (deterministic)
 
 Present completed song to user
@@ -76,7 +76,7 @@ If the user has a MIDI file they want lyrics to match:
 
 3. **Include the blueprint in the concept file** (see Step 7 format)
 
-The Lyrical Blueprint provides syllable counts, phrase structures, and rhythmic constraints that the music-engine-rowan-lyric-writer agent will use to ensure lyrics fit the melody naturally.
+The Lyrical Blueprint provides syllable counts, phrase structures, and rhythmic constraints that the writer handler's lyric-writer procedure will use to ensure lyrics fit the melody naturally.
 
 ### Step 3: Read Relevant Files
 
@@ -208,19 +208,30 @@ selection_probability: 0.XX
 
 ## Phase 2: VS-Song Execution
 
-**Delegate creative generation only to the retained lyric writer, production designer, and song reviewer.** This parent skill owns sample selection and all state transitions; there is no separate curator agent.
+**Delegate creative generation only through the shared writer, developer, and reviewer roles with the exact procedures below.** This parent skill owns sample selection and all state transitions; there is no separate curator agent. The legacy specialist IDs identify passive procedures only; never dispatch them as agents.
 
 ### Step 8: Spawn Lyric Writer
 
 Before spawning, check whether `[song-directory]/lyrics-samples.md` already exists. If it does, do not regenerate; resume at Step 9 and present those samples for selection. Regenerate only on the user's request and only after confirming that the existing samples may be replaced.
 
 ```
-Delegate through the host's available subagent capability to `music-engine-rowan-lyric-writer`. Ask it to write from `[song-directory]/concept-approved.md`, generate 5 distinct lyrical approaches with probabilities, and save them to `[song-directory]/lyrics-samples.md`.
+Invoke the generic `writer` handler through the host's subagent capability with this explicit envelope (do not delegate by a bare role name):
+
+```yaml
+procedure: music-engine-rowan-lyric-writer
+scope: Generate exactly five distinct lyric samples for this approved song.
+request: Read the approved concept, honor its constraints and any MIDI Lyrical Blueprint, and write five differentiated lyrical approaches with probabilities and rationales.
+inputs:
+  concept: [song-directory]/concept-approved.md
+  output: [song-directory]/lyrics-samples.md
+```
+
+Use the `writer` role's `agent-procedures` workflow; the child validates and loads this known procedure directly. The output is limited to the named samples file.
 ```
 
 ### Step 9: Select Lyrics
 
-After music-engine-rowan-lyric-writer completes:
+After the lyric-writer procedure completes:
 
 ```
 Read `[song-directory]/lyrics-samples.md` and parse each sample's number, probability, rationale/differentiator, and complete content. Recommend the highest-fit option first, present all alternatives with what distinguishes them, and let the user confirm or select another. Offer the full content of any choice on request; never summarize or truncate the selected lyrics when writing them. If probabilities are close, explain the tie and let preference decide. If the user rejects all options, ask what is missing and offer to rerun the lyric writer with adjusted direction. If they cancel or defer, leave the song file, phase, and samples untouched so selection can resume later.
@@ -235,12 +246,23 @@ After lyrics are selected:
 Before spawning, check whether `[song-directory]/production-samples.md` already exists. If it does, do not regenerate; resume at Step 11 and present those samples for selection. Regenerate only on the user's request and only after confirming that the existing samples may be replaced.
 
 ```
-Delegate through the host's available subagent capability to `music-engine-rowan-production-designer`. Have it use the selected lyrics in `[song-directory]/concept-approved.md`, generate 5 distinct production approaches with probabilities, and save them to `[song-directory]/production-samples.md`.
+Invoke the generic `developer` handler with this explicit envelope:
+
+```yaml
+procedure: music-engine-rowan-production-designer
+scope: Generate exactly five production-design samples for the approved song.
+request: Read the approved concept and selected lyrics; produce five distinct production approaches with probabilities and rationales.
+inputs:
+  selected_song: [song-directory]/concept-approved.md
+  output: [song-directory]/production-samples.md
+```
+
+Use the `developer` role's `agent-procedures` workflow; the child validates and loads this known procedure directly. Do not authorize changes to the canonical song file.
 ```
 
 ### Step 11: Select Production
 
-After music-engine-rowan-production-designer completes:
+After the production-designer procedure completes:
 
 ```
 Read `[song-directory]/production-samples.md` and parse each sample's number, probability, rationale/differentiator, and complete content. Recommend the highest-fit option first, present all alternatives with what distinguishes them, and let the user confirm or select another. Offer the full content of any choice on request; preserve the selected production design in full when writing it. If probabilities are close, explain the tie and let preference decide. If the user rejects all options, ask what is missing and offer to rerun the production designer with adjusted direction. If they cancel or defer, leave the song file, phase, and samples untouched so selection can resume later.
@@ -253,7 +275,17 @@ After explicit user selection, copy the selected production design's complete co
 After production is selected, spawn the reviewer for fresh-eyes quality check:
 
 ```
-Delegate through the host's available subagent capability to `music-engine-rowan-song-reviewer`. Ask it to check concept alignment, lyrical quality, production coherence, and Suno compatibility in `[song-directory]/concept-approved.md`; present findings and apply fixes only as requested. Set phase to `reviewed` when the review is complete.
+Invoke the generic `reviewer` handler with a fresh invocation and this explicit envelope:
+
+```yaml
+procedure: music-engine-rowan-song-reviewer
+scope: Quality-review the selected song.
+request: Check concept alignment, lyrical quality, production coherence, and Suno compatibility. Return findings and proposed fixes only; make no writes.
+inputs:
+  song: [song-directory]/concept-approved.md
+```
+
+Use the `reviewer` role's `agent-procedures` workflow. The initial review is fresh and bounded to the selected song. Every review uses a separate fresh invocation; after user-approved fixes, invoke a fresh bounded song review with the prior findings and changed sections as context. Never reuse a reviewer session or grant the reviewer write access. The parent presents findings and applies fixes only as requested. Set phase to `reviewed` when review is complete.
 ```
 
 The reviewer comes in with fresh context—no memory of the creative process—which helps catch issues the creative agents missed while too close to the work.
@@ -287,7 +319,7 @@ If the user wants changes after seeing the result:
 **Different lyrical approach**:
 1. Check for existing `lyrics-samples.md`. Reuse and present pending samples for selection; regenerate only if requested and after confirming replacement of the existing file.
 2. Apply the parent-owned selection procedure in Step 9: present the candidates, obtain explicit user selection, write and verify the full selection and phase update, and only then delete samples
-3. Re-run music-engine-rowan-production-designer and the `music-suno-output` skill
+3. Re-run the generic `developer` handler with the production-designer procedure, then use the `music-suno-output` skill
 
 **Different production approach**:
 1. Check for existing `production-samples.md`. Reuse and present pending samples for selection; regenerate only if requested and after confirming replacement of the existing file.
@@ -334,7 +366,7 @@ The music-engine-reference skill provides:
 ## Critical Rules
 
 - **NEVER skip concept approval** - Phase 2 only runs after user confirms selection
-- **Delegate only creative generation and review** to the retained lyric-writer, production-designer, and song-reviewer agents; the parent owns stage selection, sample selection, state transitions, and the `music-suno-output` skill step
+- **Delegate only creative generation and review** through shared roles with explicit procedures; the parent owns stage selection, sample selection, state transitions, and the `music-suno-output` skill step
 - **SAVE the concept file** before spawning agents
 - **Sequential agent execution** - Each agent needs the previous selection
 - **Parent-owned selection between VS agents** - Confirm user selection before next step

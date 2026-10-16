@@ -239,7 +239,7 @@ For each of the 30 checklist items:
 
 **Missing Character Files**: If character appears in chapter but no character file exists, FLAG as validation FAIL for Character Voice category. Report: "Cannot validate character voice without character profile for [name]."
 
-**Chapter Status Not "complete"**: If chapter frontmatter shows `status: "partial"` or `"error"`, report error and recommend waiting for story-engine-wyrd-prose-writer to complete chapter.
+**Chapter Status Not "complete"**: If chapter frontmatter shows `status: "partial"` or `"error"`, report error and recommend waiting for the `writer` handler to complete the prose-writer procedure.
 
 **Empty or Very Short Chapter**: If chapter is <100 words, report error: "Cannot meaningfully validate insufficient prose. Prose-writer should regenerate chapter."
 

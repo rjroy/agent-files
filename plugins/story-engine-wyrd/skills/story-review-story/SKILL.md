@@ -113,7 +113,20 @@ Loading story: "The Cyberpunk Rebellion"
 
 ### Step 3: Invoke the Shared Story Reviewer
 
-Invoke a fresh `story-engine-wyrd-story-reviewer` subagent with `mode: continuity`, the validated story directory, an explicit range from chapter 1 through `completed_chapters`, and relevant plan context. This on-demand range is authoritative even when it overlaps prior checkpoints. The reviewer loads only the continuity procedure at `references/continuity-review.md` relative to this skill directory. Do not delegate through another wrapper or reuse a prior reviewer invocation.
+Invoke the generic `reviewer` handler freshly with the explicit envelope below. The caller may pass this known procedure ID without loading the index. The receiving reviewer loads the `agent-procedures` skill, reads its canonical `SKILL_BASE/references/index.md`, validates the procedure ID and allowed role against the matching index row, then resolves and loads the selected procedure from that row. The legacy ID is a passive procedure identifier, never a dispatch target.
+
+```yaml
+procedure: story-engine-wyrd-story-reviewer
+scope: On-demand informational continuity review of this story.
+request: Return evidence-based findings only. This review is read-only, informational, and never blocks story generation.
+mode: continuity
+inputs:
+  story_directory: [validated story directory]
+  chapter_range: 1-[completed_chapters]
+  plan_context: [relevant validated plan context]
+```
+
+This explicit range is authoritative even when it overlaps prior checkpoints. Load only the continuity procedure. Do not reuse any previous reviewer invocation; invoke fresh again for verification after changes and carry all relevant context/findings into that invocation.
 
 The reviewer is read-only and returns evidence-based findings, with chapter references and severity where supported. It does not change source files or metadata. This on-demand skill remains informational and never blocks story generation; parent-workflow checkpoint gates are owned by `story-write-story`.
 
@@ -122,7 +135,7 @@ The reviewer is read-only and returns evidence-based findings, with chapter refe
 ### Step 4: Present Validation Report
 
 **4.1 Display Reviewer Findings**
-- Show the complete validation report from the story-engine-wyrd-story-reviewer
+- Show the complete validation report returned by the fresh `reviewer` invocation
 - Preserve all chapter:line references for easy navigation
 - Maintain category groupings (Character, World, Timeline, Plot Threads)
 
@@ -337,7 +350,7 @@ Use `story-write-story` to begin writing chapters, then run `story-review-story`
 
 ### Agent Spawn Failure
 ```
-ERROR: Failed to spawn story-engine-wyrd-story-reviewer
+ERROR: Failed to invoke the generic reviewer handler
 
 This may be due to:
 - System resource constraints
@@ -381,7 +394,7 @@ Loading story: "The Lighthouse Mystery"
 - Completed chapters: 6
 - Validating chapters 1-6 for continuity...
 
-[Invoking story-engine-wyrd-story-reviewer in continuity mode...]
+[Invoking the generic reviewer with the story-reviewer procedure in continuity mode...]
 
 CONTINUITY VALIDATION REPORT
 Story: "The Lighthouse Mystery"
@@ -445,7 +458,7 @@ Loading story: "The Cyberpunk Rebellion"
 - Completed chapters: 10
 - Validating chapters 1-10 for continuity...
 
-[Invoking story-engine-wyrd-story-reviewer in continuity mode...]
+[Invoking the generic reviewer with the story-reviewer procedure in continuity mode...]
 
 CONTINUITY VALIDATION REPORT
 Story: "The Cyberpunk Rebellion"
@@ -602,7 +615,7 @@ The `story-review-story` skill provides on-demand continuity validation with the
 
 **Core Functionality**:
 - Validates all completed chapters in a story bible
-- Invokes story-engine-wyrd-story-reviewer in continuity mode for systematic analysis
+- Invokes the generic reviewer with the continuity procedure for systematic analysis
 - Reports contradictions across 4 categories (Character, World, Timeline, Plot)
 - Informational only - never blocks story generation
 

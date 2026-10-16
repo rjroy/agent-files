@@ -23,19 +23,27 @@ For substantial work where prior context may matter, ask the `lore-researcher` s
 
 Understand the user's requested outcome and any new evidence. Use the plan's steps when a useful plan is supplied; otherwise choose a small number of coherent phases appropriate to the work. Prefer existing capabilities and account for affected consumers, actual behavior, and relevant safety or compatibility constraints. Current user direction may authorize behavior or contract changes; do not treat an old artifact's silence, approval status, or requirements as a veto. Raise concrete safety/compatibility consequences or consequential unresolved choices, not mere historical noncompliance.
 
-**Select agents.** Consult `.lore/lore-agents.md` if it exists. Match agents to three mandatory roles:
+**Select agents.** Consult `.lore/lore-agents.md` if it exists. Match agents to three mandatory roles and record the reviewer selected for each phase. Honor a project-selected Code Quality reviewer and its own invocation contract; do not replace that choice merely because another reviewer is available.
 
 | Role | Registry Category | Fallback |
 |------|-------------------|----------|
 | Implementation | Implementation | Host general-purpose subagent |
 | Testing | Testing | Host general-purpose subagent |
-| Review | Code Quality | `bun-typescript-reviewer` for matching projects; otherwise host general-purpose subagent |
+| Review | Code Quality | Project-selected Code Quality reviewer; if none, the matching supported `code-reviewer` procedure or host general-purpose reviewer |
 
-When the registry has no Code Quality selection, use the bundled
-`bun-typescript-reviewer` if the repository uses Bun and TypeScript and the
-changed surface includes its daemon, Unix-socket, CLI, Next.js, or React
-architecture. Do not use it merely because a repository contains one incidental
-TypeScript file. For other stacks, retain the host general-purpose fallback.
+When no project Code Quality reviewer is selected, use procedure
+`bun-typescript-reviewer` with the registered `code-reviewer` for Bun and
+TypeScript changes to daemon, Unix-socket, CLI, Next.js, or React architecture.
+Do not select it merely because a repository contains one incidental TypeScript
+file. Use procedure `rust-daemon-cli-reviewer` with the registered
+`code-reviewer` for matching Rust daemon or CLI changes. For other stacks, retain
+the host general-purpose reviewer fallback; do not invent a generic procedure.
+For invocations through a generic `reviewer` or `code-reviewer` prompt, include
+its `procedure`, `scope`, `request`, and `inputs`, and include `mode` only when
+the selected procedure defines one. Use the host general-purpose agent's own
+contract for other-stack fallback. If a selected generic procedure is
+unavailable, resolve it through the shared `agent-procedures` base rather than a
+retired root prompt.
 
 **Choose evidence.** Identify the project-specific behavior and risks that matter
 to this change. Reuse adequate tests and other evidence; add focused checks for
@@ -81,13 +89,31 @@ For each testable behavior, follow this agent-run red-green cycle:
 4. **Optional refactor.** If useful, dispatch a behavior-preserving refactor
    writer after GREEN. The read-only tester reruns the checks for the changed
    surface; retain the refactor only if behavior remains verified.
-5. **Review.** Dispatch a read-only reviewer in `initial-review` mode for a
-   material-defect review of the resulting behavior and relevant boundaries.
-   Include the behavior, changed files, red/green evidence, and affected
-   consumers. Review actual behavior and relevant invariants, not historical
-   artifacts as authority over current direction. Report only concrete material
-   defects or risks with consequences and bounded outcomes; give each finding a
-   stable ID. Accept adequate work without optional hardening or ceremonial
+5. **Review.** Dispatch the read-only reviewer selected during initialization in
+   a fresh child invocation. If that reviewer is the generic `code-reviewer`,
+   select only the applicable supported procedure: `bun-typescript-reviewer` for
+   matching Bun/TypeScript daemon, Unix-socket, CLI, Next.js, or React changes, or
+   `rust-daemon-cli-reviewer` for matching Rust daemon/CLI changes. Its envelope
+   includes that `procedure`, `scope` as the changed behavior and affected
+   boundaries, `request` for material defects or risks, and `inputs` containing
+   the current request, changed files/diff, relevant red/green evidence, and
+   affected consumers; set `mode` to `initial-review`. For any other selected
+   reviewer, follow that reviewer's own contract and pass its required context;
+   do not substitute `code-reviewer` or invent a procedure. Review actual behavior
+   and relevant invariants, not historical artifacts as authority over current
+   direction. Report only concrete material defects or risks with consequences
+   and bounded outcomes; preserve the selected reviewer's finding contract. Any
+   correction verification or terminal review is a fresh invocation: never reuse
+   or pass a prior child session. For code-reviewer procedures, verification uses
+   the matching procedure, scope, request, and inputs containing the current
+   request, complete unresolved finding records, changed sections, relevant
+   validation evidence, and affected consumers, with `verification` mode. For
+   other reviewers, follow their verification contract and include the complete
+   unresolved finding records and changed sections when supported. Do not include
+   author deliberation or an expected verdict. A terminal broad review, when
+   called for below, is another fresh invocation of the selected reviewer using
+   its broad-review contract; it does not make optional review mandatory for
+   smaller work. Accept adequate work without optional hardening or ceremonial
    coverage. An obsolete parallel path or unused scaffolding is a finding only
    when evidence shows material maintenance or behavior cost, not a cleanup
    quota. A request for another test must identify a plausible defect current

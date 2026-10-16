@@ -50,7 +50,8 @@ ERROR: Agent spawn failed
 
 Context:
 - Operation: Spawning [agent-name] for [purpose]
-- Slim prompt: repository-root `omo-slim-agents/story-engine-wyrd-[agent-name].md`
+- Slim role prompt: repository-root `omo-slim-agents/[reviewer|code-reviewer|writer|developer].md`
+- Procedure: resolve the selected ID through `agent-procedures` and its canonical index; specialist procedures are not root prompt files
 
 Diagnostic Details:
 - First attempt: [error message]

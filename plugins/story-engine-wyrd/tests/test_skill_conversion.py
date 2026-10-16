@@ -8,6 +8,7 @@ COLLECTION = Path(__file__).resolve().parents[1]
 SKILLS = COLLECTION / "skills"
 REPOSITORY_ROOT = COLLECTION.parents[1]
 SLIM_PROMPTS = REPOSITORY_ROOT / "omo-slim-agents"
+PROCEDURES = REPOSITORY_ROOT / "plugins" / "personal" / "skills" / "agent-procedures" / "references" / "procedures"
 MIGRATIONS = {
     "write-story": "story-write-story",
     "review-story": "story-review-story",
@@ -42,9 +43,56 @@ def test_story_creation_preserves_approval_and_resume_contract() -> None:
     ):
         assert contract in content
     assert "story-engine-wyrd-story-reviewer" in content
-    assert "story-engine-wyrd-concept-developer" in content
+    assert "procedure: story-engine-wyrd-concept-developer" in content
     assert "Please resume .story-state/example/PLAN.md" in content
     assert content.index("explicit continuation or resume intent") < content.index("File Reference")
+
+
+def test_story_child_validates_procedure_and_parent_owns_selection() -> None:
+    content = (SKILLS / "story-write-story" / "SKILL.md").read_text(encoding="utf-8")
+    normalized = " ".join(content.casefold().split())
+    assert "the parent may dispatch a known procedure id directly without reloading the index" in normalized
+    assert "every child must load the applicable role skill and the `agent-procedures` index" in normalized
+    assert "validate the supplied procedure id and role against that index" in normalized
+
+
+def test_concept_calls_declare_separate_operations_and_authorized_outputs() -> None:
+    content = (SKILLS / "story-write-story" / "SKILL.md").read_text(encoding="utf-8")
+    sampling = content.split("### 4.1 Spawn Concept Developer", 1)[1].split("### 4.2", 1)[0]
+    expansion = content.split("### 4.5 Generate Full Plan", 1)[1].split("### 4.6", 1)[0]
+    assert "operation: sampling" in sampling
+    assert "user_input:" in sampling
+    assert ".story-state/[Story]/concept-samples.md" in sampling
+    assert "concept-approved.md" not in sampling
+
+    assert "operation: approved-concept-expansion" in expansion
+    assert "selected_approved_concept: .story-state/[Story]/concept-approved.md" in expansion
+    assert "format: [confirmed format]" in expansion
+    for path in (
+        ".story-state/[Story]/PLAN.md",
+        ".story-state/[Story]/quality-rubrics.md",
+        ".story-state/[Story]/world-state/mechanics.md",
+        ".story-state/[Story]/plot-threads/thread-status.md",
+    ):
+        assert path in expansion
+    outputs = expansion.split("authorized_outputs:", 1)[1].split("```", 1)[0]
+    assert "metadata.json" not in outputs
+    assert "concept-approved.md" not in outputs
+    assert "selection metadata" in expansion
+
+
+def test_partial_chapter_resume_only_generates_replacement_samples() -> None:
+    content = (SKILLS / "story-write-story" / "SKILL.md").read_text(encoding="utf-8")
+    partial = content.split("### Resume Step 3: Handle Partial Chapter", 1)[1].split("### Resume Step 4:", 1)[0]
+    normalized = " ".join(partial.casefold().split())
+    assert "partial canonical chapter as input only" in normalized
+    assert "continue/preserve its prose" in normalized
+    assert ".story-state/[story]/chapter-[n]-samples.md" in normalized
+    assert "do not authorize direct writes to the canonical chapter" in normalized
+    assert "parent selects a complete sample" in normalized
+    assert "full schema workflow in step 6.4" in normalized
+    assert "fresh quality review under step 6.5" in normalized
+    assert "authorized partial-chapter output" not in normalized
 
 
 def test_story_reference_paths_are_skill_relative() -> None:
@@ -73,37 +121,16 @@ def test_story_slim_prompts_and_referenced_resources_are_relocated() -> None:
         "story-engine-wyrd-story-reviewer",
     )
     for agent_id in agent_ids:
-        source = COLLECTION / "agents" / f"{agent_id.removeprefix('story-engine-wyrd-')}.md"
-        prompt = SLIM_PROMPTS / f"{agent_id}.md"
-        assert not source.exists()
-        assert prompt.is_file()
-        content = prompt.read_text(encoding="utf-8")
-        assert content.strip()
-        assert not content.startswith("---\n")
+        procedure = PROCEDURES / f"{agent_id}.md"
+        assert procedure.is_file()
+        assert procedure.read_text(encoding="utf-8").strip()
+    for role in ("writer", "developer", "reviewer"):
+        assert (SLIM_PROMPTS / f"{role}.md").is_file()
 
-    prompts = {
-        "story-engine-wyrd-concept-developer": (
-            "story/theory/theory-narrative-structure.md",
-            "../../docs/story-bible-schema.md",
-            "../../utils/agent-error-pattern.md",
-        ),
-        "story-engine-wyrd-character-builder": (
-            "story/theory/theory-character-development.md",
-            "../../utils/agent-error-pattern.md",
-        ),
-        "story-engine-wyrd-prose-writer": (
-            "story/theory/theory-prose-craft.md",
-            "../../utils/agent-error-pattern.md",
-        ),
-    }
-    for agent_id, resources in prompts.items():
-        content = (SLIM_PROMPTS / f"{agent_id}.md").read_text(encoding="utf-8")
-        assert "loader-provided canonical installed directory as `REFERENCE_BASE`" in content
-        assert "lexical symlink path" in content
-        assert "current working directory" in content
-        assert "../plugins/story-engine-wyrd" not in content
-        for resource in resources:
-            assert f"REFERENCE_BASE/{resource}" in content
+    for role in ("writer", "developer", "reviewer"):
+        content = (SLIM_PROMPTS / f"{role}.md").read_text(encoding="utf-8")
+        assert content.strip()
+        assert "procedure" in content.lower()
 
     reference_base = SKILLS / "story-engine-reference"
     for resource in ("story/theory/theory-narrative-structure.md", "story/theory/theory-character-development.md", "story/theory/theory-prose-craft.md"):
@@ -111,10 +138,6 @@ def test_story_slim_prompts_and_referenced_resources_are_relocated() -> None:
     for resource in ("docs/story-bible-schema.md", "utils/agent-error-pattern.md"):
         assert (COLLECTION / resource).is_file()
 
-    character = (SLIM_PROMPTS / "story-engine-wyrd-character-builder.md").read_text(encoding="utf-8")
-    prose = (SLIM_PROMPTS / "story-engine-wyrd-prose-writer.md").read_text(encoding="utf-8")
-    for prompt in (character, prose):
-        assert "REFERENCE_BASE/../story-write-story/sample-selection.md" in prompt
     assert (reference_base / "../story-write-story/sample-selection.md").is_file()
     for removed_id in (
         "story-engine-wyrd-sampling-curator",
@@ -126,25 +149,27 @@ def test_story_slim_prompts_and_referenced_resources_are_relocated() -> None:
 
 
 def test_story_reviewer_modes_load_independent_read_only_procedures() -> None:
-    reviewer = (SLIM_PROMPTS / "story-engine-wyrd-story-reviewer.md").read_text(encoding="utf-8")
+    reviewer = (PROCEDURES / "story-engine-wyrd-story-reviewer.md").read_text(encoding="utf-8")
     procedures = {
-        "quality": "REFERENCE_BASE/../story-review-story/references/quality-review.md",
-        "continuity": "REFERENCE_BASE/../story-review-story/references/continuity-review.md",
-        "final-review": "REFERENCE_BASE/../story-review-story/references/final-review.md",
+        "quality": "quality-review.md",
+        "continuity": "continuity-review.md",
+        "final-review": "final-review.md",
     }
     for mode, resource in procedures.items():
         assert f"`{mode}`" in reviewer
         assert resource in reviewer
-        relative_resource = resource.removeprefix("REFERENCE_BASE/")
-        assert (SKILLS / "story-engine-reference" / relative_resource).is_file()
+        assert (SKILLS / "story-review-story" / "references" / resource).is_file()
     assert "read-only" in reviewer.lower()
-    assert "Do not update frontmatter or `metadata.json`" in reviewer
-    assert "separate fresh invocation" in reviewer
-    assert "passive `story-engine-reference` skill" in reviewer
-    assert "loader-provided canonical installed directory as `REFERENCE_BASE`" in reviewer
-    assert "Load the `story-review-story` skill" not in reviewer
-    assert "lexical symlink path" in reviewer
-    assert "../plugins/story-engine-wyrd" not in reviewer
+    assert "read-only" in reviewer.lower()
+
+    on_demand_dispatch = (SKILLS / "story-review-story" / "SKILL.md").read_text(encoding="utf-8")
+    dispatch = on_demand_dispatch.split("### Step 3: Invoke the Shared Story Reviewer", 1)[1].split("### Step 4:", 1)[0]
+    assert "generic `reviewer` handler" in dispatch
+    envelope = dispatch.split("```yaml", 1)[1].split("```", 1)[0]
+    assert "procedure: story-engine-wyrd-story-reviewer" in envelope
+    assert "mode: continuity" in envelope
+    for field in ("scope:", "request:", "inputs:", "story_directory:", "chapter_range:"):
+        assert field in envelope
 
     readme = (COLLECTION / "README.md").read_text(encoding="utf-8")
     for agent_id in (
@@ -172,9 +197,9 @@ def test_story_reviewer_modes_load_independent_read_only_procedures() -> None:
     assert "Prose" in phase_rules and "without prompting by default" in phase_rules
     assert "Only after a successful chosen-content write" in selection_text
     for mode in procedures:
-        assert f"Mode: {mode}" in writer
+        assert f"mode: {mode}" in writer
     assert "sequentially" in writer
-    assert "contiguous batches of 3-5 chapters sequentially" in writer
+    assert "fresh instance per batch" in writer
     assert "recover the latest carry-forward notes" in writer
     assert "final-review-notes.md" in writer
 
@@ -267,3 +292,19 @@ def test_continuity_explicit_range_overrides_checkpoint_history() -> None:
     assert "story-engine-wyrd-story-reviewer" in on_demand
     assert "continuity mode" in on_demand
     assert "informational" in on_demand.lower()
+
+
+def test_story_calls_use_explicit_procedure_envelopes_and_fresh_reviewers() -> None:
+    writer = (SKILLS / "story-write-story" / "SKILL.md").read_text(encoding="utf-8")
+    routes = (
+        ("developer", "story-engine-wyrd-concept-developer"),
+        ("developer", "story-engine-wyrd-character-builder"),
+        ("writer", "story-engine-wyrd-prose-writer"),
+        ("reviewer", "story-engine-wyrd-story-reviewer"),
+    )
+    for role, procedure in routes:
+        assert f"**Handler / procedure**: `{role}` / `{procedure}`" in writer
+        assert f"procedure: {procedure}" in writer
+        assert (PROCEDURES / f"{procedure}.md").is_file()
+    for mode in ("quality", "continuity", "final-review"):
+        assert f"mode: {mode}" in writer

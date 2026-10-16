@@ -40,15 +40,15 @@ All work saves to `.story-state/` with metadata tracking, allowing resumption fr
 
 Invoke a skill conversationally by asking for its described task; provide a story directory, outline, or resume plan path when relevant. Slash-command syntax is no longer used.
 
-## Specialized Agents
+## Shared Role Handlers and Procedures
 
-The system delegates concept development, character building, and prose generation to three retained agents:
+The system delegates concept development, character building, and prose generation through shared `developer` and `writer` role handlers with passive procedures:
 
-- **`story-engine-wyrd-concept-developer`** — Explores story premise, identifies core conflicts, and validates world fit
-- **`story-engine-wyrd-character-builder`** — Develops detailed character profiles with depth and consistency
-- **`story-engine-wyrd-prose-writer`** — Executes chapter writing with attention to voice, pacing, and sensory detail
+- **`developer` + `story-engine-wyrd-concept-developer` procedure** — Explores story premise, identifies core conflicts, and validates world fit
+- **`developer` + `story-engine-wyrd-character-builder` procedure** — Develops detailed character profiles with depth and consistency
+- **`writer` + `story-engine-wyrd-prose-writer` procedure** — Executes chapter writing with attention to voice, pacing, and sensory detail
 
-The `story-write-story` parent handles all sample selection and workflow state. The shared **`story-engine-wyrd-story-reviewer`** is invoked fresh in quality, continuity, or final-review mode; it is read-only and returns findings. The parent applies review outcomes to schema-defined frontmatter/metadata and handles any user-approved revisions. Review does not grant permission to edit story files without user approval.
+The `story-write-story` parent handles all sample selection and workflow state. The generic **`reviewer`** handler receives the `story-engine-wyrd-story-reviewer` procedure and one explicit quality, continuity, or final-review mode per fresh invocation; it is read-only and returns findings. Legacy IDs are procedure values, not dispatch targets. The parent applies review outcomes to schema-defined frontmatter/metadata and handles any user-approved revisions. Review does not grant permission to edit story files without user approval.
 
 ## Skills
 

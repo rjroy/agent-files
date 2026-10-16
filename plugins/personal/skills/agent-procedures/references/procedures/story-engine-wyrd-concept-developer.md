@@ -1,3 +1,32 @@
+## Operation routing preamble
+
+This procedure supports exactly two caller-selected operations: `sampling` and
+`approved-concept-expansion`. The caller supplies `operation`; do not infer it or
+switch operations. Both use the applicable story-reference loading and
+clarification behavior below, but each operation has a separate output contract.
+
+### `sampling`
+
+Use the detailed Verbalized Sampling process below. Generate the five concept
+candidates and write only `concept-samples.md` at the explicitly authorized
+path. All sampling-only requirements below—including generating five samples,
+deferring PLAN and related artifacts until after user selection, and not writing
+workflow state—apply only to this operation.
+
+### `approved-concept-expansion`
+
+Require the selected, user-approved concept, its chosen format, and explicit
+caller authorization for each output path before proceeding. Expand that one
+concept into `PLAN.md` using the existing PLAN and story-bible schema material
+below. Write only the explicitly authorized paths among `PLAN.md`,
+`quality-rubrics.md`, `world-state/mechanics.md`, and
+`plot-threads/thread-status.md`; do not create concept samples or choose a
+concept. Do not write selection or workflow metadata, change phases, or make
+other state transitions. If approval, format, scope, or any required output path
+is absent or ambiguous, ask for clarification before reading or writing files.
+
+<!-- ORIGINAL PROCEDURE BODY: preserved verbatim below -->
+
 # Concept Developer Agent
 
 **Version**: 2.0.0

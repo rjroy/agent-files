@@ -29,6 +29,18 @@ def _normalized_agent(name: str) -> str:
     return " ".join(_read_agent(name).split())
 
 
+def _read_procedure(name: str) -> str:
+    return (
+        REPOSITORY_ROOT
+        / "plugins/personal/skills/agent-procedures/references/procedures"
+        / f"{name}.md"
+    ).read_text(encoding="utf-8")
+
+
+def _normalized_procedure(name: str) -> str:
+    return " ".join(_read_procedure(name).split())
+
+
 def _run_setup(config_home: Path, *args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
         ["node", str(REPOSITORY_ROOT / "scripts/setup-opencode.mjs"), *args],
@@ -59,7 +71,9 @@ def test_implementation_roles_are_serialized_and_read_only() -> None:
     assert "write-capable test-author agent first" in prompt
     assert "separate, read-only testing agent" in prompt
     assert "production behavior only" in prompt
-    assert "read-only reviewer in `initial-review` mode" in prompt
+    assert "read-only reviewer selected during initialization" in prompt
+    assert "fresh child invocation" in prompt
+    assert "`initial-review`" in prompt
 
 
 def test_implementation_uses_focused_red_green_cycles_and_honest_evidence() -> None:
@@ -95,23 +109,26 @@ def test_implementation_uses_proportionate_behavioral_evidence() -> None:
 def test_review_workflows_distinguish_initial_and_verification_modes() -> None:
     prompts = [
         _read("skills/implement/SKILL.md"),
-        _read_agent("design-reviewer"),
-        _read_agent("plan-reviewer"),
+        _read_procedure("design-reviewer"),
+        _read_procedure("plan-reviewer"),
+        _read_procedure("intent-reviewer"),
     ]
 
     for prompt in prompts:
         assert "initial-review" in prompt
         assert "verification" in prompt
-        assert "stable ID" in prompt
 
-    for path in [
-        "design-reviewer",
-        "plan-reviewer",
-    ]:
-        prompt = _normalized_agent(path)
-        assert "complete unresolved finding records" in prompt
-        assert "newly encountered material issue" in prompt
-        assert "do not populate a fixed template" in prompt
+    # Design and plan procedures retain complete verification context and require
+    # newly encountered material issues to be reported; intent differs here.
+    for path in ("design-reviewer", "plan-reviewer"):
+        procedure = _normalized_procedure(path)
+        assert "stable ID" in procedure
+        assert "complete unresolved finding records" in procedure
+        assert "newly encountered material issue" in procedure
+    intent = _normalized_procedure("intent-reviewer")
+    assert "A severity (`Important` or `Minor`)" in intent
+    assert "recheck supplied findings against the changed sections" in intent
+    assert "without restarting broad review" in intent
 
 
 def test_document_reviewers_do_not_force_ceremonial_output() -> None:
@@ -119,7 +136,7 @@ def test_document_reviewers_do_not_force_ceremonial_output() -> None:
         "design-reviewer",
         "plan-reviewer",
     ]:
-        prompt = _normalized_agent(path)
+        prompt = _normalized_procedure(path)
         assert "guessing which file is newest" in prompt
         assert "force one finding per lens" in prompt
         assert "Reviewed: [timestamp]" not in prompt
@@ -230,7 +247,7 @@ def test_prep_plan_prompts_collaborative_evidence_driven_planning() -> None:
 
 
 def test_plan_reviewer_avoids_exhaustive_mapping_and_historical_authority() -> None:
-    reviewer = _normalized_agent("plan-reviewer")
+    reviewer = _normalized_procedure("plan-reviewer")
 
     assert "fits the user's current direction" in reviewer
     assert "do not override current user direction" in reviewer
@@ -245,7 +262,7 @@ def test_plan_reviewer_avoids_exhaustive_mapping_and_historical_authority() -> N
 
 
 def test_bun_typescript_reviewer_requires_material_traceable_findings() -> None:
-    reviewer = _normalized_agent("bun-typescript-reviewer")
+    reviewer = _normalized_procedure("bun-typescript-reviewer")
     implementation = _normalized("skills/implement/SKILL.md")
 
     assert "A review that finds no material non-conformance is successful" in reviewer
@@ -257,7 +274,7 @@ def test_bun_typescript_reviewer_requires_material_traceable_findings() -> None:
     assert "do not populate a fixed template" in reviewer
     assert "## Requirement Evidence" not in reviewer
     assert "## Findings" not in reviewer
-    assert "use the bundled `bun-typescript-reviewer`" in implementation
+    assert "procedure `bun-typescript-reviewer`" in implementation
     assert "Accept adequate work" in implementation
     assert "A request for another test must identify" in implementation
 
@@ -289,7 +306,7 @@ def test_intent_prompt_captures_substantive_revisable_direction() -> None:
 
 
 def test_intent_reviewer_has_fresh_context_modes_without_contract_checks() -> None:
-    reviewer = _normalized_agent("intent-reviewer")
+    reviewer = _normalized_procedure("intent-reviewer")
 
     assert "initial-review" in reviewer
     assert "verification" in reviewer
@@ -299,7 +316,7 @@ def test_intent_reviewer_has_fresh_context_modes_without_contract_checks() -> No
 
 
 def test_intent_reviewer_and_researcher_treat_legacy_specs_as_history() -> None:
-    reviewer = _normalized_agent("intent-reviewer")
+    reviewer = _normalized_procedure("intent-reviewer")
     researcher = _normalized_agent("lore-researcher")
 
     assert "historical context, not a binding contract" in reviewer
@@ -311,7 +328,7 @@ def test_intent_reviewer_and_researcher_treat_legacy_specs_as_history() -> None:
     assert "do not override the user's present direction" in researcher
     assert "old-document noncompliance alone is not a blocker" in researcher
 
-    design_reviewer = _normalized_agent("design-reviewer")
+    design_reviewer = _normalized_procedure("design-reviewer")
     assert "Historical specs and other work artifacts" in design_reviewer
     assert "do not constrain current user direction" in design_reviewer
     assert "old-document noncompliance alone" in design_reviewer
@@ -346,7 +363,8 @@ def test_implementation_accepts_direct_requests_and_keeps_notes_optional() -> No
     assert "do not create one by default" in prompt
     assert "Do not ask for confirmation between phases" in prompt
     assert "read-only testing agent" in prompt
-    assert "read-only reviewer" in prompt
+    assert "read-only reviewer selected during initialization" in prompt
+    assert "fresh child invocation" in prompt
     assert "Route material findings to implementation for correction" in prompt
     assert "repeat only the failed checks" in prompt
     assert "terminal review to catch interactions" in prompt
@@ -367,21 +385,59 @@ def test_implementation_reviewers_follow_current_direction() -> None:
         "bun-typescript-reviewer",
         "rust-daemon-cli-reviewer",
     ]:
-        reviewer = _normalized_agent(path)
+        reviewer = _normalized_procedure(path)
         assert "user's current requested behavior" in reviewer
         assert "do not override current user direction" in reviewer
         assert "Do not report noncompliance with an old artifact alone" in reviewer
+        assert "stable ID" in reviewer
 
 
 def test_design_skill_runs_fresh_context_review() -> None:
     prompt = _normalized("skills/design/SKILL.md")
 
-    assert "invoke the `design-reviewer` subagent" in prompt
-    assert "`initial-review` mode" in prompt
-    assert "complete unresolved finding records" in prompt
-    assert "`verification` mode" in prompt
-    assert "terminal broad acceptance review" in prompt
-    assert "do not run another broad review unless accepted scope changed" in prompt
+    assert "`procedure`: `design-reviewer`" in prompt
+    assert "`mode`: `initial-review`" in prompt
+    for field in ("scope", "request", "inputs"):
+        assert f"`{field}`:" in prompt
+
+
+def test_procedure_catalog_and_generic_dispatch_envelopes() -> None:
+    index = " ".join(
+        (REPOSITORY_ROOT / "plugins/personal/skills/agent-procedures/references/index.md")
+        .read_text(encoding="utf-8")
+        .split()
+    )
+    reviewer = _normalized_agent("reviewer")
+    code_reviewer = _normalized_agent("code-reviewer")
+
+    for procedure in (
+        "design-reviewer",
+        "intent-reviewer",
+        "plan-reviewer",
+        "bun-typescript-reviewer",
+        "rust-daemon-cli-reviewer",
+    ):
+        assert f"{procedure}.md" in index
+        assert _read_procedure(procedure).strip()
+
+    for wrapper in (reviewer, code_reviewer):
+        for field in ("procedure", "scope", "request", "inputs"):
+            assert field in wrapper
+    assert "| `design-reviewer` | reviewer |" in index
+    assert "| `intent-reviewer` | reviewer |" in index
+    assert "| `plan-reviewer` | reviewer |" in index
+    assert "| `bun-typescript-reviewer` | code-reviewer |" in index
+    assert "| `rust-daemon-cli-reviewer` | code-reviewer |" in index
+    design = _normalized("skills/design/SKILL.md")
+    plan = _normalized("skills/prep-plan/SKILL.md")
+    assert "`procedure`: `design-reviewer`" in design
+    assert "`procedure` `plan-reviewer`" in plan
+    assert "`mode` `initial-review`" in plan
+
+    implementation = _normalized("skills/implement/SKILL.md")
+    assert "If that reviewer is the generic `code-reviewer`" in implementation
+    assert "procedure `rust-daemon-cli-reviewer`" in implementation
+    assert "procedure `bun-typescript-reviewer`" in implementation
 
 
 def test_lore_search_contract_includes_lower_confidence_body_matches() -> None:
@@ -406,18 +462,21 @@ def test_readme_skill_table_matches_active_inventory_and_shared_lifecycle() -> N
     assert "`/field-guide:stratify`" in readme
     assert (PLUGIN_ROOT.parent / "field-guide/skills/stratify/SKILL.md").is_file()
 
-    agent_table = readme.split("## Agent prompt bodies", maxsplit=1)[1].split("## ", maxsplit=1)[0]
-    listed_agents = set(re.findall(r"\[`([^`]+)`\]\(", agent_table))
+    agent_section = readme.split("## Agent prompt bodies and procedures", maxsplit=1)[1].split("## ", maxsplit=1)[0]
     prompt_bodies = REPOSITORY_ROOT / "omo-slim-agents"
-    assert listed_agents == {
-        "lore-researcher",
-        "bun-typescript-reviewer",
+    for name in ("lore-researcher", "reviewer", "code-reviewer"):
+        assert (prompt_bodies / f"{name}.md").is_file()
+    assert "not agent IDs" in agent_section
+    procedures = REPOSITORY_ROOT / "plugins/personal/skills/agent-procedures/references/procedures"
+    for name in (
         "design-reviewer",
-        "plan-reviewer",
         "intent-reviewer",
+        "plan-reviewer",
+        "bun-typescript-reviewer",
         "rust-daemon-cli-reviewer",
-    }
-    assert all((prompt_bodies / f"{name}.md").is_file() for name in listed_agents)
+    ):
+        assert f"`{name}`" in agent_section
+        assert (procedures / f"{name}.md").is_file()
     assert "learned/" in readme
     assert "no lore-development skill currently writes it" in schema
     assert "Shared four-value lifecycle across all lore zones" in schema
@@ -473,12 +532,8 @@ def test_design_inputs_use_relevant_evidence_without_exhaustive_mapping() -> Non
 
 def test_lore_prompt_bodies_are_flat_and_runtime_metadata_free() -> None:
     names = (
-        "plan-reviewer",
-        "rust-daemon-cli-reviewer",
-        "lore-researcher",
-        "intent-reviewer",
-        "design-reviewer",
-        "bun-typescript-reviewer",
+        "reviewer",
+        "code-reviewer",
     )
     for name in names:
         prompt = _read_agent(name)
@@ -487,6 +542,15 @@ def test_lore_prompt_bodies_are_flat_and_runtime_metadata_free() -> None:
         assert "\nmodel:" not in prompt
         assert "\npermission:" not in prompt
         assert not (PLUGIN_ROOT / "agents" / f"{name}.md").exists()
+
+    for name in (
+        "plan-reviewer",
+        "rust-daemon-cli-reviewer",
+        "intent-reviewer",
+        "design-reviewer",
+        "bun-typescript-reviewer",
+    ):
+        assert _read_procedure(name).strip()
 
 
 def test_modeler_prompt_bodies_match_existing_inline_prompts() -> None:

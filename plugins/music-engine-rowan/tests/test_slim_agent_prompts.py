@@ -7,11 +7,12 @@ import re
 COLLECTION = Path(__file__).resolve().parents[1]
 REPOSITORY_ROOT = COLLECTION.parents[1]
 SLIM_PROMPTS = REPOSITORY_ROOT / "omo-slim-agents"
+PROCEDURES = REPOSITORY_ROOT / "plugins" / "personal" / "skills" / "agent-procedures" / "references" / "procedures"
 
 
 def read_agent(agent_id: str) -> str:
-    path = SLIM_PROMPTS / f"music-engine-rowan-{agent_id}.md"
-    assert path.is_file(), f"missing retained agent prompt: {path}"
+    path = PROCEDURES / f"music-engine-rowan-{agent_id}.md"
+    assert path.is_file(), f"missing passive procedure: {path}"
     return path.read_text(encoding="utf-8")
 
 
@@ -21,21 +22,12 @@ def read_skill(skill: str) -> str:
     return path.read_text(encoding="utf-8")
 
 
-def test_only_retained_three_slim_prompts_remain() -> None:
-    retained = {"lyric-writer", "production-designer", "song-reviewer"}
-    for agent_id in retained:
-        text = read_agent(agent_id)
-        assert text.strip()
-        assert not text.startswith("---\n")
-
-    for removed in {
-        "sampling-curator",
-        "suno-formatter",
-        "studio-prep",
-        "cover-art-generator",
-        "hook-art-generator",
-    }:
-        assert not (SLIM_PROMPTS / f"music-engine-rowan-{removed}.md").exists()
+def test_music_procedures_are_passive_and_roles_are_generic_handlers() -> None:
+    for procedure in ("lyric-writer", "production-designer", "song-reviewer"):
+        assert read_agent(procedure).strip()
+    for role in ("writer", "developer", "reviewer"):
+        handler = SLIM_PROMPTS / f"{role}.md"
+        assert handler.is_file(), f"missing generic handler: {handler}"
 
 
 def test_retained_agents_reference_supported_skills_and_resources() -> None:
@@ -133,7 +125,7 @@ def test_pending_sample_resume_routes_to_selection_without_regeneration() -> Non
 def test_phase_two_delegation_is_limited_to_retained_specialists() -> None:
     text = read_skill("music-write-lyrics")
     assert "NEVER execute Phase 2 yourself" not in text
-    assert "Delegate only creative generation and review" in text
+    assert "Delegate creative generation only through the shared writer, developer, and reviewer roles" in text
     assert "parent owns stage selection, sample selection, state transitions" in text
     assert "music-suno-output" in text
 
@@ -156,7 +148,24 @@ def test_song_reviewer_is_read_only_and_parent_owns_user_approved_edits() -> Non
     assert "after any edits:" not in lower
     assert "make quick fixes" not in lower
     assert "proceed to the `music-suno-output` skill" not in lower
-    assert "present findings and apply fixes only as requested" in parent
+    parent_policy = " ".join(parent.casefold().split())
+    assert re.search(r"the parent presents findings and applies fixes only as requested", parent_policy)
+
+
+def test_each_music_dispatch_has_procedure_envelope_and_fresh_review() -> None:
+    text = read_skill("music-write-lyrics")
+    for role, procedure in (
+        ("writer", "music-engine-rowan-lyric-writer"),
+        ("developer", "music-engine-rowan-production-designer"),
+        ("reviewer", "music-engine-rowan-song-reviewer"),
+    ):
+        assert f"Invoke the generic `{role}` handler" in text
+        section = text.split(f"procedure: {procedure}", 1)[1].split("```", 1)[0]
+        for field in ("scope:", "request:", "inputs:"):
+            assert field in section
+        assert (PROCEDURES / f"{procedure}.md").is_file()
+    reviewer_call = text.split("procedure: music-engine-rowan-song-reviewer", 1)[1].split("```", 1)[0]
+    assert "song: [song-directory]/concept-approved.md" in reviewer_call
 
 
 def test_prompt_only_skills_do_not_delegate_to_removed_curator() -> None:

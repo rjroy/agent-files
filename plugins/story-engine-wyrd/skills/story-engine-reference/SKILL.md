@@ -101,12 +101,14 @@ Modular narrative craft fundamentals:
 
 ### Agent-Specific Theory Loading
 
-Each agent loads only the theory modules relevant to its task:
+Each shared role loads the procedure selected by the caller and only theory modules relevant to that procedure:
 
-- **story-engine-wyrd-concept-developer** → `theory-narrative-structure.md` + world file + lens file (if applicable)
-- **story-engine-wyrd-character-builder** → `theory-character-development.md` + world file
-- **story-engine-wyrd-prose-writer** → `theory-prose-craft.md` + `theory-dialogue-and-voice.md`
-- **story-engine-wyrd-story-reviewer** → loads only the requested review-mode procedure and reads the relevant story files (no theory needed)
+- **developer** + `story-engine-wyrd-concept-developer` procedure → `theory-narrative-structure.md` + world file + lens file (if applicable)
+- **developer** + `story-engine-wyrd-character-builder` procedure → `theory-character-development.md` + world file
+- **writer** + `story-engine-wyrd-prose-writer` procedure → `theory-prose-craft.md` + `theory-dialogue-and-voice.md`
+- **reviewer** + `story-engine-wyrd-story-reviewer` procedure → loads only the selected review-mode procedure and reads the relevant story files (no theory needed)
+
+Legacy specialist IDs are passive procedure values, never executable dispatch targets. Every call uses an explicit `procedure`, `scope`, `request`, and `inputs` envelope; a known procedure may be passed directly without loading the full index.
 
 ### Format Guidelines
 
