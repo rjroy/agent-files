@@ -1,0 +1,26 @@
+---
+name: asset-production
+description: Create and validate reproducible runtime-ready derivatives from explicitly authorized, approved assets; this does not authorize asset work or integration.
+---
+
+# Asset production
+
+Read [asset-workflow](../asset-workflow/SKILL.md) and approval history first. This is the bounded production step between accepted authoring source and runtime integration: inspect approved source, create separate reproducible derivative, hand it off. It does not authorize production, export, validation harnesses, game/runtime edits, or integration. Obtain explicit scope, output location, expected consumer/view and validation authority. A bounded pilot may include disposable validation; do not demand redundant permission for mechanical checks. Runtime changes/integration remain separate.
+
+## Preserve, inventory and choose derivatives
+
+- Keep approved authoring source and generator immutable. Load detailed source and operate on a derived copy for reduction, UVs or baking. A separate production script may automate; do not simplify architecture/characters by rerunning a lower-detail source-generator variant. Write derivatives only to approved destination; never replace source or silently substitute another asset.
+- Record source identity/revision, provenance, tool versions, consumer/library version, reproducible steps, assumptions and status. Pin versions when executing; inspect installed exporter options rather than guessing.
+- Define portable assembly contract: axes/units (including unknowns), local origins, scene/per-instance matrices, material roles/emissive intent and study camera. Apply each transform once; do not recenter, reconstruct placement by eye or repeat loader/export axis conversion. Preserve role mapping and instance matrices when batching.
+- Inventory objects, UVs/textures/channel meaning, skins/joints/animation relevant to consumer; record actual screen sizes, repetition/population and unknown device/performance targets. Ask only blocking decisions; mark others unknown.
+- Judge detail at intended screen size and preserve landmarks/silhouette/modular joins. Reduction, normal/AO/base/emissive textures, LOD and compression are optional only when measured screen-space or delivery benefit justifies them. Do not invent budgets. Normal maps add shading, not silhouette; AO may double-darken/stale; avoid baking fixed lighting into shared base maps. Keep shared appearance useful across intended modes; reserve emissive maps for self-lit accents.
+
+## Consumer validation and handoff
+
+- glTF does not carry arbitrary Blender node graphs or automatically reproduce custom shading. Verify actual consumer loader's handling of materials, textures, transforms, skins and animation. Successful GLB transfer is distinct from accepted appearance in the actual browser/runtime consumer. For appearance, compare paired relevant modes using same geometry, camera and role mapping; compare scene pixels, not only background. Renderer lighting differences mean matching numeric values is not matching appearance. Document deliberate material-treatment tradeoffs, not as exporter defects. Blender beauty render alone is not runtime proof.
+- Use a representative pilot only for a new/unproven export/consumer path; reuse proven patterns without redundant pilots. Change one optional production choice at a time; compare unchanged source in intended view, document change/reason/measured evidence, inspect exported artifact and actual loader warnings/unsupported behavior.
+- Report counts with meaning: unique resources vs placed totals; multiply geometry per instance by instance count for assembled totals. Linked/reused meshes or clones are not GPU instancing. Preserve matrices/material assignments when batching. Distinguish assembled totals, frame-visible triangles, draw calls and decoded storage. These are not GPU-memory/target budgets; state method and limits. Small regression fixture should cover ordinary mesh and instanced mesh count >1.
+- Deliver lean package: current derivative, reproducible process, concise report and selected evidence. Consolidate useful artifacts and reproduction steps; keep scratch candidates out of commits by default. Do not delete only approved evidence/source. Before cleanup verify output, provenance and regeneration; remove only authorized scratch/superseded files. State open decisions and consumer caveats.
+- Preserve description, concept/artwork, model and runtime acceptance gates. Derivative needs its own review before promotion; authorization/check success is not approval. Route visual/design decisions to the user/designer. Mechanical packaging is not authority to redesign geometry/material direction; route changes through existing approval gates. Never silently substitute a specialist or broaden scope.
+
+Project-specific pipeline references should be taken from the consuming project's authorized context/guide; this skill contains generic validation principles only.
