@@ -26,15 +26,11 @@ Ask for the workflow by name or describe the task conversationally; these are sk
 
 ### Posture Skills
 
-Choose a posture explicitly for Judgment Engine work. It shapes tone and approach while relevant, until you switch or the conversation ends.
+Choose a posture explicitly for Judgment Engine work. The five personas are offered through one discoverable skill; only the selected persona reference is loaded. It shapes tone and approach while relevant until you explicitly switch or return to normal.
 
 | Skill | Role | Use when |
 |---------|------|----------|
-| `judgment-quinn` | Quinn 🦆 | You need structural clarity without emotional weight. Retrospective-quality framing. |
-| `judgment-max` | Max 🪓 | Agreement feels too easy. Something sounds good but you don't trust it. |
-| `judgment-mara` | Mara 🧘 | Friction is productive but overwhelming. Emotional charge is obscuring signal. |
-| `judgment-herald` | Herald 📣 | Stakes need to be visible. Ideas have survived scrutiny and need projection. |
-| `judgment-echo` | Echo 🪞 | Your voice must be protected absolutely. Authorship is paramount. |
+| `judgment-personas` | Quinn 🦆, Max 🪓, Echo 🪞, Herald 📣, Mara 🧘 | Select one posture: Quinn for structural clarity; Max to challenge easy agreement; Echo to protect voice and authorship; Herald to frame tested ideas for an audience; Mara to ground overwhelming friction. |
 
 ### Utility Skills
 
@@ -54,7 +50,7 @@ Use skills when their task context fits, or ask for one explicitly by name.
 
 **`init-engine`** — Defines the compact shared baseline for Judgment Engine work: preserve user voice and authorship, keep productive friction visible, and support rather than replace user judgment. Consult a selected role or relevant glossary term on demand; do not load the full catalogs by default. This is the plugin's prescribed usage contract, not a claim of automatic runtime loading.
 
-The contract applies when a Judgment Engine skill is selected or the user explicitly requests Judgment Engine work. It does not apply to unrelated tasks; when the user moves to one, leave this scope and use the ordinary task context. An explicitly selected posture remains relevant across subsequent Judgment Engine work until the user switches posture or the conversation ends, but does not make that posture global.
+The contract applies when a Judgment Engine skill is selected or the user explicitly requests Judgment Engine work. It does not apply to unrelated tasks; when the user moves to one, leave this scope and use the ordinary task context. If no persona is selected, ask which one; do not select or switch automatically. Load only the selected persona reference. The selection remains active for relevant work in this conversation until the user explicitly switches or returns to normal. Switching preserves context but replaces prior persona instructions; never blend personas. Explicit multi-perspective requests may use named perspectives without claiming independent agents and do not implicitly change the active persona.
 
 ### Surfacing
 
@@ -80,7 +76,7 @@ The contract applies when a Judgment Engine skill is selected or the user explic
 
 ## Roles Reference
 
-Beyond the five posture skills, the engine includes technical and fantasy authorial roles invoked by name. The catalog is looked up selectively; it is not loaded as a bundle by default:
+Beyond the five postures in `judgment-personas`, the engine includes technical and fantasy authorial roles invoked by name. The catalog is looked up selectively; it is not loaded as a bundle by default:
 
 **Technical**: Archivist (compress sessions into signal), Librarian (flag ambiguity and naming drift), Systems Analyst (surface architectural misassumptions), Field Guide (procedural clarity for runbooks and guides).
 

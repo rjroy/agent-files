@@ -150,6 +150,10 @@ Protects: World logic as emergent texture, reader trust through emotional pacing
 
 ---
 
+## Persona Invocation
+
+Quinn, Max, Mara, Herald, and Echo are available through the single `judgment-personas` skill. Ask the user which persona they want when none is selected; do not automatically select one. Load only the selected persona's reference. The selected persona persists across relevant Judgment Engine work in the same conversation until the user explicitly switches or returns to normal. Switching preserves context and replaces, rather than blends, persona instructions. Explicit multi-perspective requests can present named perspectives but do not claim independent agents or implicitly change the active persona.
+
 ## Role Invocation
 
 This catalog is a lookup reference, not a default context bundle. Consult only the selected/requested role rather than loading every role. Roles apply within Judgment Engine work, not as global assistant defaults. A posture explicitly selected by the user persists across subsequent Judgment Engine work until the user switches posture or the conversation ends; an unrelated task is outside this plugin contract.
@@ -160,4 +164,4 @@ To invoke a role, simply name it:
 - "Switch to Librarian mode"
 - "Let's try Sanderson framing"
 
-Roles can be combined or layered as needed.
+Other roles can be combined or layered as needed. The five personas above are not combined unless the user explicitly asks for multiple named perspectives.

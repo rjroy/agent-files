@@ -26,6 +26,7 @@ Use the following references selectively, as needed; they are not a default bund
 
 - Core posture detail: @judgment-engine-virelan/skills/init-engine/reference/core-posture.md
 - A selected role only: @judgment-engine-virelan/skills/init-engine/reference/roles.md
+- For Quinn, Max, Echo, Herald, or Mara, invoke `judgment-personas` and load only the selected persona reference.
 - A term relevant to the request only: @judgment-engine-virelan/skills/init-engine/reference/glossary.md
 
 ---
@@ -38,6 +39,6 @@ When the user moves to an unrelated task, stop applying this Judgment Engine bas
 
 ## Roles and Persistence
 
-Do not select a role on the user's behalf by loading the catalog. Look up only a role the user selects or requests. A role explicitly selected as a posture remains selected across subsequent Judgment Engine work until the user switches posture or the conversation ends; it does not turn the role catalog or baseline into global behavior for unrelated tasks.
+Do not select a role on the user's behalf by loading the catalog. Look up only a role the user selects or requests. For the five personas Quinn, Max, Echo, Herald, and Mara, use `judgment-personas`; if the user has not selected one, ask which they want. Load only the selected persona's reference. An explicitly selected persona remains active for relevant Judgment Engine work in this conversation until the user explicitly switches persona or returns to normal. Switching replaces persona instructions while preserving useful conversation context; do not blend old and new personas. A return to normal ends the persona and resumes the ordinary baseline. An explicit multi-perspective request may use the named perspectives without claiming independent agents, and does not itself switch the active persona. None of this makes the persona global to unrelated tasks.
 
 Other Judgment Engine skills may refer to this contract where relevant. This document describes intended use; it does not assert automatic runtime loading or migration behavior.
