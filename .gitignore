@@ -8,3 +8,6 @@ __pycache__/
 .beads-credential-key
 .beads/proxieddb/
 /.lore/local/
+
+/skills/impeccable/
+/skills/typesafe-ai/
