@@ -24,11 +24,11 @@ The source `asset-workflow` material is preserved across this package as follows
 | Source guidance | Destination |
 | --- | --- |
 | Description approval; branch choice; concept/model/art/runtime gates; bounded iteration; distinct approvals | `skills/asset-workflow/SKILL.md` |
-| Modeling/critique ownership, source preservation, relocatable package, archive and cleanup safety | `skills/asset-workflow/SKILL.md`, `skills/blender-model/SKILL.md` |
+| Modeling/critique ownership, native-source default, optional generator, scope coverage, source preservation, relocatable package, and authorized acceptance-time cleanup | `skills/asset-workflow/SKILL.md`, `skills/blender-model/SKILL.md`, `skills/blender-visualize/SKILL.md` |
 | Authorized Codex route; native image staging; decode, inspect, copy, checksum, and exact-version approval | `skills/concept-art/SKILL.md`, `skills/asset-art/SKILL.md` |
 | Production artwork-specific framing, alpha, and projected-size checks | `skills/asset-art/SKILL.md` |
-| Blender construction, reproducibility, export/consumer caveats, bounded execution and recovery | `skills/blender-model/SKILL.md` |
-| Read-only Blender rendering, source-integrity checks, geometry critique | `skills/blender-visualize/SKILL.md` |
-| Separate production derivatives, source immutability, optimization/baking options, real-consumer validation and handoff | `skills/asset-production/SKILL.md` |
+| Blender construction, task-dependent reproducibility, export/consumer caveats, bounded execution and recovery | `skills/blender-model/SKILL.md` |
+| Read-only Blender rendering, source-integrity checks, bounded visual critique and evidence | `skills/blender-visualize/SKILL.md` |
+| Separate production derivatives, source immutability, reproducible conversion, optimization/baking options, real-consumer validation and handoff | `skills/asset-production/SKILL.md` |
 
 Project-specific Brightvale/Shining Stars direction and modeler agent routing were intentionally not carried over. Route visual decisions to the user/designer; use available authorized tools and agents only as explicitly scoped. Do not substitute a visual specialist without permission.
