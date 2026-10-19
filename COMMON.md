@@ -14,6 +14,13 @@ For large tasks across independent files, weigh parallel sub-agents against sequ
 
 "Add logging" means more than one failure log around a call. Log state changes, their trigger, and enough context to reconstruct events. At service boundaries (API calls, database writes, queues, external processes, cache invalidation), log both the attempt and outcome. Prefer per-request or per-service-call logging over per-frame or per-loop logging. When in doubt, log where data or control crosses a boundary.
 
+## TEST ISOLATION
+
+- Unit tests must verify algorithms with controlled, test-owned inputs and mocked dependencies, not mutable production configuration or live project data.
+- Integration tests may use real configuration and data to verify contracts and that the system works together. They must not hardcode current tuning choices as permanent requirements.
+- Valid configuration or content changes must not break unit tests. When they do, fix the test isolation rather than reverting user settings, replacing expected constants with today's values, or weakening coverage.
+- Choose the correct testing boundary over the quickest way to make tests pass. This is a standing requirement across projects.
+
 ## NEVER
 
 - Edit files in `~/Applications/`. These are the running services.
