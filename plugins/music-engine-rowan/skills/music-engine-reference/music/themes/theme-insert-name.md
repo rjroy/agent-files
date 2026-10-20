@@ -124,7 +124,7 @@ Common voices in Insert Name stories:
 - **Version migrants** - Programs helping others navigate identity evolution
 
 ## Insert Name Proper Noun
-**Insert Name** - The world designation (meta-commentary on placeholder identity) and the condition of digital existence where identity is fluid, insertable, and constantly evolving
+**Insert Name** - The world designation (meta-commentary on finding ones own identity) and the condition of digital existence where identity is fluid, insertable, and constantly evolving
 
 ## Tempo and Evolution Guidelines
 
