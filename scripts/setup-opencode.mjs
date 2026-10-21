@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 const HELP = `Usage: node scripts/setup-opencode.mjs [--apply] [--help]
 
 Preview planned OpenCode setup changes by default. Use --apply to update an
-existing OpenCode config and create the two approved global links.
+existing OpenCode config and create the three approved global links.
 `;
 
 function parseArgs(args) {
@@ -302,11 +302,15 @@ function planSetup() {
   const repository = resolveRepository();
   const instructionsSource = path.join(repository, "COMMON.md");
   const slimSource = path.join(repository, "omo-slim-agents");
+  const slimConfigSource = path.join(repository, "config", "oh-my-opencode-slim.json");
   if (!fs.existsSync(instructionsSource) || !fs.statSync(instructionsSource).isFile()) {
     throw new Error(`Shared instructions are missing: ${instructionsSource}`);
   }
   if (!fs.existsSync(slimSource) || !fs.statSync(slimSource).isDirectory()) {
     throw new Error(`Slim prompt directory is missing: ${slimSource}`);
+  }
+  if (!fs.existsSync(slimConfigSource) || !fs.statSync(slimConfigSource).isFile()) {
+    throw new Error(`Slim configuration is missing: ${slimConfigSource}`);
   }
 
   const home = process.env.HOME;
@@ -322,6 +326,7 @@ function planSetup() {
   const links = [
     { target: path.join(configDirectory, "AGENTS.md"), source: instructionsSource },
     { target: path.join(configDirectory, "oh-my-opencode-slim"), source: slimSource },
+    { target: path.join(configDirectory, "oh-my-opencode-slim.json"), source: slimConfigSource },
   ];
   for (const link of links) link.existedCorrectly = inspectLink(link.target, link.source);
 

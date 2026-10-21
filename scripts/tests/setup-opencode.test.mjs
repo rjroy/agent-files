@@ -20,6 +20,7 @@ function createFixture({
   config = { skills: [] },
   configName = "opencode.json",
   createConfig = true,
+  createSlimConfig = true,
 } = {}) {
   const temp = fs.mkdtempSync(path.join(os.tmpdir(), "opencode setup fixture "));
   const repo = path.join(temp, "repository with spaces");
@@ -36,6 +37,10 @@ function createFixture({
   fs.chmodSync(fixtureInstaller, fs.statSync(installerSource).mode);
   fs.writeFileSync(path.join(repo, "COMMON.md"), "# Shared instructions\n");
   fs.writeFileSync(path.join(repo, "omo-slim-agents", "fixture-agent.md"), "Prompt body\n");
+  if (createSlimConfig) {
+    fs.mkdirSync(path.join(repo, "config"), { recursive: true });
+    fs.writeFileSync(path.join(repo, "config", "oh-my-opencode-slim.json"), "{\"preset\":\"fixture\"}\n");
+  }
 
   writeSkill(repo, ".agents/skills", "local-skill");
   writeSkill(repo, "skills", "root-skill");
@@ -130,10 +135,11 @@ function expectedSkillRoots(repo) {
 }
 
 function assertOnlyManagedLinks(fixture) {
-  assert.deepEqual(symlinkPaths(fixture.configDir), ["AGENTS.md", "oh-my-opencode-slim"]);
+  assert.deepEqual(symlinkPaths(fixture.configDir), ["AGENTS.md", "oh-my-opencode-slim", "oh-my-opencode-slim.json"]);
   for (const [link, source] of [
     [path.join(fixture.configDir, "AGENTS.md"), path.join(fixture.repo, "COMMON.md")],
     [path.join(fixture.configDir, "oh-my-opencode-slim"), path.join(fixture.repo, "omo-slim-agents")],
+    [path.join(fixture.configDir, "oh-my-opencode-slim.json"), path.join(fixture.repo, "config", "oh-my-opencode-slim.json")],
   ]) {
     assert.equal(path.resolve(path.dirname(link), fs.readlinkSync(link)), source);
   }
@@ -162,6 +168,7 @@ test("help describes preview and apply modes without touching the fixture", (t) 
   const result = runSetup(fixture, ["--help"]);
   assertSuccessful(result);
   assert.match(`${result.stdout}\n${result.stderr}`, /--apply/);
+  assert.match(result.stdout, /three approved global links/);
   assert.deepEqual(snapshotTree(fixture.temp), before, "help must be side-effect free");
 });
 
@@ -258,10 +265,45 @@ test("already-correct managed links are preserved as no-ops", (t) => {
   fs.writeFileSync(fixture.configFile, `${JSON.stringify({ skills: expectedSkillRoots(fixture.repo) }, null, 2)}\n`);
   fs.symlinkSync(path.join(fixture.repo, "COMMON.md"), path.join(fixture.configDir, "AGENTS.md"));
   fs.symlinkSync(path.join(fixture.repo, "omo-slim-agents"), path.join(fixture.configDir, "oh-my-opencode-slim"));
+  fs.symlinkSync(path.join(fixture.repo, "config", "oh-my-opencode-slim.json"), path.join(fixture.configDir, "oh-my-opencode-slim.json"));
   const before = snapshotTree(fixture.configDir);
 
   assertSuccessful(runSetup(fixture, ["--apply"]));
   assert.deepEqual(snapshotTree(fixture.configDir), before);
+});
+
+test("a conflicting Slim config link is preserved and prevents all planned changes", (t) => {
+  const fixture = createFixture({ config: { skills: [] } });
+  t.after(fixture.cleanup);
+  const configLink = path.join(fixture.configDir, "oh-my-opencode-slim.json");
+  fs.writeFileSync(configLink, "user-owned config\n");
+  const before = snapshotTree(fixture.temp);
+
+  const result = runSetup(fixture, ["--apply"]);
+  assertFailed(result);
+  assert.equal(fs.readFileSync(configLink, "utf8"), "user-owned config\n");
+  assert.deepEqual(snapshotTree(fixture.temp), before, "preflight failure must not create links or edit config");
+});
+
+test("a missing Slim config source is rejected without partial installation", (t) => {
+  const fixture = createFixture({ createSlimConfig: false });
+  t.after(fixture.cleanup);
+  const before = snapshotTree(fixture.temp);
+
+  const result = runSetup(fixture, ["--apply"]);
+  assertFailed(result);
+  assert.deepEqual(snapshotTree(fixture.temp), before);
+});
+
+test("a non-file Slim config source is rejected without partial installation", (t) => {
+  const fixture = createFixture({ createSlimConfig: false });
+  t.after(fixture.cleanup);
+  fs.mkdirSync(path.join(fixture.repo, "config", "oh-my-opencode-slim.json"), { recursive: true });
+  const before = snapshotTree(fixture.temp);
+
+  const result = runSetup(fixture, ["--apply"]);
+  assertFailed(result);
+  assert.deepEqual(snapshotTree(fixture.temp), before);
 });
 
 test("a conflicting AGENTS.md is preserved and prevents all planned changes", (t) => {
