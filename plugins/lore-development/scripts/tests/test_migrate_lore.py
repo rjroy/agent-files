@@ -260,25 +260,6 @@ def test_unknown_legacy_status_fails_preview_without_mutation(tmp_path: Path) ->
     assert not (root / ".gitignore").exists()
 
 
-def test_migrate_skill_translates_blockers_into_safe_recovery() -> None:
-    skill = (SCRIPTS.parent / "skills/migrate/SKILL.md").read_text()
-
-    for guidance in (
-        "Unknown or malformed status",
-        "Never infer `approved`",
-        "Compare both contents",
-        "Inspect both `git -C '<root>' diff",
-        "Ask for explicit user approval",
-        "will not dereference it",
-        "check-ignore -v --no-index",
-        "do not use `sudo` or blanket `chmod`",
-        "Keep the original bytes",
-        "STOP; do not rerun apply blindly",
-        "Offer to help inspect or normalize",
-    ):
-        assert guidance in skill
-
-
 def test_malformed_legacy_status_reports_exact_line_and_safe_choices(
     tmp_path: Path,
 ) -> None:

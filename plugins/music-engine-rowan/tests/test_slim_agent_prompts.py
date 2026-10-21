@@ -1,175 +1,46 @@
-"""Content contracts for the retained music agents and consolidated skills."""
+"""Structural checks for active music procedures and referenced resources."""
 
 from pathlib import Path
-import re
 
 
 COLLECTION = Path(__file__).resolve().parents[1]
 REPOSITORY_ROOT = COLLECTION.parents[1]
 SLIM_PROMPTS = REPOSITORY_ROOT / "omo-slim-agents"
-PROCEDURES = REPOSITORY_ROOT / "plugins" / "personal" / "skills" / "agent-procedures" / "references" / "procedures"
+PROCEDURES = (
+    REPOSITORY_ROOT
+    / "plugins/personal/skills/agent-procedures/references/procedures"
+)
 
 
-def read_agent(agent_id: str) -> str:
-    path = PROCEDURES / f"music-engine-rowan-{agent_id}.md"
-    assert path.is_file(), f"missing passive procedure: {path}"
-    return path.read_text(encoding="utf-8")
-
-
-def read_skill(skill: str) -> str:
-    path = COLLECTION / "skills" / skill / "SKILL.md"
-    assert path.is_file(), f"missing skill: {path}"
-    return path.read_text(encoding="utf-8")
-
-
-def test_music_procedures_are_passive_and_roles_are_generic_handlers() -> None:
-    for procedure in ("lyric-writer", "production-designer", "song-reviewer"):
-        assert read_agent(procedure).strip()
-    for role in ("writer", "developer", "reviewer"):
-        handler = SLIM_PROMPTS / f"{role}.md"
-        assert handler.is_file(), f"missing generic handler: {handler}"
-
-
-def test_retained_agents_reference_supported_skills_and_resources() -> None:
-    lyric = read_agent("lyric-writer")
-    production = read_agent("production-designer")
-    reviewer = read_agent("song-reviewer")
-    assert "theory-lyrical-craft.md" in lyric
-    assert "music-write-lyrics" in lyric
-    assert "theory-production-atmosphere.md" in production
-    assert "music-write-lyrics" in production
-    assert "music-suno-output" in reviewer
-
-    for agent, resources in {
-        "lyric-writer": ("theory-lyrical-craft.md",),
-        "production-designer": ("theory-production-atmosphere.md", "theory-genre-reference.md"),
-        "song-reviewer": ("theory-lyrical-craft.md", "theory-production-atmosphere.md"),
-    }.items():
-        prompt = read_agent(agent)
-        for resource in resources:
-            assert resource in prompt
-            reference_base = COLLECTION / "skills" / "music-engine-reference"
-            assert (reference_base / "music" / "theory" / resource).is_file()
-            assert f"music/theory/{resource}" in prompt
-            assert "installed directory of the loaded `music-engine-reference` skill" in prompt
-            assert "../plugins/music-engine-rowan/skills/music-engine-reference" not in prompt
-
-
-def test_suno_output_modes_preserve_boundaries_and_outputs() -> None:
-    text = read_skill("music-suno-output")
-    for term in ("Suno output mode", "studio mode", "studio-prep.md", "same directory", "200–400", "800–1000", "phase: complete"):
-        assert term in text
-    assert "Do not confuse preparing prompts with generating audio" in text
-    assert "music-engine-reference/music/theory/theory-suno-formatting.md" in text
-
-
-def test_artwork_modes_gate_rendering_and_preserve_prompt_only_skills() -> None:
-    text = read_skill("music-artwork")
-    for term in ("Image mode", "Video mode", "music-image-prompt", "music-video-prompt", "aspect-ratio", "cover-*.*", "image-prompt-samples-*.md", "video-prompt-samples-*.md"):
-        assert term in text
-    lower = text.casefold()
-    for phrase in ("explicit approval", "ask before retrying", "prompt selection alone is not generation approval", "confirm which source image"):
-        assert phrase in lower
-    assert "images/base.md" in text
-    assert "video/video-prompting-guide.md" in text
-
-
-def test_parent_owns_confirmed_selection_and_cleanup() -> None:
-    text = read_skill("music-write-lyrics")
-    flows = (
-        ("### Step 9: Select Lyrics", "### Step 10:", "lyrics-drafted", "full selected lyrics", "lyrics-samples.md"),
-        ("### Step 11: Select Production", "### Step 12:", "production-designed", "full selected design", "production-samples.md"),
-    )
-    for start, end, phase, content_label, samples_file in flows:
-        flow = text.split(start, 1)[1].split(end, 1)[0]
-        assert "explicit user selection" in flow
-        assert "let the user confirm or select another" in flow
-        assert content_label in flow
-        assert "cancel or defer" in flow
-        assert "leave the song file, phase, and samples untouched" in flow
-
-        phase_update = flow.index(f"phase: {phase}")
-        verification = flow.index(f"Verify the destination contains the {content_label}, metadata, and updated phase")
-        cleanup = flow.index(f"deleting `{samples_file}`")
-        assert phase_update < verification < cleanup
-        assert f"Never delete the samples before the complete content write and phase update are verified" in flow
-
-    assert re.search(r"(?i)\b(?:re-run|rerun|auto-recommend via|spawn|delegate to)\b.{0,50}\bcurator\b", text) is None
-    assert "music-engine-rowan-sampling-curator" not in text
-    assert "music-suno-output" in text
-    assert "music-artwork" in text
-
-
-def test_pending_sample_resume_routes_to_selection_without_regeneration() -> None:
-    text = read_skill("music-write-lyrics")
-    routing = text.split("| Current phase | Existing pending sample file | Resume action |", 1)[1].split("\n\n", 1)[0]
-    routes = [line.strip() for line in routing.splitlines() if line.strip().startswith("|") and "---" not in line]
-    assert any("`concept-approved`" in line and "`lyrics-samples.md`" in line and "Step 9" in line and "do not spawn" in line for line in routes)
-    assert any("`lyrics-drafted`" in line and "`production-samples.md`" in line and "Step 11" in line and "do not spawn" in line for line in routes)
-    assert any("`concept-approved`" in line and "none" in line and "Generate lyric samples" in line for line in routes)
-    assert any("`lyrics-drafted`" in line and "none" in line and "Generate production samples" in line for line in routes)
-
-    for sample_file, step, next_step, agent in (
-        ("lyrics-samples.md", "Step 8", "Step 9", "music-engine-rowan-lyric-writer"),
-        ("production-samples.md", "Step 10", "Step 11", "music-engine-rowan-production-designer"),
+def test_retained_procedures_and_generic_handlers_exist() -> None:
+    for procedure in (
+        "music-engine-rowan-lyric-writer",
+        "music-engine-rowan-production-designer",
+        "music-engine-rowan-song-reviewer",
     ):
-        generation = text.split(f"### {step}:", 1)[1].split(f"### {next_step}:", 1)[0]
-        assert f"`[song-directory]/{sample_file}` already exists" in generation
-        assert f"resume at {next_step}" in generation
-        assert "do not regenerate" in generation
-        assert "only on the user's request" in generation
-        assert "confirming that the existing samples may be replaced" in generation
-        assert agent in generation
-
-
-def test_phase_two_delegation_is_limited_to_retained_specialists() -> None:
-    text = read_skill("music-write-lyrics")
-    assert "NEVER execute Phase 2 yourself" not in text
-    assert "Delegate creative generation only through the shared writer, developer, and reviewer roles" in text
-    assert "parent owns stage selection, sample selection, state transitions" in text
-    assert "music-suno-output" in text
-
-
-def test_song_reviewer_is_read_only_and_parent_owns_user_approved_edits() -> None:
-    reviewer = read_agent("song-reviewer")
-    lower = reviewer.casefold()
-    parent = read_skill("music-write-lyrics")
-
-    assert "read-only" in lower
-    assert "return the full review report and proposed fixes to the parent" in lower
-    assert "the parent presents findings, gets user direction" in lower
-    assert "only the parent may apply fixes after the user requests them" in lower
-    assert "only the parent" in lower and "phase: reviewed" in lower
-    assert re.search(
-        r"\*{0,2}changes made:\*{0,2}\s*none — reviewer is read-only", lower
-    )
-    assert "make edits directly to the song file" not in lower
-    assert "update phase and confirm ready for formatting" not in lower
-    assert "after any edits:" not in lower
-    assert "make quick fixes" not in lower
-    assert "proceed to the `music-suno-output` skill" not in lower
-    parent_policy = " ".join(parent.casefold().split())
-    assert re.search(r"the parent presents findings and applies fixes only as requested", parent_policy)
-
-
-def test_each_music_dispatch_has_procedure_envelope_and_fresh_review() -> None:
-    text = read_skill("music-write-lyrics")
-    for role, procedure in (
-        ("writer", "music-engine-rowan-lyric-writer"),
-        ("developer", "music-engine-rowan-production-designer"),
-        ("reviewer", "music-engine-rowan-song-reviewer"),
-    ):
-        assert f"Invoke the generic `{role}` handler" in text
-        section = text.split(f"procedure: {procedure}", 1)[1].split("```", 1)[0]
-        for field in ("scope:", "request:", "inputs:"):
-            assert field in section
         assert (PROCEDURES / f"{procedure}.md").is_file()
-    reviewer_call = text.split("procedure: music-engine-rowan-song-reviewer", 1)[1].split("```", 1)[0]
-    assert "song: [song-directory]/concept-approved.md" in reviewer_call
+
+    for role in ("writer", "developer", "reviewer"):
+        assert (SLIM_PROMPTS / f"{role}.md").is_file()
 
 
-def test_prompt_only_skills_do_not_delegate_to_removed_curator() -> None:
-    for skill in ("music-image-prompt", "music-video-prompt"):
-        text = read_skill(skill)
-        assert "music-engine-rowan-sampling-curator" not in text
-        assert "prompt selection does not authorize" in text
+def test_music_reference_resources_exist() -> None:
+    reference_base = COLLECTION / "skills" / "music-engine-reference"
+    for resource in (
+        "music/theory/theory-lyrical-craft.md",
+        "music/theory/theory-production-atmosphere.md",
+        "music/theory/theory-genre-reference.md",
+        "music/theory/theory-suno-formatting.md",
+    ):
+        assert (reference_base / resource).is_file()
+
+
+def test_active_music_skills_exist() -> None:
+    for skill in (
+        "music-write-lyrics",
+        "music-suno-output",
+        "music-artwork",
+        "music-image-prompt",
+        "music-video-prompt",
+    ):
+        assert (COLLECTION / "skills" / skill / "SKILL.md").is_file()

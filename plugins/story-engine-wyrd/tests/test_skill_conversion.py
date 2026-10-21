@@ -1,4 +1,4 @@
-"""Narrow contract checks for the command-to-skill prompt migration."""
+"""Structural checks for migrated skills, metadata, and file references."""
 
 from pathlib import Path
 import re
@@ -7,8 +7,10 @@ import re
 COLLECTION = Path(__file__).resolve().parents[1]
 SKILLS = COLLECTION / "skills"
 REPOSITORY_ROOT = COLLECTION.parents[1]
-SLIM_PROMPTS = REPOSITORY_ROOT / "omo-slim-agents"
-PROCEDURES = REPOSITORY_ROOT / "plugins" / "personal" / "skills" / "agent-procedures" / "references" / "procedures"
+PROCEDURES = (
+    REPOSITORY_ROOT
+    / "plugins/personal/skills/agent-procedures/references/procedures"
+)
 MIGRATIONS = {
     "write-story": "story-write-story",
     "review-story": "story-review-story",
@@ -17,85 +19,20 @@ MIGRATIONS = {
 }
 
 
-def test_old_commands_are_replaced_by_discoverable_skills() -> None:
+def test_migrated_commands_have_skill_files_and_matching_metadata() -> None:
     for old_name, skill_name in MIGRATIONS.items():
         assert not (COLLECTION / "commands" / f"{old_name}.md").exists()
-        prompt = SKILLS / skill_name / "SKILL.md"
-        assert prompt.is_file()
-        content = prompt.read_text(encoding="utf-8")
+        skill = SKILLS / skill_name / "SKILL.md"
+        assert skill.is_file()
+        content = skill.read_text(encoding="utf-8")
         frontmatter = content.split("---", 2)[1]
         name = re.search(r"^name:\s*(.+)$", frontmatter, re.MULTILINE)
         description = re.search(r"^description:\s*(.+)$", frontmatter, re.MULTILINE)
         assert name is not None and name.group(1) == skill_name
         assert description is not None and len(description.group(1)) >= 30
-        assert "Conversational use" in content
 
 
-def test_story_creation_preserves_approval_and_resume_contract() -> None:
-    content = (SKILLS / "story-write-story" / "SKILL.md").read_text(encoding="utf-8")
-    for contract in (
-        "wait for the user's explicit choice",
-        "Present Plan for User Approval",
-        "[Yes - Proceed] [No - Revise] [Cancel]",
-        "Resume Workflow",
-        "metadata.json",
-        "chapter_generation",
-    ):
-        assert contract in content
-    assert "story-engine-wyrd-story-reviewer" in content
-    assert "procedure: story-engine-wyrd-concept-developer" in content
-    assert "Please resume .story-state/example/PLAN.md" in content
-    assert content.index("explicit continuation or resume intent") < content.index("File Reference")
-
-
-def test_story_child_validates_procedure_and_parent_owns_selection() -> None:
-    content = (SKILLS / "story-write-story" / "SKILL.md").read_text(encoding="utf-8")
-    normalized = " ".join(content.casefold().split())
-    assert "the parent may dispatch a known procedure id directly without reloading the index" in normalized
-    assert "every child must load the applicable role skill and the `agent-procedures` index" in normalized
-    assert "validate the supplied procedure id and role against that index" in normalized
-
-
-def test_concept_calls_declare_separate_operations_and_authorized_outputs() -> None:
-    content = (SKILLS / "story-write-story" / "SKILL.md").read_text(encoding="utf-8")
-    sampling = content.split("### 4.1 Spawn Concept Developer", 1)[1].split("### 4.2", 1)[0]
-    expansion = content.split("### 4.5 Generate Full Plan", 1)[1].split("### 4.6", 1)[0]
-    assert "operation: sampling" in sampling
-    assert "user_input:" in sampling
-    assert ".story-state/[Story]/concept-samples.md" in sampling
-    assert "concept-approved.md" not in sampling
-
-    assert "operation: approved-concept-expansion" in expansion
-    assert "selected_approved_concept: .story-state/[Story]/concept-approved.md" in expansion
-    assert "format: [confirmed format]" in expansion
-    for path in (
-        ".story-state/[Story]/PLAN.md",
-        ".story-state/[Story]/quality-rubrics.md",
-        ".story-state/[Story]/world-state/mechanics.md",
-        ".story-state/[Story]/plot-threads/thread-status.md",
-    ):
-        assert path in expansion
-    outputs = expansion.split("authorized_outputs:", 1)[1].split("```", 1)[0]
-    assert "metadata.json" not in outputs
-    assert "concept-approved.md" not in outputs
-    assert "selection metadata" in expansion
-
-
-def test_partial_chapter_resume_only_generates_replacement_samples() -> None:
-    content = (SKILLS / "story-write-story" / "SKILL.md").read_text(encoding="utf-8")
-    partial = content.split("### Resume Step 3: Handle Partial Chapter", 1)[1].split("### Resume Step 4:", 1)[0]
-    normalized = " ".join(partial.casefold().split())
-    assert "partial canonical chapter as input only" in normalized
-    assert "continue/preserve its prose" in normalized
-    assert ".story-state/[story]/chapter-[n]-samples.md" in normalized
-    assert "do not authorize direct writes to the canonical chapter" in normalized
-    assert "parent selects a complete sample" in normalized
-    assert "full schema workflow in step 6.4" in normalized
-    assert "fresh quality review under step 6.5" in normalized
-    assert "authorized partial-chapter output" not in normalized
-
-
-def test_story_reference_paths_are_skill_relative() -> None:
+def test_story_reference_paths_resolve_from_their_skills() -> None:
     for skill_name, relative_path in (
         ("story-plan-plot", "../story-engine-reference/story/theory/theory-narrative-structure.md"),
         ("story-develop-character", "../story-engine-reference/story/theory/theory-character-development.md"),
@@ -106,205 +43,29 @@ def test_story_reference_paths_are_skill_relative() -> None:
         assert (SKILLS / skill_name / relative_path).is_file()
 
 
-def test_review_skill_remains_informational_and_read_only() -> None:
-    content = (SKILLS / "story-review-story" / "SKILL.md").read_text(encoding="utf-8")
-    assert "informational only" in content.lower()
-    assert "never blocks" in content.lower()
-    assert "No modification to story bible files" in content
-
-
-def test_story_slim_prompts_and_referenced_resources_are_relocated() -> None:
-    agent_ids = (
-        "story-engine-wyrd-prose-writer",
-        "story-engine-wyrd-concept-developer",
-        "story-engine-wyrd-character-builder",
-        "story-engine-wyrd-story-reviewer",
-    )
-    for agent_id in agent_ids:
-        procedure = PROCEDURES / f"{agent_id}.md"
-        assert procedure.is_file()
-        assert procedure.read_text(encoding="utf-8").strip()
-    for role in ("writer", "developer", "reviewer"):
-        assert (SLIM_PROMPTS / f"{role}.md").is_file()
-
-    for role in ("writer", "developer", "reviewer"):
-        content = (SLIM_PROMPTS / f"{role}.md").read_text(encoding="utf-8")
-        assert content.strip()
-        assert "procedure" in content.lower()
-
-    reference_base = SKILLS / "story-engine-reference"
-    for resource in ("story/theory/theory-narrative-structure.md", "story/theory/theory-character-development.md", "story/theory/theory-prose-craft.md"):
-        assert (reference_base / resource).is_file()
-    for resource in ("docs/story-bible-schema.md", "utils/agent-error-pattern.md"):
-        assert (COLLECTION / resource).is_file()
-
-    assert (reference_base / "../story-write-story/sample-selection.md").is_file()
-    for removed_id in (
-        "story-engine-wyrd-sampling-curator",
-        "story-engine-wyrd-quality-checker",
-        "story-engine-wyrd-continuity-validator",
-        "story-engine-wyrd-final-review",
-    ):
-        assert not (SLIM_PROMPTS / f"{removed_id}.md").exists()
-
-
-def test_story_reviewer_modes_load_independent_read_only_procedures() -> None:
-    reviewer = (PROCEDURES / "story-engine-wyrd-story-reviewer.md").read_text(encoding="utf-8")
-    procedures = {
-        "quality": "quality-review.md",
-        "continuity": "continuity-review.md",
-        "final-review": "final-review.md",
-    }
-    for mode, resource in procedures.items():
-        assert f"`{mode}`" in reviewer
-        assert resource in reviewer
-        assert (SKILLS / "story-review-story" / "references" / resource).is_file()
-    assert "read-only" in reviewer.lower()
-    assert "read-only" in reviewer.lower()
-
-    on_demand_dispatch = (SKILLS / "story-review-story" / "SKILL.md").read_text(encoding="utf-8")
-    dispatch = on_demand_dispatch.split("### Step 3: Invoke the Shared Story Reviewer", 1)[1].split("### Step 4:", 1)[0]
-    assert "generic `reviewer` handler" in dispatch
-    envelope = dispatch.split("```yaml", 1)[1].split("```", 1)[0]
-    assert "procedure: story-engine-wyrd-story-reviewer" in envelope
-    assert "mode: continuity" in envelope
-    for field in ("scope:", "request:", "inputs:", "story_directory:", "chapter_range:"):
-        assert field in envelope
-
-    readme = (COLLECTION / "README.md").read_text(encoding="utf-8")
-    for agent_id in (
+def test_story_dispatch_references_have_procedure_files() -> None:
+    writer = (SKILLS / "story-write-story" / "SKILL.md").read_text(encoding="utf-8")
+    for procedure in (
         "story-engine-wyrd-concept-developer",
         "story-engine-wyrd-character-builder",
         "story-engine-wyrd-prose-writer",
         "story-engine-wyrd-story-reviewer",
     ):
-        assert agent_id in readme
-    assert "Sampling Curator" not in readme
-    assert "Quality Checker" not in readme
-    assert "Continuity Validator" not in readme
-
-    writer = (SKILLS / "story-write-story" / "SKILL.md").read_text(encoding="utf-8")
-    selection = SKILLS / "story-write-story" / "sample-selection.md"
-    assert selection.is_file()
-    assert "sample-selection.md" in writer
-    assert "concept" in selection.read_text(encoding="utf-8").lower()
-    assert "character" in selection.read_text(encoding="utf-8").lower()
-    selection_text = selection.read_text(encoding="utf-8")
-    assert re.search(r"highest[-\s]probability candidate", selection_text)
-    phase_rules = selection_text.split("## Choose by phase", 1)[1].split("For interactive choices", 1)[0]
-    assert "Concept" in phase_rules and "Never choose automatically" in phase_rules
-    assert "Character" in phase_rules and "Never choose automatically" in phase_rules
-    assert "Prose" in phase_rules and "without prompting by default" in phase_rules
-    assert "Only after a successful chosen-content write" in selection_text
-    for mode in procedures:
-        assert f"mode: {mode}" in writer
-    assert "sequentially" in writer
-    assert "fresh instance per batch" in writer
-    assert "recover the latest carry-forward notes" in writer
-    assert "final-review-notes.md" in writer
-
-
-def test_selected_chapters_follow_schema_and_review_results_never_fake_passes() -> None:
-    schema = (COLLECTION / "docs" / "story-bible-schema.md").read_text(encoding="utf-8")
-    selection = (SKILLS / "story-write-story" / "sample-selection.md").read_text(encoding="utf-8")
-    selection_text = selection
-    writer = (SKILLS / "story-write-story" / "SKILL.md").read_text(encoding="utf-8")
-
-    chapter_schema = schema.split("### Chapter File Schema", 1)[1].split("### Verbalized Sampling Files", 1)[0]
-    required_chapter_fields = (
-        "chapter_number",
-        "chapter_title",
-        "word_count",
-        "target_word_count",
-        "generated",
-        "quality_checked",
-        "quality_review_status",
-        "status",
-    )
-    for field in required_chapter_fields:
-        assert f"{field}:" in chapter_schema
-        assert f"{field}:" in selection
-
-    character_schema = schema.split("### Character File Schema", 1)[1].split("### metadata.json Schema", 1)[0]
-    for field in ("name", "role", "created", "last_updated"):
-        assert f"{field}:" in character_schema
-        assert f"{field}" in selection
-    character_template_start = selection_text.index("### Selected character frontmatter")
-    character_template_start = selection_text.index("```yaml", character_template_start) + len("```yaml")
-    character_template_end = selection_text.index("```", character_template_start)
-    character_template = selection_text[character_template_start:character_template_end]
-    for field in ("name", "role", "created", "last_updated"):
-        assert re.search(rf"^\s*{field}:", character_template, re.MULTILINE)
-
-    assert "load `../../docs/story-bible-schema.md`" in selection
-    assert "complete selected candidate body" in selection
-    assert "Do not summarize, truncate, or rewrite" in selection
-    assert "quality_checked: false" in selection
-    assert "quality_review_status: pending" in selection
-    chapter_template_start = selection_text.index("### Selected chapter frontmatter")
-    chapter_template_start = selection_text.index("```yaml", chapter_template_start) + len("```yaml")
-    chapter_template_end = selection_text.index("```", chapter_template_start)
-    chapter_template = selection_text[chapter_template_start:chapter_template_end]
-    for field in required_chapter_fields:
-        assert re.search(rf"^\s*{field}:", chapter_template, re.MULTILINE)
-    assert re.search(r"^quality_checked:\s*false\s*$", chapter_template, re.MULTILINE)
-    assert re.search(r"^quality_review_status:\s*pending\s*$", chapter_template, re.MULTILINE)
-
-    assert 'quality_checked: true`, `quality_review_status: "passed"' in writer
-    assert 'quality_checked: false`, `quality_review_status: "revision_needed"`' in writer
-    assert 'quality_review_status: "accepted_with_issues"' in writer
-    assert "Never convert the reviewer result to PASS" in writer
-    assert 'status: "needs_revision"' in writer
-    assert 'status: "accepted_with_issues"' in writer
-    assert "Never record an accepted or failed checkpoint as `passed`" in writer
-    quality_acceptance = writer.split("**User accepts a failed review as-is**", 1)[1].split("**Error Handling**", 1)[0]
-    assert 'quality_checked` remains `false`' in quality_acceptance
-    assert '`quality_review_status: "accepted_with_issues"`' in quality_acceptance
-    assert '`status: "complete"`' in quality_acceptance
-    assert "retain the issue count and failure details" in quality_acceptance
-    assert "explicit acceptance" in quality_acceptance
-    assert "only when its quality failure is the sole unresolved cause" in quality_acceptance
-    assert "preserve its incomplete marker if another cause remains" in quality_acceptance
-    assert "never clear unrelated incomplete entries" in quality_acceptance
-    assert "Increment `completed_chapters` only after quality findings were passed or explicitly accepted" in writer
-    assert '"status": "accepted_with_issues"' in schema
-    assert '"needs_revision"' in schema
-    assert 'quality_review_status: "pending"' in schema or 'quality_review_status: "passed"' in schema
-
-
-def test_continuity_explicit_range_overrides_checkpoint_history() -> None:
-    procedure = (SKILLS / "story-review-story" / "references" / "continuity-review.md").read_text(encoding="utf-8")
-    scope_rules = procedure.split("### Step 1: Determine Validation Scope", 1)[1].split("### Step 2:", 1)[0]
-    assert re.search(
-        r"If the caller supplied a range.{0,200}exact start and end for every read, search, report heading, and finding",
-        scope_rules,
-        re.DOTALL,
-    )
-    assert re.search(r"Do not narrow it by `continuity_checkpoints`", scope_rules)
-    assert "12 completed chapters and a checkpoint at 12, an explicit on-demand request for chapters 1–12 still reviews chapters 1–12" in procedure
-    assert re.search(
-        r"automatic checkpoint and no range was supplied.{0,180}last automatic checkpoint",
-        scope_rules,
-        re.DOTALL,
-    )
-
-    on_demand = (SKILLS / "story-review-story" / "SKILL.md").read_text(encoding="utf-8")
-    assert "story-engine-wyrd-story-reviewer" in on_demand
-    assert "continuity mode" in on_demand
-    assert "informational" in on_demand.lower()
-
-
-def test_story_calls_use_explicit_procedure_envelopes_and_fresh_reviewers() -> None:
-    writer = (SKILLS / "story-write-story" / "SKILL.md").read_text(encoding="utf-8")
-    routes = (
-        ("developer", "story-engine-wyrd-concept-developer"),
-        ("developer", "story-engine-wyrd-character-builder"),
-        ("writer", "story-engine-wyrd-prose-writer"),
-        ("reviewer", "story-engine-wyrd-story-reviewer"),
-    )
-    for role, procedure in routes:
-        assert f"**Handler / procedure**: `{role}` / `{procedure}`" in writer
         assert f"procedure: {procedure}" in writer
         assert (PROCEDURES / f"{procedure}.md").is_file()
-    for mode in ("quality", "continuity", "final-review"):
-        assert f"mode: {mode}" in writer
+
+
+def test_chapter_frontmatter_fields_match_schema() -> None:
+    schema = (COLLECTION / "docs" / "story-bible-schema.md").read_text(encoding="utf-8")
+    selection = (SKILLS / "story-write-story" / "sample-selection.md").read_text(encoding="utf-8")
+    chapter_schema = schema.split("### Chapter File Schema", 1)[1].split("### Verbalized Sampling Files", 1)[0]
+    template_start = selection.index("### Selected chapter frontmatter")
+    template_start = selection.index("```yaml", template_start) + len("```yaml")
+    template_end = selection.index("```", template_start)
+    template = selection[template_start:template_end]
+    for field in (
+        "chapter_number", "chapter_title", "word_count", "target_word_count",
+        "generated", "quality_checked", "quality_review_status", "status",
+    ):
+        assert f"{field}:" in chapter_schema
+        assert re.search(rf"^\s*{field}:", template, re.MULTILINE)

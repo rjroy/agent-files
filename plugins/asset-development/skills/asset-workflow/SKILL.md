@@ -5,7 +5,7 @@ description: Coordinate authorized visual-asset work through concept exploration
 
 # Asset workflow
 
-The user is the visual director; the agent owns the brief, execution, evidence, and handoff. These instructions describe how to execute work and do not themselves authorize concept generation, modeling, production derivatives, integration, or asset creation. Obtain task authorization and preserve every approval boundary.
+The user is the visual director; the agent owns the brief, execution, evidence, and handoff. These instructions describe how to execute work and do not themselves authorize concept generation, modeling, production derivatives, integration, or asset creation. Obtain task authorization and preserve every approval boundary. Do not install software or dependencies; report the blocker and request direction if they are needed. Runtime integration remains a separate, explicitly authorized step below.
 
 ## Context and approvals
 

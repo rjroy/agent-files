@@ -8,6 +8,15 @@ description: Use to inspect a bounded area for code smells and discuss whether a
 Begin with read-only diagnosis. The goal is to help the user decide whether a
 concrete refactoring is worth doing, not to produce a checklist or change code.
 
+The goal is simplification through the lens of code smells, not to make more
+code, abstractions, infrastructure, or tests. Look for opportunities to remove
+or consolidate unnecessary responsibilities, indirection, duplication, and
+obsolete paths while preserving behavior. Include tests and fixtures: identify
+redundant, superseded, or ineffective coverage rather than accumulating more.
+Judge proposals by what becomes simpler to understand and maintain, not a
+line-count quota. Report test hardening or other additive improvements
+separately; they are not simplification merely because they improve quality.
+
 ## Scope and investigation
 
 Establish the area or upcoming change from the user's request and conversation.

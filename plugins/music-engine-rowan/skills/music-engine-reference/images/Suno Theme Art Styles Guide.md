@@ -4,6 +4,38 @@
 
 When a user requests "[Theme] Art Style" for a song, apply the corresponding visual approach below. These styles are designed to translate the musical themes into cohesive visual narratives.
 
+## **Shattered Worlds Art Style**
+
+**Core Approach:** Dark, densely finished pen-and-ink horror illustration with restricted color beneath dominant black ink. User-approved direction, 2026-10-20.
+
+**Visual Signature:**
+- Heavy irregular black contours, layered directional hatching and crosshatching, scratched highlights, gritty stippling, and broad solid-black shadows.
+- Build form and depth through visible drawn marks, never smooth photographic shading or photographic imagery with a texture overlay.
+- Densely finished, distressed drawing with paper-like print grain; etched or woodcut-like marks describe its appearance, not a required physical medium.
+- Dramatically receding ordinary environments and strong readable silhouettes, with selective brightness cutting through dark masses.
+
+**Color Palette:**
+- Restricted, scene-specific colors beneath dominant black ink, with selective vivid accents.
+- Ochre and burning red, or sickly teal and violet, are reference examples, not mandatory colors.
+- Preserve contrast and legibility at small cover sizes. Negative space may remain empty when the story requires erasure.
+
+**Walker Character Requirement:**
+- The Walker is cloaked and faceless; the dark hood interior shows no face or internal anatomy.
+- A rough or ragged cloak hem fits the treatment. Pose, placement and scale follow the story rather than a mandatory central approaching figure.
+- Keep the Walker mysterious, not automatically heroic, reassuring or villainous. No default scythe or grim-reaper props.
+
+**Composition and Story Boundaries:**
+- Volcanoes, monsters, claws, debris, particular colors and portrait framing are not defining style requirements.
+- Match the song's events. Do not turn quiet reality cessation into spectacular destruction merely to imitate a reference scene.
+- Aspect ratio, lettering, background and delivery requirements remain asset-specific.
+
+**Avoid:** Sparse unfinished pencil sketches, smooth gouache painting, airbrushed shading, photographic rendering, glossy 3D surfaces, and clean vector outlines.
+
+**Reusable Style Prompt:**
+> Dark, densely finished pen-and-ink horror illustration. Heavy irregular black contours, layered directional hatching and crosshatching, scratched highlights, gritty stippling, and broad solid-black shadows. Render form through visible drawn marks, never smooth photographic shading. Use a restricted scene-specific palette beneath dominant black ink, with selective vivid accents. Detailed, distressed, and unmistakably hand-drawn.
+
+**Mood Keywords:** dark ink, crosshatched, distressed, high-contrast, ordinary-world fracture, cosmic unease, displaced survival.
+
 ---
 
 

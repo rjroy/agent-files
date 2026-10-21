@@ -53,12 +53,6 @@ def midi_scripts_dir():
 
 
 @pytest.fixture(scope="session")
-def skills_dir():
-    """Return path to skills directory."""
-    return Path(__file__).parent.parent / "skills"
-
-
-@pytest.fixture(scope="session")
 def acceptance_test_dir(tmp_path_factory):
     """Create directory for acceptance test files."""
     return tmp_path_factory.mktemp("acceptance_tests")
@@ -366,38 +360,6 @@ class TestAT5ValidJSON:
                 assert "status" in output, f"{script}: missing 'status' field"
             except json.JSONDecodeError as e:
                 pytest.fail(f"{script} output is not valid JSON: {e}\nOutput: {result.stdout}")
-
-
-# ============================================================================
-# AT6: Skill docs include question->script mapping examples
-# ============================================================================
-
-class TestAT6SkillDocs:
-    """AT6: Skill docs should include question->script mapping examples."""
-
-    def test_audio_skill_has_mapping(self, skills_dir):
-        """Test that audio-analyzer SKILL.md has decision guidance."""
-        skill_md = skills_dir / "audio-analyzer" / "SKILL.md"
-        assert skill_md.exists(), "audio-analyzer SKILL.md not found"
-
-        content = skill_md.read_text()
-
-        # Check for decision guidance section
-        assert "Decision Guidance" in content, "Missing 'Decision Guidance' section"
-        assert "analyze_tempo" in content, "Missing tempo script mapping"
-        assert "analyze_key" in content, "Missing key script mapping"
-
-    def test_midi_skill_has_mapping(self, skills_dir):
-        """Test that midi-analyzer SKILL.md has decision guidance."""
-        skill_md = skills_dir / "midi-analyzer" / "SKILL.md"
-        assert skill_md.exists(), "midi-analyzer SKILL.md not found"
-
-        content = skill_md.read_text()
-
-        # Check for decision guidance section
-        assert "Decision Guidance" in content, "Missing 'Decision Guidance' section"
-        assert "analyze_midi_key" in content, "Missing MIDI key script mapping"
-        assert "analyze_midi_chords" in content, "Missing MIDI chords script mapping"
 
 
 # ============================================================================

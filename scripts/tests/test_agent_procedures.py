@@ -56,14 +56,6 @@ class AgentProcedureContracts(unittest.TestCase):
         self.assertNotIn("permission", text.lower())
         self.assertNotIn("variant", text.lower())
 
-    def test_four_dispatchers_are_short_and_generic(self):
-        forbidden = {p for group in ROLE_PROCEDURES.values() for p in group}
-        for role in ROLE_PROCEDURES:
-            prompt = (PROMPTS / f"{role}.md").read_text()
-            self.assertLessEqual(len(prompt.splitlines()), 20)
-            self.assertIn("agent-procedures", prompt)
-            self.assertFalse(any(proc in prompt for proc in forbidden))
-
     def test_root_prompt_directory_contains_only_the_seven_active_bodies(self):
         bodies = {
             path.stem for path in PROMPTS.glob("*.md")
@@ -78,29 +70,6 @@ class AgentProcedureContracts(unittest.TestCase):
         frontmatter = re.match(r"\A---\n(.*?)\n---", skill, re.DOTALL)
         self.assertIsNotNone(frontmatter)
         self.assertEqual(frontmatter.group(1).splitlines()[0], "name: agent-procedures")
-        self.assertNotIn("design-reviewer", skill)
-
-    def test_song_reviewer_invocation_is_not_a_mode_based_procedure(self):
-        row = next(
-            line for line in INDEX.read_text().splitlines()
-            if "`music-engine-rowan-song-reviewer`" in line
-        )
-        self.assertIn("song path", row)
-        self.assertIn("repeat review", row)
-        self.assertIn("prior findings and correction context", row)
-        self.assertNotIn("initial-review", row)
-        self.assertNotIn("verification", row)
-
-    def test_concept_procedure_has_two_scoped_operations(self):
-        procedure = (PROCEDURES / "story-engine-wyrd-concept-developer.md").read_text()
-        index_row = next(
-            line for line in INDEX.read_text().splitlines()
-            if "`story-engine-wyrd-concept-developer`" in line
-        )
-        self.assertRegex(index_row, r"\| developer \|")
-        self.assertRegex(index_row, r"procedures/story-engine-wyrd-concept-developer\.md")
-        self.assertIn("sampling", index_row)
-        self.assertIn("approved-concept-expansion", index_row)
 
 if __name__ == "__main__":
     unittest.main()

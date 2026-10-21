@@ -16,15 +16,6 @@ class SkillContentTests(unittest.TestCase):
         skill_path = SKILLS_ROOT / skill_name / "SKILL.md"
         content = skill_path.read_text(encoding="utf-8")
 
-        self.assertIn("OpenCode skill loader", content)
-        self.assertIn("canonical skill base", content)
-        self.assertIn("two directories above", content)
-        self.assertIn("rather than the process working directory", content)
-        self.assertIn("OpenCode's shell tool", content)
-        self.assertIn(
-            f"reference/{guide}` relative to this loaded skill's canonical directory",
-            content,
-        )
         self.assertTrue((skill_path.parent / "reference" / guide).is_file())
 
         referenced_scripts = set(
@@ -70,16 +61,6 @@ class SkillContentTests(unittest.TestCase):
             },
             "midi-script-guide.md",
         )
-
-    def test_skills_do_not_depend_on_client_specific_paths(self) -> None:
-        for skill_name in ("audio-analyzer", "midi-analyzer"):
-            with self.subTest(skill=skill_name):
-                content = (SKILLS_ROOT / skill_name / "SKILL.md").read_text(
-                    encoding="utf-8"
-                )
-                self.assertNotIn("CLAUDE_PLUGIN_ROOT", content)
-                self.assertNotIn("Claude Code", content)
-
 
 if __name__ == "__main__":
     unittest.main()

@@ -14,6 +14,7 @@ Skills use four `.lore/` zones (`local/`, `work/`, `reference/`, `learned/`) —
 
 | Skill | Purpose |
 |-------|---------|
+| `/lore-development:lore-research` | Surface relevant historical context from project `.lore/` without treating it as authority over current direction |
 | `/lore-development:research` | Gather context from outside the project |
 | `/lore-development:brainstorm` | Explore ideas, record "what if" thinking |
 | `/lore-development:intent` | Establish the present problem, intended outcomes, boundaries, and why |
