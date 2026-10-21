@@ -396,7 +396,7 @@ modules: [lore-development]
 
 ## Search Behavior
 
-The `lore-researcher` agent uses these fields to rank related prior work:
+The `explorer` agent uses these fields to rank related prior work:
 - `title:` for topic matches
 - `tags:` for keyword matches
 - `modules:` for codebase area matches

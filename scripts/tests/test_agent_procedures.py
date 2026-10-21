@@ -9,40 +9,39 @@ ROOT = Path(__file__).resolve().parents[2]
 SKILL = ROOT / "plugins/personal/skills/agent-procedures"
 INDEX = SKILL / "references/index.md"
 PROCEDURES = SKILL / "references/procedures"
-PROMPTS = ROOT / "omo-slim-agents"
-ACTIVE_PROMPT_BODIES = {
-    "reviewer", "code-reviewer", "writer", "developer",
-    "lore-researcher", "modeler-sol", "modeler-astra",
-}
 
-ROLE_PROCEDURES = {
-    "reviewer": [
+TASK_ROLE_PROCEDURES = {
+    "read-only review": [
         "design-reviewer", "intent-reviewer", "plan-reviewer",
         "music-engine-rowan-song-reviewer", "story-engine-wyrd-story-reviewer",
+        "bun-typescript-reviewer", "rust-daemon-cli-reviewer",
     ],
-    "code-reviewer": ["bun-typescript-reviewer", "rust-daemon-cli-reviewer"],
-    "writer": ["music-engine-rowan-lyric-writer", "story-engine-wyrd-prose-writer"],
-    "developer": ["music-engine-rowan-production-designer",
-                   "story-engine-wyrd-concept-developer",
-                   "story-engine-wyrd-character-builder"],
+    "bounded writing": [
+        "music-engine-rowan-lyric-writer", "story-engine-wyrd-prose-writer",
+    ],
+    "bounded development": [
+        "music-engine-rowan-production-designer",
+        "story-engine-wyrd-concept-developer",
+        "story-engine-wyrd-character-builder",
+    ],
 }
 
 
 class AgentProcedureContracts(unittest.TestCase):
-    def test_index_maps_exactly_twelve_procedures_to_files_and_roles(self):
+    def test_index_maps_procedures_to_canonical_files_and_task_roles(self):
         text = INDEX.read_text()
         rows = re.findall(
             r"^\| `([^`]+)` \| ([^|]+) \| `([^`]+)` \| ([^|]+) \| ([^|]+) \|$",
             text, re.MULTILINE,
         )
-        self.assertEqual(len(rows), 12)
+        self.assertTrue(rows)
         ids = [row[0] for row in rows]
-        self.assertEqual(len(set(ids)), 12)
-        self.assertEqual(set(ids), {p for group in ROLE_PROCEDURES.values() for p in group})
+        self.assertEqual(len(set(ids)), len(ids))
+        self.assertEqual(set(ids), {p for group in TASK_ROLE_PROCEDURES.values() for p in group})
         self.assertEqual(set(PROCEDURES.glob("*.md")),
                          {PROCEDURES / f"{procedure}.md" for procedure in ids})
         for procedure, role, path, required, _skills in rows:
-            self.assertIn(procedure, ROLE_PROCEDURES[role.strip()])
+            self.assertIn(procedure, TASK_ROLE_PROCEDURES[role.strip()])
             self.assertEqual(path, f"procedures/{procedure}.md")
             self.assertTrue(required.strip())
             resolved_target = (INDEX.parent / path).resolve()
@@ -55,15 +54,6 @@ class AgentProcedureContracts(unittest.TestCase):
         self.assertNotIn("model:", text.lower())
         self.assertNotIn("permission", text.lower())
         self.assertNotIn("variant", text.lower())
-
-    def test_root_prompt_directory_contains_only_the_seven_active_bodies(self):
-        bodies = {
-            path.stem for path in PROMPTS.glob("*.md")
-            if path.name != "README.md"
-        }
-        self.assertEqual(bodies, ACTIVE_PROMPT_BODIES)
-        for name in ACTIVE_PROMPT_BODIES:
-            self.assertTrue((PROMPTS / f"{name}.md").is_file())
 
     def test_skill_advertises_only_generic_dispatch(self):
         skill = (SKILL / "SKILL.md").read_text()

@@ -7,7 +7,7 @@ description: Use when completed work needs to be recorded as a lore artifact cov
 
 Record what happened. The retro is the witness, not the analyst.
 
-Future sessions will find this via `lore-researcher`. Make it searchable: tag the problem types, technologies, and patterns the session touched. That's what surfaces a retro when someone plans similar work later.
+Future sessions will find this via `explorer`. Make it searchable: tag the problem types, technologies, and patterns the session touched. That's what surfaces a retro when someone plans similar work later.
 
 ## Stance
 
@@ -25,6 +25,6 @@ Write it as prose. Use structure only when it helps the reader follow.
 
 Read relevant work artifacts first (spec, plan, notes) to reconstruct context before writing. Save to `.lore/work/retros/[descriptive-name].md`. Load `../../shared/frontmatter-schema.md (resolved from this skill's base directory)` for the frontmatter fields. New documents start `draft`; use `approved` only for explicit user approval (including editing to approve) or a request for the relevant next process step, never infer it from arbitrary edits. Use `completed` when applicable agent work is done, independently of approval; use `archived` when archived. Status tracks lifecycle, not maturity/correctness. Current user direction may revise approved artifacts; approval is not a veto or mandatory gate. Don't ask approval for minor transitions or every document.
 
-Title describes the work, not a takeaway. "Auth-flow rollout" is a title. "Why we should always test migrations" is not. Tags and modules are how `lore-researcher` finds this later — keep them grep-discoverable.
+Title describes the work, not a takeaway. "Auth-flow rollout" is a title. "Why we should always test migrations" is not. Tags and modules are how `explorer` finds this later — keep them grep-discoverable.
 
 Write the body in Markdown per the "Body Format" section of `../../shared/frontmatter-schema.md (resolved from this skill's base directory)`. Reach for embedded inline HTML only when a visual carries meaning prose can't, such as a timeline diagram of how the session unfolded.

@@ -19,12 +19,12 @@ Phase 1: VS-Concept Development (this agent - dialog with user)
     ↓ Auto-recommend top choice, user confirms/selects
     ↓ Save selected concept (phase: concept-approved)
 
-Phase 2: VS-Song Execution (three shared-role procedures)
-    ├── writer + music-engine-rowan-lyric-writer procedure → lyrics-samples.md (k=5)
+Phase 2: VS-Song Execution (three task procedures)
+    ├── creator + music-engine-rowan-lyric-writer procedure → lyrics-samples.md (k=5)
     │   ↓ parent presents and confirms selection → update song file
-    ├── developer + music-engine-rowan-production-designer procedure → production-samples.md (k=5)
+    ├── creator + music-engine-rowan-production-designer procedure → production-samples.md (k=5)
     │   ↓ parent presents and confirms selection → update song file
-    └── reviewer + music-engine-rowan-song-reviewer procedure → fresh quality review (phase: reviewed)
+    └── craftsman + music-engine-rowan-song-reviewer procedure → fresh quality review (phase: reviewed)
         ↓ music-suno-output skill → Final formatted output (deterministic)
 
 Present completed song to user
@@ -76,7 +76,7 @@ If the user has a MIDI file they want lyrics to match:
 
 3. **Include the blueprint in the concept file** (see Step 7 format)
 
-The Lyrical Blueprint provides syllable counts, phrase structures, and rhythmic constraints that the writer handler's lyric-writer procedure will use to ensure lyrics fit the melody naturally.
+The Lyrical Blueprint provides syllable counts, phrase structures, and rhythmic constraints that the bounded-writing invocation for the lyric-writer procedure will use to ensure lyrics fit the melody naturally.
 
 ### Step 3: Read Relevant Files
 
@@ -215,7 +215,7 @@ selection_probability: 0.XX
 Before spawning, check whether `[song-directory]/lyrics-samples.md` already exists. If it does, do not regenerate; resume at Step 9 and present those samples for selection. Regenerate only on the user's request and only after confirming that the existing samples may be replaced.
 
 ```
-Invoke the generic `writer` handler through the host's subagent capability with this explicit envelope (do not delegate by a bare role name):
+Invoke the `creator` agent through the host's subagent capability with this explicit envelope (do not delegate by a bare role name):
 
 ```yaml
 procedure: music-engine-rowan-lyric-writer
@@ -226,7 +226,7 @@ inputs:
   output: [song-directory]/lyrics-samples.md
 ```
 
-Use the `writer` role's `agent-procedures` workflow; the child validates and loads this known procedure directly. The output is limited to the named samples file.
+Use the `creator` role's `agent-procedures` workflow; the child validates and loads this known procedure directly. The output is limited to the named samples file.
 ```
 
 ### Step 9: Select Lyrics
@@ -246,7 +246,7 @@ After lyrics are selected:
 Before spawning, check whether `[song-directory]/production-samples.md` already exists. If it does, do not regenerate; resume at Step 11 and present those samples for selection. Regenerate only on the user's request and only after confirming that the existing samples may be replaced.
 
 ```
-Invoke the generic `developer` handler with this explicit envelope:
+Invoke the `creator` agent with this explicit envelope:
 
 ```yaml
 procedure: music-engine-rowan-production-designer
@@ -257,7 +257,7 @@ inputs:
   output: [song-directory]/production-samples.md
 ```
 
-Use the `developer` role's `agent-procedures` workflow; the child validates and loads this known procedure directly. Do not authorize changes to the canonical song file.
+Use the `creator` role's `agent-procedures` workflow; the child validates and loads this known procedure directly. Do not authorize changes to the canonical song file.
 ```
 
 ### Step 11: Select Production
@@ -275,7 +275,7 @@ After explicit user selection, copy the selected production design's complete co
 After production is selected, spawn the reviewer for fresh-eyes quality check:
 
 ```
-Invoke the generic `reviewer` handler with a fresh invocation and this explicit envelope:
+Invoke the `craftsman` agent with a fresh invocation and this explicit envelope:
 
 ```yaml
 procedure: music-engine-rowan-song-reviewer
@@ -285,7 +285,7 @@ inputs:
   song: [song-directory]/concept-approved.md
 ```
 
-Use the `reviewer` role's `agent-procedures` workflow. The initial review is fresh and bounded to the selected song. Every review uses a separate fresh invocation; after user-approved fixes, invoke a fresh bounded song review with the prior findings and changed sections as context. Never reuse a reviewer session or grant the reviewer write access. The parent presents findings and applies fixes only as requested. Set phase to `reviewed` when review is complete.
+Use the `craftsman` role's `agent-procedures` workflow. The initial review is fresh and bounded to the selected song. Every review uses a separate fresh invocation; after user-approved fixes, invoke a fresh bounded song review with the prior findings and changed sections as context. Never reuse a reviewer session or grant the reviewer write access. The parent presents findings and applies fixes only as requested. Set phase to `reviewed` when review is complete.
 ```
 
 The reviewer comes in with fresh context—no memory of the creative process—which helps catch issues the creative agents missed while too close to the work.
@@ -319,7 +319,7 @@ If the user wants changes after seeing the result:
 **Different lyrical approach**:
 1. Check for existing `lyrics-samples.md`. Reuse and present pending samples for selection; regenerate only if requested and after confirming replacement of the existing file.
 2. Apply the parent-owned selection procedure in Step 9: present the candidates, obtain explicit user selection, write and verify the full selection and phase update, and only then delete samples
-3. Re-run the generic `developer` handler with the production-designer procedure, then use the `music-suno-output` skill
+3. Re-run the `creator` agent with the production-designer procedure, then use the `music-suno-output` skill
 
 **Different production approach**:
 1. Check for existing `production-samples.md`. Reuse and present pending samples for selection; regenerate only if requested and after confirming replacement of the existing file.

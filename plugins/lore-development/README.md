@@ -98,21 +98,21 @@ are passive procedures, not additional registered agents.
 Review specializations are passive procedures, not agent IDs. Their canonical
 catalog is `plugins/personal/skills/agent-procedures/references/index.md`; the
 loader resolves it from its installed skill base rather than through a
-repository-relative path. The catalog maps each procedure to its allowed role
+repository-relative path. The catalog maps each procedure to its task role
 and required inputs. Lore-development procedures are:
 
-| Procedure ID | Role | Purpose |
+| Procedure ID | Task role | Purpose |
 |--------------|------|---------|
-| `design-reviewer` | `reviewer` | Review design documents for material gaps and weak decisions |
-| `plan-reviewer` | `reviewer` | Review plans for feasibility, scope, and material omissions |
-| `intent-reviewer` | `reviewer` | Check that intent notes faithfully capture the user's direction |
-| `bun-typescript-reviewer` | `code-reviewer` | Review matching Bun/TypeScript daemon, Unix-socket, CLI, Next.js, and React changes |
-| `rust-daemon-cli-reviewer` | `code-reviewer` | Review matching Rust daemon and CLI changes |
+| `design-reviewer` | read-only review | Review design documents for material gaps and weak decisions |
+| `plan-reviewer` | read-only review | Review plans for feasibility, scope, and material omissions |
+| `intent-reviewer` | read-only review | Check that intent notes faithfully capture the user's direction |
+| `bun-typescript-reviewer` | read-only review | Review matching Bun/TypeScript daemon, Unix-socket, CLI, Next.js, and React changes |
+| `rust-daemon-cli-reviewer` | read-only review | Review matching Rust daemon and CLI changes |
 
-These procedure IDs select specialization within a generic role; do not dispatch
-the retired specialist names as agents. `lore-researcher` remains unchanged and
-continues to search `.lore/` for useful historical context before intents or
-plans.
+These procedure IDs select a task specialization, not an agent identity; do not
+dispatch procedure IDs as agents. Dispatch technical reviews to the retained
+`oracle` agent and research to the retained `explorer` agent. Procedures remain
+read-only regardless of the receiving agent's capabilities on other tasks.
 
 ## Project-specific agent recommendations
 
@@ -183,7 +183,7 @@ Knowledge compounds when past learnings inform new work. The plugin closes this 
 ```
 /intent or /prep-plan
         │
-        ├─► lore-researcher agent searches .lore/ for related work
+        ├─► explorer agent searches .lore/ for related work
         │
         ▼
    useful historical context considered while shaping intent/plan
@@ -196,7 +196,7 @@ Knowledge compounds when past learnings inform new work. The plugin closes this 
         └─► captures notes → writes to .lore/work/retros/
 ```
 
-The `lore-researcher` agent runs at the start of `/intent`; `/prep-plan` uses it when prior context would help. It surfaces relevant retros, legacy specs, and brainstorms as historical context, not instructions for current work.
+The `explorer` agent runs at the start of `/intent`; `/prep-plan` uses it when prior context would help. It surfaces relevant retros, legacy specs, and brainstorms as historical context, not instructions for current work.
 
 ## Frontmatter Schema
 
@@ -212,7 +212,7 @@ modules: [affected-modules]
 ---
 ```
 
-The `lore-researcher` can find documents without frontmatter through body-text
+The `explorer` can find documents without frontmatter through body-text
 search, but treats them as lower-confidence legacy material because lifecycle
 and module metadata are unavailable. Do not rewrite project histories en masse.
 Use the optional `/migrate` skill for preview-first layout transition and status

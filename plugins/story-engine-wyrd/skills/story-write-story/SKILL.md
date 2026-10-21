@@ -19,7 +19,7 @@ This skill orchestrates multi-agent story generation for all formats from flash 
 - Tracks progress in `metadata.json` for session resumption
 - Supports interruption and resume from any chapter
 
-**All creative work is delegated through shared role handlers and passive procedures.** This skill contains orchestration and parent-owned sample-selection logic. Use the generic `developer`, `writer`, or `reviewer` handler—not legacy specialist IDs as dispatch targets—and provide every child an explicit `procedure`, `scope`, `request`, and `inputs` envelope. Every retry or revision call gets the same complete envelope with updated feedback and a specifically authorized output; never rely on a bare generic role or on the child inferring prior scope. The parent may dispatch a known procedure ID directly without reloading the index. Every child must load the applicable role skill and the `agent-procedures` index, validate the supplied procedure ID and role against that index, then load the selected procedure. Keep outputs limited to the named, authorized artifacts; parent-owned selection and state remain unchanged.
+**All creative work is delegated through shared role handlers and passive procedures.** This skill contains orchestration and parent-owned sample-selection logic. Use the `creator` or `craftsman` agent—not legacy specialist IDs as dispatch targets—and provide every child an explicit `procedure`, `scope`, `request`, and `inputs` envelope. Every retry or revision call gets the same complete envelope with updated feedback and a specifically authorized output; never rely on a bare generic role or on the child inferring prior scope. The parent may dispatch a known procedure ID directly without reloading the index. Every child must load the applicable role skill and the `agent-procedures` index, validate the supplied procedure ID and role against that index, then load the selected procedure. Keep outputs limited to the named, authorized artifacts; parent-owned selection and state remain unchanged.
 
 Before the parent writes a selected character profile or chapter, load `../../docs/story-bible-schema.md` relative to this skill directory. The parent applies that schema's required frontmatter; the selected sample body does not supply final-file frontmatter.
 
@@ -165,11 +165,11 @@ Create `metadata.json`:
 
 ### 4.1 Spawn Concept Developer (VS Mode)
 
-**Handler / procedure**: `developer` / `story-engine-wyrd-concept-developer`
+**Handler / procedure**: `creator` / `story-engine-wyrd-concept-developer`
 **Input**: User's original input (natural language or file content)
 **Output**: `.story-state/[Story]/concept-samples.md` (k=5 concept candidates)
 
-Invoke the generic `developer` handler with this explicit envelope:
+Invoke the `creator` agent with this explicit envelope:
 
 ```yaml
 procedure: story-engine-wyrd-concept-developer
@@ -195,7 +195,7 @@ The agent will explore diversity dimensions (narrative voice, structural approac
 
 ### 4.2 Update Metadata (Concept Sampling)
 
-After the `developer` handler completes concept-sampling procedure:
+After the `creator` handler completes concept-sampling procedure:
 
 ```json
 {
@@ -225,7 +225,7 @@ After the parent writes concept-approved.md following user selection:
 
 ### 4.5 Generate Full Plan from Approved Concept
 
-**Handler / procedure**: `developer` / `story-engine-wyrd-concept-developer` (expand mode)
+**Handler / procedure**: `creator` / `story-engine-wyrd-concept-developer` (expand mode)
 **Input**: `.story-state/[Story]/concept-approved.md`
 **Output**:
 - `.story-state/[Story]/PLAN.md` (full chapter breakdown)
@@ -233,7 +233,7 @@ After the parent writes concept-approved.md following user selection:
 - `.story-state/[Story]/world-state/mechanics.md`
 - `.story-state/[Story]/plot-threads/thread-status.md`
 
-Invoke `developer` with an explicit envelope:
+Invoke `creator` with an explicit envelope:
 
 ```yaml
 procedure: story-engine-wyrd-concept-developer
@@ -302,7 +302,7 @@ Present to user:
 >
 > **Do you approve this plan?** [Yes - Proceed] [No - Revise] [Cancel]
 
-**If No - Revise**: Ask user what to change, invoke the `developer` handler again with the concept-developer procedure and revision notes
+**If No - Revise**: Ask user what to change, invoke the `creator` handler again with the concept-developer procedure and revision notes
 **If Cancel**: Stop workflow, preserve files for later
 **If Yes**: Proceed to character building
 
@@ -337,11 +337,11 @@ Read PLAN.md and identify all named characters needing profiles.
 
 #### 5.2.1 Spawn Character Builder (VS Mode)
 
-**Handler / procedure**: `developer` / `story-engine-wyrd-character-builder`
+**Handler / procedure**: `creator` / `story-engine-wyrd-character-builder`
 **Input**: Character name, role, relevant PLAN.md sections
 **Output**: `.story-state/[Story]/character-samples-[name].md` (k=5 character interpretations)
 
-Invoke `developer` with this explicit envelope:
+Invoke `creator` with this explicit envelope:
 
 ```yaml
 procedure: story-engine-wyrd-character-builder
@@ -410,20 +410,20 @@ Apply the parent-owned `sample-selection.md` procedure to `.story-state/[Story]/
 
 ```
 FOR chapter_num FROM 1 TO total_chapters:
-    1. Invoke `writer` with the prose-writer procedure (VS mode) → Generate chapter samples
+    1. Invoke `creator` with the prose-writer procedure (VS mode) → Generate chapter samples
     2. Update metadata (prose-sampling phase)
     3. Parent applies `sample-selection.md` and writes schema-complete chapter frontmatter/body
-    4. Invoke a fresh `reviewer` with the story-reviewer procedure in `quality` mode → Validate selected chapter (read-only)
+    4. Invoke a fresh `craftsman` with the story-reviewer procedure in `quality` mode → Validate selected chapter (read-only)
     5. Parent records the reviewer result and resolves or explicitly accepts failures (see 6.6)
     6. Update metadata from the result; do not treat acceptance as a pass
-    7. Every 3 chapters, invoke a fresh `reviewer` with the story-reviewer procedure in `continuity` mode (see 6.7)
+    7. Every 3 chapters, invoke a fresh `craftsman` with the story-reviewer procedure in `continuity` mode (see 6.7)
     8. Continue to next chapter
 END FOR
 ```
 
 ### 6.2 Spawn Prose Writer (VS Mode)
 
-**Handler / procedure**: `writer` / `story-engine-wyrd-prose-writer`
+**Handler / procedure**: `creator` / `story-engine-wyrd-prose-writer`
 **Input**:
 - Chapter number
 - Chapter summary from PLAN.md
@@ -432,7 +432,7 @@ END FOR
 
 **Output**: `.story-state/[Story]/chapter-[N]-samples.md` (k=5 chapter variations)
 
-Invoke `writer` with this explicit envelope:
+Invoke `creator` with this explicit envelope:
 
 ```yaml
 procedure: story-engine-wyrd-prose-writer
@@ -476,14 +476,14 @@ Apply `sample-selection.md` to `.story-state/[Story]/chapter-[N]-samples.md` in 
 
 ### 6.5 Per-Chapter Quality Review
 
-**Handler / procedure**: `reviewer` / `story-engine-wyrd-story-reviewer` (mode: `quality`)
+**Handler / procedure**: `craftsman` / `story-engine-wyrd-story-reviewer` (mode: `quality`)
 **Input**:
 - Chapter file: `.story-state/[Story]/chapters/chapter-[N].md`
 - Quality rubrics: `.story-state/[Story]/quality-rubrics.md`
 
 **Output**: Validation report (returned by agent)
 
-Invoke a fresh `reviewer` with this explicit envelope:
+Invoke a fresh `craftsman` with this explicit envelope:
 
 ```yaml
 procedure: story-engine-wyrd-story-reviewer
@@ -518,19 +518,19 @@ The reviewer only returns findings. The parent applies the result to schema-defi
 > 2. Manual fix (you edit the chapter file)
 > 3. Accept as-is (mark chapter complete despite issues)
 
-2. **If option 1 (Auto-revise)**: Invoke a fresh `writer` with a complete prose-writer envelope scoped to generating replacement chapter samples, including the chapter plan, continuity artifacts, quality findings, and the authorized samples path. Then apply `sample-selection.md` for the new selection, then invoke a fresh `reviewer` with a complete story-reviewer envelope, `mode: quality`, the selected chapter, rubrics, and the findings/changes being verified.
-3. **If option 2 (Manual fix)**: Wait for user to edit file, then invoke a fresh `reviewer` with a complete story-reviewer envelope, `mode: quality`, the selected chapter, rubrics, and the findings/changes being verified.
+2. **If option 1 (Auto-revise)**: Invoke a fresh `creator` with a complete prose-writer envelope scoped to generating replacement chapter samples, including the chapter plan, continuity artifacts, quality findings, and the authorized samples path. Then apply `sample-selection.md` for the new selection, then invoke a fresh `craftsman` with a complete story-reviewer envelope, `mode: quality`, the selected chapter, rubrics, and the findings/changes being verified.
+3. **If option 2 (Manual fix)**: Wait for user to edit file, then invoke a fresh `craftsman` with a complete story-reviewer envelope, `mode: quality`, the selected chapter, rubrics, and the findings/changes being verified.
 4. **If option 3 (Accept)**: Apply the accepted-with-issues state above; acceptance permits workflow continuation but is not a passing review.
 
 ### 6.7 Continuity Checkpoint (Every 3 Chapters)
 
 **Trigger**: After chapters 3, 6, 9, 12, ... (every 3rd chapter completion)
 
-**Handler / procedure**: `reviewer` / `story-engine-wyrd-story-reviewer` (mode: `continuity`)
+**Handler / procedure**: `craftsman` / `story-engine-wyrd-story-reviewer` (mode: `continuity`)
 **Input**: Last 3 completed chapters + story bible files
 **Output**: Continuity report (returned by agent)
 
-Invoke a fresh `reviewer` with this explicit envelope:
+Invoke a fresh `craftsman` with this explicit envelope:
 
 ```yaml
 procedure: story-engine-wyrd-story-reviewer
@@ -583,13 +583,13 @@ Increment `completed_chapters` only after quality findings were passed or explic
 
 **Trigger**: After all chapters completed
 
-**Handler / procedure**: `reviewer` / `story-engine-wyrd-story-reviewer` (mode: `final-review`)
+**Handler / procedure**: `craftsman` / `story-engine-wyrd-story-reviewer` (mode: `final-review`)
 **Input**: Complete story directory
 **Output**: Final review notes
 
 ### 7.1 Invoke Final-Review Mode
 
-Invoke a fresh `reviewer` with this explicit envelope:
+Invoke a fresh `craftsman` with this explicit envelope:
 
 ```yaml
 procedure: story-engine-wyrd-story-reviewer
@@ -714,7 +714,7 @@ test -f .story-state/[Story]/chapters/chapter-[next].md
 3. If status = "draft" or "incomplete":
    - Present to user: "Chapter [N] partially written. Options: [Rewrite from scratch] [Continue from where it left off]"
    - **Rewrite**: Delete file, proceed with normal chapter generation
-   - **Continue**: Treat the partial canonical chapter as input only. Invoke `writer` with the prose-writer procedure to continue/preserve its prose and generate replacement chapter samples at `.story-state/[Story]/chapter-[N]-samples.md`; do not authorize direct writes to the canonical chapter. The parent selects a complete sample, writes the canonical chapter using the full schema workflow in Step 6.4, then obtains a fresh quality review under Step 6.5.
+   - **Continue**: Treat the partial canonical chapter as input only. Invoke `creator` with the prose-writer procedure to continue/preserve its prose and generate replacement chapter samples at `.story-state/[Story]/chapter-[N]-samples.md`; do not authorize direct writes to the canonical chapter. The parent selects a complete sample, writes the canonical chapter using the full schema workflow in Step 6.4, then obtains a fresh quality review under Step 6.5.
 
 **If no partial chapter:**
 - Proceed with normal chapter generation from next chapter
@@ -827,13 +827,13 @@ Follow `../../utils/file-validation-pattern.md` (relative to this skill director
 1. User input correctly parsed and routed
 2. Story format detected and confirmed by user
 3. `.story-state/[Story]/` directory created with proper structure
-4. `developer` runs the concept-developer procedure and generates PLAN.md from the approved concept
+4. `creator` runs the concept-developer procedure and generates PLAN.md from the approved concept
 5. User approves plan
-6. `developer` runs the character-builder procedure to generate candidate profiles for key characters
-7. `writer` runs the prose-writer procedure for chapters sequentially
-8. A fresh `reviewer` invocation runs the story-reviewer procedure in quality mode for each chapter (issues resolved or accepted)
-9. A fresh `reviewer` invocation runs the story-reviewer procedure in continuity mode every 3 chapters (issues resolved or marked intentional)
-10. Fresh, independent `reviewer` invocations run final-review batches
+6. `creator` runs the character-builder procedure to generate candidate profiles for key characters
+7. `creator` runs the prose-writer procedure for chapters sequentially
+8. A fresh `craftsman` invocation runs the story-reviewer procedure in quality mode for each chapter (issues resolved or accepted)
+9. A fresh `craftsman` invocation runs the story-reviewer procedure in continuity mode every 3 chapters (issues resolved or marked intentional)
+10. Fresh, independent `craftsman` invocations run final-review batches
 11. `metadata.json` accurately reflects completion status
 12. User receives completion message with file locations
 
@@ -852,10 +852,10 @@ Follow `../../utils/file-validation-pattern.md` (relative to this skill director
 **Orchestration Only**: This workflow contains no prose generation, character development, or concept creation. It delegates creation to specialized agents; selection and workflow state remain parent-owned, while the shared reviewer returns read-only findings.
 
 **Agent Responsibilities**:
-- `developer` + `story-engine-wyrd-concept-developer` procedure: Generate PLAN.md from approved concept
-- `developer` + `story-engine-wyrd-character-builder` procedure: Generate candidate character profiles
-- `writer` + `story-engine-wyrd-prose-writer` procedure: Generate chapter prose
-- `reviewer` + `story-engine-wyrd-story-reviewer` procedure: Read-only quality, continuity, or final review according to the single mode selected for each fresh invocation
+- `creator` + `story-engine-wyrd-concept-developer` procedure: Generate PLAN.md from approved concept
+- `creator` + `story-engine-wyrd-character-builder` procedure: Generate candidate character profiles
+- `creator` + `story-engine-wyrd-prose-writer` procedure: Generate chapter prose
+- `craftsman` + `story-engine-wyrd-story-reviewer` procedure: Read-only quality, continuity, or final review according to the single mode selected for each fresh invocation
 
 **State Management**: Creation procedures communicate through only their explicitly authorized `.story-state/` output files. The parent passes required review mode, explicit range, and carry-forward notes to fresh reviewer invocations; it owns selection, metadata, and review outcomes.
 

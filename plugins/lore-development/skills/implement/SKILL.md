@@ -19,7 +19,7 @@ Implement the requested change. Keep or update a notes file only when it helps r
 
 ### 1. Initialize
 
-For substantial work where prior context may matter, ask the `lore-researcher` subagent to surface relevant history. Do not delay a straightforward change for irrelevant lore research. If invoked, use its result as context and verify consequential claims against current code or the user.
+For substantial work where prior context may matter, ask the `explorer` subagent to surface relevant history. Do not delay a straightforward change for irrelevant research. If invoked, use its result as context and verify consequential claims against current code or the user.
 
 Understand the user's requested outcome and any new evidence. Use the plan's steps when a useful plan is supplied; otherwise choose a small number of coherent phases appropriate to the work. Prefer existing capabilities and account for affected consumers, actual behavior, and relevant safety or compatibility constraints. Current user direction may authorize behavior or contract changes; do not treat an old artifact's silence, approval status, or requirements as a veto. Raise concrete safety/compatibility consequences or consequential unresolved choices, not mere historical noncompliance.
 
@@ -29,16 +29,16 @@ Understand the user's requested outcome and any new evidence. Use the plan's ste
 |------|-------------------|----------|
 | Implementation | Implementation | Host general-purpose subagent |
 | Testing | Testing | Host general-purpose subagent |
-| Review | Code Quality | Project-selected Code Quality reviewer; if none, the matching supported `code-reviewer` procedure or host general-purpose reviewer |
+| Review | Code Quality | Project-selected Code Quality reviewer; if none, the matching supported `oracle` procedure or host general-purpose reviewer |
 
 When no project Code Quality reviewer is selected, use procedure
-`bun-typescript-reviewer` with the registered `code-reviewer` for Bun and
+`bun-typescript-reviewer` with the registered `oracle` for Bun and
 TypeScript changes to daemon, Unix-socket, CLI, Next.js, or React architecture.
 Do not select it merely because a repository contains one incidental TypeScript
 file. Use procedure `rust-daemon-cli-reviewer` with the registered
-`code-reviewer` for matching Rust daemon or CLI changes. For other stacks, retain
+`oracle` for matching Rust daemon or CLI changes. For other stacks, retain
 the host general-purpose reviewer fallback; do not invent a generic procedure.
-For invocations through a generic `reviewer` or `code-reviewer` prompt, include
+For invocations through the `oracle` agent, include
 its `procedure`, `scope`, `request`, and `inputs`, and include `mode` only when
 the selected procedure defines one. Use the host general-purpose agent's own
 contract for other-stack fallback. If a selected generic procedure is
@@ -90,7 +90,7 @@ For each testable behavior, follow this agent-run red-green cycle:
    writer after GREEN. The read-only tester reruns the checks for the changed
    surface; retain the refactor only if behavior remains verified.
 5. **Review.** Dispatch the read-only reviewer selected during initialization in
-   a fresh child invocation. If that reviewer is the generic `code-reviewer`,
+   a fresh child invocation. If that reviewer is the generic `oracle`,
    select only the applicable supported procedure: `bun-typescript-reviewer` for
    matching Bun/TypeScript daemon, Unix-socket, CLI, Next.js, or React changes, or
    `rust-daemon-cli-reviewer` for matching Rust daemon/CLI changes. Its envelope
@@ -99,7 +99,7 @@ For each testable behavior, follow this agent-run red-green cycle:
    the current request, changed files/diff, relevant red/green evidence, and
    affected consumers; set `mode` to `initial-review`. For any other selected
    reviewer, follow that reviewer's own contract and pass its required context;
-   do not substitute `code-reviewer` or invent a procedure. Review actual behavior
+   do not substitute a different procedure or invent one. Review actual behavior
    and relevant invariants, not historical artifacts as authority over current
    direction. Report only concrete material defects or risks with consequences
    and bounded outcomes; preserve the selected reviewer's finding contract. Any

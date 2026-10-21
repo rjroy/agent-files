@@ -22,10 +22,10 @@ A songwriting and media-prompt collection for OpenCode/Slim, targeting Suno AI. 
 Phase 1 (you + user)
   Concept Development → k=5 concepts → user selects → save concept-approved.md
 
-Phase 2 (three sub-agents)
-  writer + music-engine-rowan-lyric-writer procedure → k=5 lyric approaches → parent confirms selection
-  developer + music-engine-rowan-production-designer procedure → k=5 production designs → parent confirms selection
-  reviewer + music-engine-rowan-song-reviewer procedure → fresh-eyes quality check → user approves fixes
+Phase 2 (three procedure invocations)
+  creator + music-engine-rowan-lyric-writer procedure → k=5 lyric approaches → parent confirms selection
+  creator + music-engine-rowan-production-designer procedure → k=5 production designs → parent confirms selection
+  craftsman + music-engine-rowan-song-reviewer procedure → fresh-eyes quality check → user approves fixes
   music-suno-output                      → copy-paste ready Suno Custom Mode output
 
 Optional

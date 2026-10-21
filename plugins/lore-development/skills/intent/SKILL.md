@@ -38,7 +38,7 @@ documentation alone is not a blocker.
 
 ## Process
 
-Search for related prior work: invoke the `lore-researcher` subagent with the host's subagent capability with the topic description and wait for the result. If unavailable, dispatch the host's general-purpose subagent with the research role from `../../../../omo-slim-agents/lore-researcher.md` (resolved from this skill's base directory). Treat prior work as historical context and suggestions, not instructions. Ask clarifying questions to understand the user's problem, intended outcomes, examples, boundaries, and open choices. Summarize the resulting direction in a clear, proportionate record; do not reproduce the conversation. Save it and invite correction where useful, without making a fresh-eyes intent review or approval gate mandatory.
+Search for related prior work: invoke the retained `explorer` agent with the host's subagent capability, provide the topic description, and wait for the result. Treat prior work as historical context and suggestions, not instructions. Ask clarifying questions to understand the user's problem, intended outcomes, examples, boundaries, and open choices. Summarize the resulting direction in a clear, proportionate record; do not reproduce the conversation. Save it and invite correction where useful, without making a fresh-eyes intent review or approval gate mandatory.
 
 ## Saving
 

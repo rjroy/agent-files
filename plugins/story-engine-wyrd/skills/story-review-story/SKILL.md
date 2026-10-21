@@ -113,7 +113,7 @@ Loading story: "The Cyberpunk Rebellion"
 
 ### Step 3: Invoke the Shared Story Reviewer
 
-Invoke the generic `reviewer` handler freshly with the explicit envelope below. The caller may pass this known procedure ID without loading the index. The receiving reviewer loads the `agent-procedures` skill, reads its canonical `SKILL_BASE/references/index.md`, validates the procedure ID and allowed role against the matching index row, then resolves and loads the selected procedure from that row. The legacy ID is a passive procedure identifier, never a dispatch target.
+Invoke the `craftsman` agent freshly with the explicit envelope below. The caller may pass this known procedure ID without loading the index. The receiving agent loads the `agent-procedures` skill, reads its canonical `SKILL_BASE/references/index.md`, validates the procedure ID and its read-only review task role against the matching index row, then resolves and loads the selected procedure from that row. The legacy ID is a passive procedure identifier, never a dispatch target.
 
 ```yaml
 procedure: story-engine-wyrd-story-reviewer
@@ -135,7 +135,7 @@ The reviewer is read-only and returns evidence-based findings, with chapter refe
 ### Step 4: Present Validation Report
 
 **4.1 Display Reviewer Findings**
-- Show the complete validation report returned by the fresh `reviewer` invocation
+- Show the complete validation report returned by the fresh `craftsman` invocation
 - Preserve all chapter:line references for easy navigation
 - Maintain category groupings (Character, World, Timeline, Plot Threads)
 
@@ -350,7 +350,7 @@ Use `story-write-story` to begin writing chapters, then run `story-review-story`
 
 ### Agent Spawn Failure
 ```
-ERROR: Failed to invoke the generic reviewer handler
+ERROR: Failed to invoke the craftsman agent
 
 This may be due to:
 - System resource constraints

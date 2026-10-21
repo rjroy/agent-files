@@ -15,7 +15,7 @@ Save to `.lore/work/design/[topic].md` using kebab-case. Load `../../shared/fron
 
 Write the body Markdown-first per the "Body Format" section of `../../shared/frontmatter-schema.md (resolved from this skill's base directory)`. Reach for embedded inline HTML when topology or trade-offs need it — inline-SVG architecture or flow diagrams that beat prose, and side-by-side visual comparison of competing options.
 
-After saving, invoke the registered `reviewer` with this request envelope:
+After saving, invoke the registered `oracle` with this request envelope:
 
 - `procedure`: `design-reviewer`
 - `scope`: the saved design
