@@ -26,6 +26,12 @@ PROMPT
 
 `--skip-git-repo-check` is a route flag, not permission or sandbox bypass. Do not add bypass flags, weaken controls, install tools, change global configuration, or use permission workarounds. `-o/--output-last-message` writes text, not an image. Never substitute a placeholder. Report exact staging/destination access failures; do not improvise.
 
+### Execution timeout and recovery
+
+- Set the shell/execution tool timeout explicitly to **600000 milliseconds (10 minutes)** for the Codex generation command. Do not inherit a short default such as 120 seconds. This is a host execution setting, not a flag to add to `codex exec`.
+- A timeout does not prove generation failed or stopped. Report the exact error and check the original process and native output locations for recoverable results before proposing another attempt. Do not start a duplicate while the original is still running.
+- Recover and verify an existing output when available. If no usable output is found, obtain explicit authorization before retrying; never retry automatically or switch generation routes to evade the timeout.
+
 1. Verify native output exists, is nonempty, decodes and can be visually inspected. Compare against approved brief and references.
 2. If alpha is required, inspect decoded alpha pixels and verify transparent and opaque pixels. A checkerboard in RGB is not transparency. Composite over dark and light backgrounds; inspect halos, matte color and premultiplication. Never promise real alpha. If absent, stop and ask for an approved alternative/removal route; do not silently key or destructively remove background.
 3. Review projected display size and relevant crops/selected states. For sets, compare framing, silhouette, scale and style together. Review reusable art without runtime effects masking defects.
