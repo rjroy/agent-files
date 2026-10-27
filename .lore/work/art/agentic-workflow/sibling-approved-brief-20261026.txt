@@ -1,0 +1,87 @@
+AUTHORIZATION AND ROLE
+The user approved the prior infographic's look ("Looks great") and, after a whole-system review, explicitly requested: "great. Generate a sibling infographic to represent this". The user delegated visual direction and authorized proceeding through Codex image generation without planning questions. This approves the sibling production description and this generation, not the exact as-yet-unseen artwork or runtime integration.
+
+Generate one actual finished 2D infographic using the normal native Codex image-output mechanism. No variants or automatic retries. Report the absolute native image path. Do not install software, use API/CLI fallback, change configuration, edit code, overwrite existing artwork, or modify unrelated files. Use only the authorized Codex native route.
+
+AUTHORIZED REFERENCE
+Inspect /home/rjroy/.agents/.lore/work/art/agentic-workflow/agentic-workflow-candidate-20261026.png as a style reference only. Preserve its sibling identity: warm cream paper, dark navy/petrol ink, vermilion arrows, muted gold circular accents, bold condensed display labels, elegant oversized editorial serif headline, precision rules and field-guide typography. Do NOT reuse its title or content. Improve connection clarity: no mountain/lighthouse illustration blocking arrows, no dangling arrows. Small landscape ornament is permitted ONLY in outer margins, never in functional connections. This is a finished infographic, not a website mockup.
+
+APPROVED VISUAL DIRECTION
+A beautifully composed personal-systems atlas, titled "Your compass. A wider reach." This sibling expands from coding workflow to a whole personal AI system: human authorship, relevant personal context, specialist capacity, technical and creative skills, and deliberate evidence-grounded learning. Clear hierarchy, a few strong functional arrows, restrained architectural modules, excellent readable lettering, cream negative space. The visual metaphor is a field guide for choosing a route, not a machine that runs a compulsory pipeline. Precise information, not decorative complexity. No private employment details, model version listings, robots, brain imagery, glossy 3D, extra invented labels, fake writing or marketing hype.
+
+DELIVERY
+Standalone landscape 3:2 image, ideally native 3072 x 2048 or highest supported native resolution at that ratio; never upscale merely to claim high resolution. Lettering is explicitly necessary and authorized. Opaque intentional cream background, no alpha required. 4% safe outer margin. Headline and structure should read in a chat preview; detailed supporting text should be comfortably legible at full size. File-size budget unknown. One native master only; do not create resized derivatives.
+
+LAYOUT AND CONNECTIONS
+Top ~13%: large title, smaller thesis line, small folio "PERSONAL SYSTEM / FIELD GUIDE".
+Next ~20%: two clear adjacent blocks. Left is HUMAN DIRECTION, with an inset PROFILE section visually subordinate to the human. Right is ORCHESTRATION. One unbroken vermilion arrow from Human Direction to Orchestration. Profile is contextual information, not an automatic memory engine; its relevant constraints are explicitly passed by the orchestrator, as the text states.
+Middle ~27%: three equally valued side-by-side optional loop cards: THINK, MAKE, LEARN. A simple rail from Orchestration can branch separately to the three cards. Do not connect the three cards as a left-to-right mandatory sequence. Each card has its own small circular-route symbol or contained looping arrow. Add a shared small caption "Choose a loop as needed — not a mandatory sequence". Keep internal text arrows readable and free of interference. LEARN means deliberate curation and checking; not automatic learning, not permanent old decisions.
+Lower ~29%: two balanced modules. Left "7 AGENTS = WHO", with the seven concise role mappings in a clean two-column list. Right "72 SKILLS = HOW", with the complete ten-family counted inventory in two columns. All counts must be correct and readable. These are inventories/capacities, not additional workflow steps. No arrows needed within these lists. Profile is separate from the 72 skills.
+Bottom ~11%: thin ruled state strip, then a short memorable closing line. Keep breathing room; avoid dense body paragraphs. Tune proportions to fit legibility while retaining the whole-system breadth.
+
+EXACT CONCISE COPY
+Use all the following essential text accurately. Line breaks and typographic punctuation can vary. No extra factual claims.
+
+Your compass. A wider reach.
+Human direction. Specialist capacity. Evidence-grounded learning.
+
+HUMAN DIRECTION
+Goals · decisions · approvals
+PROFILE / Personal relevance
+Priorities · capacity · voice · domain knowledge · decision patterns
+Context, not automatic global memory
+
+ORCHESTRATION
+oh-my-opencode-slim / custom configuration
+Agents · models · skills · tools
+Route bounded work. Explicitly pass relevant constraints.
+Use the lightest workflow that fits.
+
+Choose a loop as needed — not a mandatory sequence
+
+THINK
+Explore → challenge → clarify → choose
+Judgment Engine + Lore
+
+MAKE
+Delegate → build / create → verify → review
+Technical: test + review
+Creative: inspect + select + approve
+
+LEARN
+Work history → curate / check → reference → future work
+Lore + Field Guide
+Deliberate feedback, not automatic memory
+
+7 AGENTS = WHO
+Orchestrator — Coordinates
+Explorer — Research
+Fixer — Technical building
+Oracle — Review + high-risk fixes
+Designer — Visual / UX direction
+Creator — First-pass creative work
+Craftsman — Complex refinement
+
+72 SKILLS = HOW
+Lore Development 15
+Judgment Engine 13
+Field Guide 7
+Story Engine 6
+Music Engine 7
+Asset Development 6
+Audio Analysis 2
+Art Generation 2
+Engineering & writing standards 9
+Supporting skills 5
+Profile is separate, not counted.
+
+Beads = tasks  |  Git = source + checkpoints  |  Lore = history  |  Field Guide = maintained knowledge
+
+More leverage. Still your authorship.
+Evidence is not approval. Present direction outranks old plans and decisions.
+
+FACTUAL GUARDRAILS
+The counted families total 72. Never include diagnose-crash or omarchy. Private profile is separate, personal context only, not a global memory promise. Orchestrator must deliberately pass relevant context to specialists; no automatic propagation. Agents mean who, skills mean how. Seven roles are available, not mandatory participants. Three loops are optional and may be revisited independently, not a linear lifecycle. Technical and creative production both have real verification, with creative selection/approval distinguished from technical tests. Human retains decisions, approvals and acceptance. Knowledge feedback is curated and evidence-grounded, not a magical automatic retraining system. User's current direction can revise old plans and decisions. No claim of full automation, automatic remote pushes, or automatic profile updates.
+
+OUTPUT
+Generate once using the native image-output mechanism. Report native absolute path and concise summary; parent will inspect and copy the actual original into a new durable sibling candidate. Do not overwrite the prior image or write implementation code.

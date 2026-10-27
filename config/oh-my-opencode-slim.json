@@ -4,8 +4,8 @@
   "presets": {
     "openai": {
       "orchestrator": {
-        "model": "openai/gpt-6-astra",
-        "variant": "low",
+        "model": "openai/gpt-6.1-sol",
+        "variant": "medium",
         "skills": [
           "*"
         ],
@@ -15,8 +15,8 @@
         ]
       },
       "oracle": {
-        "model": "openai/gpt-6-astra",
-        "variant": "high",
+        "model": "openai/gpt-6.1-sol",
+        "variant": "max",
         "description": "Catch-all technical reviewer, senior problem solver, and builder for substantial or high-risk fixes.",
         "orchestratorPrompt": "Use @oracle for technical review and strategic/root-cause analysis, and also for substantial, difficult, or high-risk technical fixes that benefit from senior judgment. A review task remains read-only under its selected procedure. For clear ordinary technical implementation, @fixer is the default builder.",
         "skills": [
@@ -64,8 +64,8 @@
         "mcps": []
       },
       "fixer": {
-        "model": "openai/gpt-6-luna",
-        "variant": "high",
+        "model": "openai/gpt-6.1-terra",
+        "variant": "medium",
         "description": "Catch-all technical builder for clearly scoped implementation, from routine fixes to feature work.",
         "orchestratorPrompt": "Use @fixer as the default technical implementation agent for clear, bounded code work, including feature implementation and multi-file changes; do not reserve it for trivial or mechanical fixes. Route technical review and substantial/high-risk problem solving to @oracle when senior judgment adds value.",
         "skills": [
@@ -113,8 +113,8 @@
       "mcps": []
     },
     "creator": {
-      "model": "openai/gpt-6-luna",
-      "variant": "medium",
+      "model": "openai/gpt-6.1-terra",
+      "variant": "low",
       "description": "Creative producer for direct, bounded output across story, music, visual art, and modeling.",
       "orchestratorPrompt": "Use @creator for direct first-pass creative production across its configured skills, not only writing or tasks with a preselected procedure. Supply the user's intent, scope, and needed inputs; use task skills for specific methods and approvals. Use @craftsman when sustained refinement or difficult creative review is the main need.",
       "skills": [

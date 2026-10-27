@@ -1,0 +1,69 @@
+AUTHORIZATION
+The user explicitly delegated visual decisions and authorized generation via asset-art and Codex: "I want to see what you generate so assume everything is approved. All the way through generating through using codex. Just show me the finished result". This approves the production description and generation, not exact-version artwork acceptance, derivatives, or integration.
+
+APPROVED PRODUCTION BRIEF AND GENERATION PROMPT
+Generate actual finished 2D infographic artwork with the normal Codex image-output mechanism. Report the absolute native image output path. Do not modify unrelated project files. Do not install software, change configuration, or substitute another generation route. This task is explicitly authorized for image generation.
+
+Asset and role: one finished, beautifully art-directed infographic explaining this user's real human-led agentic workflow. Standalone image viewed full-size in chat, not a website or UI mockup. English lettering is explicitly authorized and essential. No reference images; factual copy below is authoritative.
+
+Approved visual direction: an exceptionally crafted editorial systems atlas. Warm ivory paper, deep petrol/near-black ink, vivid rust-orange route lines, restrained pale citron highlights. Sophisticated oversized editorial serif title paired with a crisp, highly legible humanist sans for labels and exact monospace paths. Spacious and architectural, asymmetric modular composition, fine precision rules, generous margins, small distinctive diagram symbols. Subtle paper grain only, never behind tiny type. No glossy 3D, robots, generic brain imagery, gradients, decorative fake writing, or clutter. Hierarchy and strong visual connections matter more than ornament. It should look like a premium printed field guide and a lucid transit map combined.
+
+Framing/delivery: landscape 3:2 poster, preferably 3072 x 2048 or the highest native resolution supported at this ratio. Do not upscale a smaller output to pretend it is high resolution. Keep 5% safe padding. Headline and route should read at chat-preview size; detail should be comfortably readable full-size. Limit text to the exact concise copy below. File-size budget unknown. Intentional opaque warm ivory background; no transparency required. No runtime effects or interactive controls. One native master image; do not generate variants.
+
+COMPOSITION AND GRAPH SEMANTICS
+Top 18%: title and modest subtitle, with a small folio label "WORKFLOW / FIELD GUIDE".
+Middle 43%: main horizontal route from HUMAN DIRECTION to a dominant ORCHESTRATOR hub to EVIDENCE & REVIEW. Draw one clear solid forward arrow from human direction to orchestrator and one from orchestrator to evidence. Under the human-to-orchestrator connection, show a dashed side branch called SHAPE AS NEEDED with the three optional skills, returning to orchestrator. The optional branch must not look mandatory; the direct route remains visible. A small optional /retro branch can leave evidence toward the context layer, labeled observations, never automatic lessons. Use no numbered lifecycle stages.
+Lower 30%: a left module holding the seven-role specialist bench, connected bidirectionally to orchestrator; a right module for durable context. Show a single elegant return line from context toward the earlier human/orchestrator area, labeled "Context for future work". Do not let lines cross text. Route specialists only when useful; not every role participates every time. Role names should be clearly scanned in a clean two-column or compact three-column list, not an overloaded seven-card row.
+Bottom 9%: a fine ruled foundation strip for Beads and Git. Do not crowd the footer.
+Feel free to tune exact proportions for outstanding balance and readability, while preserving the graph semantics and all important facts. No extra invented facts or compulsory ceremony.
+
+EXACT COPY (use these concise labels; linebreaks may vary):
+
+TITLE: Human-led. Agent-powered.
+SUBTITLE: lore-development × oh-my-opencode-slim
+SMALL SUBTITLE: Custom configuration. Flexible workflow.
+
+HUMAN DIRECTION
+Goals, decisions, approvals
+
+SHAPE AS NEEDED
+Optional and revisable
+/intent — Purpose & boundaries
+/prep-plan — Approach & evidence
+/research — Current sources
+
+ORCHESTRATOR
+/implement
+Choose the lightest workflow
+Delegate · monitor · reconcile · verify
+
+EVIDENCE & REVIEW
+Testable changes:
+Failing test → build → independent verification → review
+Docs, prompts, visuals: concrete evidence
+
+OPTIONAL /retro
+Observations, surprises, dead ends
+
+SPECIALISTS, WHEN USEFUL
+Orchestrator — Coordinates
+Explorer — Research + prior lore
+Fixer — Technical building
+Oracle — Technical review + high-risk fixes
+Designer — Visual / UI direction
+Creator — First-pass creative work
+Craftsman — Complex creative refinement
+Parallel work only for independent scopes
+
+CONTEXT FOR FUTURE WORK
+.lore/work/ — Shared history
+.lore/reference/ — Maintained knowledge
+.lore/local/ — Disposable scratch
+Prior lore informs the next task
+
+BEADS: Tasks + dependencies
+agentic = ready to execute · escalate = user decision
+GIT: Source + verified checkpoints
+Issue sequences: dedicated branch · checkpoint per issue
+
+Accuracy guardrails: this is custom configuration of an existing plugin, not a custom plugin implementation. Do not add model assignments. Do not include .lore/learned/. Do not imply /retro writes the reference wiki, optional steps are required, every request needs a plan or Beads sequence, or remote pushes are automatic. Shared history and maintained knowledge are durable context; local scratch is explicitly disposable and must not be drawn as equally durable. Human retains decisions and approvals. Return only the generated native image path and a concise result summary.
