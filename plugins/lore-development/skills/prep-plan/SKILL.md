@@ -1,6 +1,6 @@
 ---
 name: prep-plan
-description: Use to think through an implementation approach with the user, discuss useful evidence, and optionally record a working plan. Input can be conversational intent, design, brainstorm, research, or a prompt. Triggers include "prep plan", "prepare a plan", "plan this", "make a plan", "plan the implementation", and "break this into steps".
+description: Use when the user asks to plan work before implementation, including "make a plan", "plan this", "prepare a plan", "prep plan", "plan the implementation", or "break this into steps". Develop the implementation approach, scope, sequencing, dependencies, trade-offs, and appropriate validation with the user; optionally save a working plan. Start from the current request, intent, design, brainstorm, or research. This is the primary skill for implementation-planning requests, not verification-planning, which focuses on how to verify a change.
 ---
 
 # Prep Plan
