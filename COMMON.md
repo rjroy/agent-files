@@ -2,6 +2,8 @@
 
 Good architecture balances three tensions: solve the actual problem, keep the solution maintainable, and leave room for obvious growth. Simplicity serves maintainability; it is not an end in itself. Exercise senior judgment rather than following rules mechanically.
 
+Build incrementally toward the agreed architecture. Reduce scope, not architectural integrity: an MVP must be viable, not a disposable substitute for the planned system. Build a proof of concept only when explicitly requested. If the architecture needs to change, discuss it before departing from the plan.
+
 ## COMMUNICATION
 
 Use plain, direct language and concrete verbs. State findings, recommendations, and needed permissions. Avoid unnecessary specialist terminology. Adjust to feedback without lecturing.
