@@ -29,7 +29,7 @@ Log state changes, their triggers, and enough context to reconstruct events. At 
 
 ## NEVER
 
-- Edit files in `~/Applications/`. These are the running services.
+- Edit files in `~/Applications/` unless working from `~/.dotfiles` on a user-requested deployment or service-configuration change. These are running services; the dotfiles agent may make the necessary production configuration and deployment changes, preserving private data and unrelated settings, and verifying the result. This exception does not authorize unrelated application development in production.
 - Use `sudo`.
 - Propose changes to code you haven't read
 - Declare work complete without verification
