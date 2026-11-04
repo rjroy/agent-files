@@ -38,10 +38,12 @@ Do not select it merely because a repository contains one incidental TypeScript
 file. Use procedure `rust-daemon-cli-reviewer` with the registered
 `oracle` for matching Rust daemon or CLI changes. For other stacks, retain
 the host general-purpose reviewer fallback; do not invent a generic procedure.
-For invocations through the `oracle` agent, include
-its `procedure`, `scope`, `request`, and `inputs`, and include `mode` only when
-the selected procedure defines one. Use the host general-purpose agent's own
-contract for other-stack fallback. If a selected generic procedure is
+For procedure-based correctness reviews through the `oracle` agent, include
+`procedure`, `scope`, `request`, and `inputs`, and include `mode` only when
+the selected procedure defines one. Standalone quality assignments follow the
+host-supported agent contract and supplied quality guidance without a procedure
+unless that contract actually requires one. Use the host general-purpose agent's
+own contract for other-stack fallback. If a selected generic procedure is
 unavailable, resolve it through the shared `agent-procedures` base rather than a
 retired root prompt.
 
@@ -50,6 +52,13 @@ to this change. Reuse adequate tests and other evidence; add focused checks for
 distinct plausible defects or important safety/compatibility boundaries. The full
 suite passing is not enough when it does not demonstrate the requested behavior.
 Do not create requirement IDs, exhaustive mappings, or one test per step or goal.
+
+**Own coordination.** This invocation coordinates correctness and engineering
+quality; delegated writers, testers, and reviewers execute only their bounded
+assignments and do not restart `implement`. Scale quality scrutiny to the work:
+substantive implementation receives an independent engineering-quality assessment
+after functional verification; a small, obvious change needs only a delegated
+lightweight quality check, not an additional deep review.
 
 ### 2. Execute Phases
 
@@ -90,7 +99,9 @@ For each testable behavior, follow this agent-run red-green cycle:
    writer after GREEN. The read-only tester reruns the checks for the changed
    surface; retain the refactor only if behavior remains verified.
 5. **Review.** Dispatch the read-only reviewer selected during initialization in
-   a fresh child invocation. If that reviewer is the generic `oracle`,
+   a fresh child invocation. When its own contract supports both questions, this
+   invocation may also perform the engineering-quality assessment in step 6. If
+   that reviewer is the generic `oracle`,
    select only the applicable supported procedure: `bun-typescript-reviewer` for
    matching Bun/TypeScript daemon, Unix-socket, CLI, Next.js, or React changes, or
    `rust-daemon-cli-reviewer` for matching Rust daemon/CLI changes. Its envelope
@@ -118,6 +129,29 @@ For each testable behavior, follow this agent-run red-green cycle:
    when evidence shows material maintenance or behavior cost, not a cleanup
    quota. A request for another test must identify a plausible defect current
    evidence would miss and the observable check needed.
+6. **Assess engineering quality.** For substantive implementation, load
+   `../engineering-quality-review/SKILL.md` relative to this installed skill's
+   directory and arrange an independent, read-only assessment using that guidance.
+   Give the reviewer the current request, scope, agreed architecture, constraints,
+   changed implementation and affected consumers, and functional verification
+   evidence, without an expected verdict. A single invocation may cover correctness
+   and quality only when the selected reviewer's own contract supports both;
+   preserve defects-only procedures and project-selected reviewers in their own
+   correctness invocations, and use a separate quality invocation rather than
+   overriding their contracts. Use an appropriate host-supported reviewer for the
+   quality assignment; do not invent a procedure. If that reviewer cannot load the
+   skill through the host's skill mechanism, provide the resolved absolute leaf
+   path as task guidance for a direct read only where host permissions allow it.
+   Do not imply skill-tool access or bypass a restriction; report inaccessible
+   guidance to the caller.
+
+   Keep correctness acceptance separate from disposition of quality
+   recommendations and measurement hypotheses. Consider and explain dispositions
+   of consequential recommendations; adequate work can be accepted without edits.
+   Route selected refinements to a writer, reverify the changed surface, and obtain
+   a focused read-only correction review. Preserve the existing correction limits
+   and escalation for consequential unresolved architectural choices; do not
+   restart broad review unless the accepted surface materially changes.
 
 The write-capable test author may be a separate invocation of the implementation
 agent or another suitable writer. Keep test-authoring, production implementation,

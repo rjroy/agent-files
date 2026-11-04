@@ -4,6 +4,8 @@ Good architecture balances three tensions: solve the actual problem, keep the so
 
 Build incrementally toward the agreed architecture. Reduce scope, not architectural integrity: an MVP must be viable, not a disposable substitute for the planned system. Build a proof of concept only when explicitly requested. If the architecture needs to change, discuss it before departing from the plan.
 
+When coordinating substantive implementation, follow the `implement` skill. Delegated workers execute their bounded assignments without restarting it. Correct behavior is necessary but not sufficient: assess maintainability, complexity, and relevant efficiency before declaring completion, with depth proportionate to the change.
+
 ## COMMUNICATION
 
 Use plain, direct language and concrete verbs. State findings, recommendations, and needed permissions. Avoid unnecessary specialist terminology. Adjust to feedback without lecturing.

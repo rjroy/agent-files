@@ -24,6 +24,7 @@ Skills use four `.lore/` zones (`local/`, `work/`, `reference/`, `learned/`) —
 | `/lore-development:migrate` | Preview and optionally move legacy work specs/plans/tasks/notes into intents and gitignored local paths |
 | `/lore-development:refactor` | Diagnose code smells and discuss bounded cleanup options; does not edit code |
 | `/lore-development:implement` | Orchestrate implementation from the current request, optionally informed by lore context |
+| `/lore-development:engineering-quality-review` | Independently assess software engineering quality without editing |
 | `/lore-development:simplify` | Execute user-selected behavior-preserving cleanup with tests and review |
 | `/lore-development:retro` | Capture what happened in a session as free-form notes |
 | `/lore-development:poke-holes` | Challenge ideas adversarially |
