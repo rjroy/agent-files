@@ -15,18 +15,16 @@ Test structure mirrors the validation pipeline:
 """
 
 import json
-import os
-import shutil
 import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest.mock import patch
 
 # Allow importing from scripts directory
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent))
 
+from frontmatter_schema import STATUS_VALUES
 from validate_frontmatter import (
     _resolve_doc_type,
     load_custom_status_values,
@@ -34,7 +32,6 @@ from validate_frontmatter import (
     scan_directory,
     validate_file,
 )
-from frontmatter_schema import STATUS_VALUES
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
 SCRIPT = str(Path(__file__).resolve().parent.parent / "validate_frontmatter.py")
@@ -215,11 +212,20 @@ class TestTypeSpecificRequired(unittest.TestCase):
 
     def test_task_missing_sequence(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            lore = _make_lore_tree(tmpdir, {
-                "work/tasks/test.md": (FIXTURES / "task_missing_sequence.md").read_text()
-            })
+            lore = _make_lore_tree(
+                tmpdir,
+                {
+                    "work/tasks/test.md": (
+                        FIXTURES / "task_missing_sequence.md"
+                    ).read_text()
+                },
+            )
             findings = scan_directory(lore)
-            missing = [f for f in findings if f["error_type"] == "missing_field" and f["field"] == "sequence"]
+            missing = [
+                f
+                for f in findings
+                if f["error_type"] == "missing_field" and f["field"] == "sequence"
+            ]
             self.assertEqual(len(missing), 1)
 
     def test_valid_note_no_missing(self):
@@ -255,7 +261,9 @@ class TestFieldTypes(unittest.TestCase):
     def test_valid_date_as_yaml_date(self):
         """PyYAML parses unquoted YYYY-MM-DD as datetime.date; that's valid."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            content = "---\ntitle: test\ndate: 2026-03-10\nstatus: draft\ntags: [a]\n---\n"
+            content = (
+                "---\ntitle: test\ndate: 2026-03-10\nstatus: draft\ntags: [a]\n---\n"
+            )
             lore = _make_lore_tree(tmpdir, {"work/specs/test.md": content})
             findings = scan_directory(lore)
             self.assertEqual(findings, [])
@@ -263,25 +271,41 @@ class TestFieldTypes(unittest.TestCase):
     def test_valid_date_as_string(self):
         """Quoted YYYY-MM-DD stays a string; that's also valid."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            content = '---\ntitle: test\ndate: "2026-03-10"\nstatus: draft\ntags: [a]\n---\n'
+            content = (
+                '---\ntitle: test\ndate: "2026-03-10"\nstatus: draft\ntags: [a]\n---\n'
+            )
             lore = _make_lore_tree(tmpdir, {"work/specs/test.md": content})
             findings = scan_directory(lore)
             self.assertEqual(findings, [])
 
     def test_related_must_be_list_of_strings(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            content = "---\ntitle: test\ndate: 2026-03-10\nstatus: draft\ntags: [a]\nrelated:\n  - 123\n---\n"
+            content = (
+                "---\ntitle: test\ndate: 2026-03-10\nstatus: draft\ntags: [a]\n"
+                "related:\n  - 123\n---\n"
+            )
             lore = _make_lore_tree(tmpdir, {"work/specs/test.md": content})
             findings = scan_directory(lore)
-            type_errs = [f for f in findings if f["error_type"] == "invalid_type" and f["field"] == "related"]
+            type_errs = [
+                f
+                for f in findings
+                if f["error_type"] == "invalid_type" and f["field"] == "related"
+            ]
             self.assertEqual(len(type_errs), 1)
 
     def test_modules_must_be_list(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            content = '---\ntitle: test\ndate: 2026-03-10\nstatus: draft\ntags: [a]\nmodules: "not-a-list"\n---\n'
+            content = (
+                '---\ntitle: test\ndate: 2026-03-10\nstatus: draft\ntags: [a]\n'
+                'modules: "not-a-list"\n---\n'
+            )
             lore = _make_lore_tree(tmpdir, {"work/specs/test.md": content})
             findings = scan_directory(lore)
-            type_errs = [f for f in findings if f["error_type"] == "invalid_type" and f["field"] == "modules"]
+            type_errs = [
+                f
+                for f in findings
+                if f["error_type"] == "invalid_type" and f["field"] == "modules"
+            ]
             self.assertEqual(len(type_errs), 1)
 
     def test_sequence_must_be_integer(self):
@@ -292,7 +316,11 @@ class TestFieldTypes(unittest.TestCase):
             )
             lore = _make_lore_tree(tmpdir, {"work/tasks/test.md": content})
             findings = scan_directory(lore)
-            type_errs = [f for f in findings if f["error_type"] == "invalid_type" and f["field"] == "sequence"]
+            type_errs = [
+                f
+                for f in findings
+                if f["error_type"] == "invalid_type" and f["field"] == "sequence"
+            ]
             self.assertEqual(len(type_errs), 1)
 
 
@@ -352,14 +380,19 @@ class TestStatusValues(unittest.TestCase):
 
     def test_valid_status_for_brainstorm(self):
         with tempfile.TemporaryDirectory() as tmpdir:
-            lore = _make_lore_tree(tmpdir, {"work/brainstorm/test.md": VALID_BRAINSTORM_FM})
+            lore = _make_lore_tree(
+                tmpdir, {"work/brainstorm/test.md": VALID_BRAINSTORM_FM}
+            )
             findings = scan_directory(lore)
             self.assertEqual(findings, [])
 
     def test_unknown_directory_skips_status_check(self):
         """Files in directories not in schema get no status validation."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            content = "---\ntitle: test\ndate: 2026-03-10\nstatus: anything-goes\ntags: [a]\n---\n"
+            content = (
+                "---\ntitle: test\ndate: 2026-03-10\nstatus: anything-goes\n"
+                "tags: [a]\n---\n"
+            )
             lore = _make_lore_tree(tmpdir, {"custom-dir/test.md": content})
             findings = scan_directory(lore)
             status_errs = [f for f in findings if f["error_type"] == "invalid_status"]
@@ -382,7 +415,9 @@ class TestStatusValues(unittest.TestCase):
     def test_file_directly_in_lore_skips_status_check(self):
         """Files directly in .lore/ (no subdirectory) skip status validation."""
         with tempfile.TemporaryDirectory() as tmpdir:
-            content = "---\ntitle: test\ndate: 2026-03-10\nstatus: whatever\ntags: [a]\n---\n"
+            content = (
+                "---\ntitle: test\ndate: 2026-03-10\nstatus: whatever\ntags: [a]\n---\n"
+            )
             lore = _make_lore_tree(tmpdir, {"test.md": content})
             findings = scan_directory(lore)
             status_errs = [f for f in findings if f["error_type"] == "invalid_status"]
@@ -427,16 +462,24 @@ class TestResolveDocType(unittest.TestCase):
         self.assertEqual(_resolve_doc_type(".lore/work/specs/auth.md"), "work/specs")
 
     def test_work_nested_path_keeps_two_level_key(self):
-        self.assertEqual(_resolve_doc_type(".lore/work/specs/auth/flow.md"), "work/specs")
+        self.assertEqual(
+            _resolve_doc_type(".lore/work/specs/auth/flow.md"), "work/specs"
+        )
 
     def test_reference_path_resolves_to_reference(self):
-        self.assertEqual(_resolve_doc_type(".lore/reference/auth-feature.md"), "reference")
+        self.assertEqual(
+            _resolve_doc_type(".lore/reference/auth-feature.md"), "reference"
+        )
 
     def test_reference_subdirectory_resolves_to_reference(self):
-        self.assertEqual(_resolve_doc_type(".lore/reference/diagrams/flow.md"), "reference")
+        self.assertEqual(
+            _resolve_doc_type(".lore/reference/diagrams/flow.md"), "reference"
+        )
 
     def test_learned_path_resolves_to_learned(self):
-        self.assertEqual(_resolve_doc_type(".lore/learned/dont-mock-modules.md"), "learned")
+        self.assertEqual(
+            _resolve_doc_type(".lore/learned/dont-mock-modules.md"), "learned"
+        )
 
     def test_custom_directory_returns_first_segment(self):
         # Legacy/custom directories still resolve so config-driven custom
@@ -467,7 +510,11 @@ class TestExitCodes(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmpdir:
             lore = _make_lore_tree(tmpdir, {"work/specs/clean.md": VALID_FM})
             result = self._run_script(lore)
-            self.assertEqual(result.returncode, 0, f"stderr: {result.stderr}\nstdout: {result.stdout}")
+            self.assertEqual(
+                result.returncode,
+                0,
+                f"stderr: {result.stderr}\nstdout: {result.stdout}",
+            )
 
     def test_exit_1_errors_found(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -530,7 +577,7 @@ class TestOutputFormat(unittest.TestCase):
             content = "---\nstatus: draft\n---\n"  # missing title, date, tags
             lore = _make_lore_tree(tmpdir, {"work/specs/bad.md": content})
             result = self._run_script(lore)
-            lines = [l for l in result.stdout.strip().split("\n") if l]
+            lines = [line for line in result.stdout.strip().split("\n") if line]
             self.assertTrue(len(lines) >= 1, "Expected at least one finding")
             for line in lines:
                 obj = json.loads(line)
@@ -544,8 +591,10 @@ class TestOutputFormat(unittest.TestCase):
                 "work/specs/bad.md": (FIXTURES / "multiple_errors.md").read_text()
             })
             result = self._run_script(lore)
-            lines = [l for l in result.stdout.strip().split("\n") if l]
-            self.assertTrue(len(lines) >= 3, f"Expected 3+ findings, got {len(lines)}: {lines}")
+            lines = [line for line in result.stdout.strip().split("\n") if line]
+            self.assertTrue(
+                len(lines) >= 3, f"Expected 3+ findings, got {len(lines)}: {lines}"
+            )
 
     def test_clean_directory_no_output(self):
         with tempfile.TemporaryDirectory() as tmpdir:
@@ -613,7 +662,9 @@ class TestMultipleErrors(unittest.TestCase):
     def test_multiple_errors_in_one_file(self):
         fpath = str(FIXTURES / "multiple_errors.md")
         findings = validate_file(fpath, str(FIXTURES))
-        self.assertTrue(len(findings) >= 3, f"Expected 3+ findings, got {len(findings)}")
+        self.assertTrue(
+            len(findings) >= 3, f"Expected 3+ findings, got {len(findings)}"
+        )
         error_types = {f["error_type"] for f in findings}
         self.assertIn("missing_field", error_types)
         self.assertIn("invalid_type", error_types)
@@ -664,7 +715,9 @@ class TestLoadCustomStatusValues(unittest.TestCase):
                 LORE_CONFIG_WITH_CUSTOM, encoding="utf-8"
             )
             result = load_custom_status_values(tmpdir)
-            self.assertEqual(result["commissions"], ["pending", "active", "completed", "abandoned"])
+            self.assertEqual(
+                result["commissions"], ["pending", "active", "completed", "abandoned"]
+            )
             self.assertEqual(result["meetings"], ["open", "closed", "deferred"])
 
     def test_missing_config_returns_empty(self):

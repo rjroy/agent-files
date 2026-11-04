@@ -278,7 +278,12 @@ def validate_file(filepath, root, status_values=None):
     for field in REQUIRED_FIELDS:
         if field not in data:
             findings.append(
-                _finding(rel, "missing_field", f"Required field '{field}' is missing", field=field)
+                _finding(
+                    rel,
+                    "missing_field",
+                    f"Required field '{field}' is missing",
+                    field=field,
+                )
             )
 
     # Step 4: Type-specific required fields
@@ -307,7 +312,8 @@ def validate_file(filepath, root, status_values=None):
                     _finding(
                         rel,
                         "invalid_type",
-                        f"Field '{field_name}' should be a list, got {type(value).__name__}",
+                        f"Field '{field_name}' should be a list, "
+                        f"got {type(value).__name__}",
                         field=field_name,
                     )
                 )
@@ -319,7 +325,8 @@ def validate_file(filepath, root, status_values=None):
                             _finding(
                                 rel,
                                 "invalid_type",
-                                f"Field 'related' should be a list of strings, got {type(item).__name__} element",
+                                "Field 'related' should be a list of strings, "
+                                f"got {type(item).__name__} element",
                                 field="related",
                             )
                         )
@@ -331,7 +338,8 @@ def validate_file(filepath, root, status_values=None):
                     _finding(
                         rel,
                         "invalid_type",
-                        f"Field '{field_name}' should be a string, got {type(value).__name__}",
+                        f"Field '{field_name}' should be a string, "
+                        f"got {type(value).__name__}",
                         field=field_name,
                     )
                 )
@@ -339,7 +347,9 @@ def validate_file(filepath, root, status_values=None):
         elif expected_type == "date":
             # PyYAML may parse dates as datetime.date objects. Accept those,
             # and also accept strings matching YYYY-MM-DD.
-            if isinstance(value, datetime.date) and not isinstance(value, datetime.datetime):
+            if isinstance(value, datetime.date) and not isinstance(
+                value, datetime.datetime
+            ):
                 pass  # valid
             elif isinstance(value, str):
                 if not DATE_RE.match(value):
@@ -347,7 +357,8 @@ def validate_file(filepath, root, status_values=None):
                         _finding(
                             rel,
                             "invalid_type",
-                            f"Field '{field_name}' should match YYYY-MM-DD, got '{value}'",
+                            f"Field '{field_name}' should match YYYY-MM-DD, "
+                            f"got '{value}'",
                             field=field_name,
                         )
                     )
@@ -356,41 +367,43 @@ def validate_file(filepath, root, status_values=None):
                     _finding(
                         rel,
                         "invalid_type",
-                        f"Field '{field_name}' should be a date (YYYY-MM-DD), got {type(value).__name__}",
+                        f"Field '{field_name}' should be a date (YYYY-MM-DD), "
+                        f"got {type(value).__name__}",
                         field=field_name,
                     )
                 )
 
-        elif expected_type == "integer":
-            if not isinstance(value, int) or isinstance(value, bool):
-                findings.append(
-                    _finding(
-                        rel,
-                        "invalid_type",
-                        f"Field '{field_name}' should be an integer, got {type(value).__name__}",
-                        field=field_name,
-                    )
+        elif expected_type == "integer" and (
+            not isinstance(value, int) or isinstance(value, bool)
+        ):
+            findings.append(
+                _finding(
+                    rel,
+                    "invalid_type",
+                    f"Field '{field_name}' should be an integer, "
+                    f"got {type(value).__name__}",
+                    field=field_name,
                 )
+            )
 
     # Step 6: Status values
-    if "status" in data and isinstance(data["status"], str):
-        if doc_type:
-            valid = status_values.get(doc_type)
-            if valid is None and doc_type.split("/", 1)[0] in {"work", "local"}:
-                valid = LORE_STATUSES
-            if valid is not None and data["status"] not in valid:
-                valid_str = ", ".join(valid)
-                findings.append(
-                    _finding(
-                        rel,
-                        "invalid_status",
-                        f"Invalid status '{data['status']}' "
-                        f"(valid for {doc_type}: {valid_str}); "
-                        "run /lore-development:migrate only for legacy-layout files, "
-                        "or update this document's status to a listed value",
-                        field="status",
-                    )
+    if "status" in data and isinstance(data["status"], str) and doc_type:
+        valid = status_values.get(doc_type)
+        if valid is None and doc_type.split("/", 1)[0] in {"work", "local"}:
+            valid = LORE_STATUSES
+        if valid is not None and data["status"] not in valid:
+            valid_str = ", ".join(valid)
+            findings.append(
+                _finding(
+                    rel,
+                    "invalid_status",
+                    f"Invalid status '{data['status']}' "
+                    f"(valid for {doc_type}: {valid_str}); "
+                    "run /lore-development:migrate only for legacy-layout files, "
+                    "or update this document's status to a listed value",
+                    field="status",
                 )
+            )
 
     return findings
 
@@ -422,7 +435,9 @@ def scan_directory(directory):
             if fname == "lore-config.md" and Path(dirpath) == root:
                 continue
             fpath = Path(dirpath) / fname
-            file_findings = validate_file(str(fpath), str(root), status_values=merged_status)
+            file_findings = validate_file(
+                str(fpath), str(root), status_values=merged_status
+            )
             all_findings.extend(file_findings)
 
     return all_findings

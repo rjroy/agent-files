@@ -43,7 +43,10 @@ def _assert_setup_links(config_dir: Path) -> None:
 
 def test_procedure_catalog_references_existing_procedure_files() -> None:
     index = " ".join(
-        (REPOSITORY_ROOT / "plugins/personal/skills/agent-procedures/references/index.md")
+        (
+            REPOSITORY_ROOT
+            / "plugins/personal/skills/agent-procedures/references/index.md"
+        )
         .read_text(encoding="utf-8")
         .split()
     )
@@ -84,7 +87,9 @@ def test_retired_plan_breakdown_is_not_an_active_skill_or_implement_path(
     config_dir = config_home / "opencode"
     skills_dir = config_home / "opencode/skills"
     skills_dir.mkdir(parents=True)
-    (config_dir / "opencode.json").write_text(json.dumps({"skills": []}), encoding="utf-8")
+    (config_dir / "opencode.json").write_text(
+        json.dumps({"skills": []}), encoding="utf-8"
+    )
     stale_registration = skills_dir / "plan-breakdown"
     stale_registration.symlink_to(tmp_path / "missing-plan-breakdown")
     _run_setup(config_home, "--apply")
@@ -105,7 +110,9 @@ def test_active_claude_setup_packaging_is_removed() -> None:
         "music-engine-rowan",
         "story-engine-wyrd",
     ):
-        assert not (PLUGIN_ROOT.parent / collection / ".claude-plugin" / "plugin.json").exists()
+        assert not (
+            PLUGIN_ROOT.parent / collection / ".claude-plugin" / "plugin.json"
+        ).exists()
 
 
 def test_setup_creates_only_shared_links_without_legacy_definition_installs(
@@ -128,7 +135,9 @@ def test_setup_creates_only_shared_links_without_legacy_definition_installs(
     applied_config = config_file.read_bytes()
     _run_setup(config_home, "--apply")
 
-    assert sorted(path.name for path in (config_dir / "agents").iterdir()) == ["intent-reviewer.md"]
+    assert sorted(path.name for path in (config_dir / "agents").iterdir()) == [
+        "intent-reviewer.md"
+    ]
     assert conflicting_agent.read_text(encoding="utf-8") == "user-owned\n"
     assert conflicting_command.read_text(encoding="utf-8") == "user-owned command\n"
     assert [path.name for path in (config_dir / "commands").iterdir()] == ["init.md"]
@@ -158,7 +167,9 @@ def test_setup_preserves_skill_array_and_user_command_collision(
     assert isinstance(config["skills"], list)
     assert config["skills"][: len(skills)] == skills
     assert conflicting_command.read_text(encoding="utf-8") == "user-owned\n"
-    assert sorted(path.name for path in (config_dir / "commands").iterdir()) == ["init.md"]
+    assert sorted(path.name for path in (config_dir / "commands").iterdir()) == [
+        "init.md"
+    ]
     assert not (config_dir / "skills").exists()
     _assert_setup_links(config_dir)
 
@@ -177,7 +188,9 @@ def test_setup_preserves_dangling_definition_and_skill_collisions(
     dangling_agent.symlink_to(tmp_path / "missing-agent.md")
     dangling_skill.symlink_to(tmp_path / "missing-skill")
 
-    (config_dir / "opencode.json").write_text(json.dumps({"skills": []}), encoding="utf-8")
+    (config_dir / "opencode.json").write_text(
+        json.dumps({"skills": []}), encoding="utf-8"
+    )
     _run_setup(config_home, "--apply")
 
     assert dangling_agent.is_symlink()

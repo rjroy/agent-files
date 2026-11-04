@@ -53,11 +53,15 @@ class TestRequiredFields(unittest.TestCase):
 
     def test_all_required_fields_have_types(self):
         for field in REQUIRED_FIELDS:
-            self.assertIn(field, FIELD_TYPES, f"Required field '{field}' missing from FIELD_TYPES")
+            self.assertIn(
+                field, FIELD_TYPES, f"Required field '{field}' missing from FIELD_TYPES"
+            )
 
     def test_all_optional_fields_have_types(self):
         for field in OPTIONAL_FIELDS:
-            self.assertIn(field, FIELD_TYPES, f"Optional field '{field}' missing from FIELD_TYPES")
+            self.assertIn(
+                field, FIELD_TYPES, f"Optional field '{field}' missing from FIELD_TYPES"
+            )
 
 
 class TestOptionalFields(unittest.TestCase):
@@ -68,7 +72,9 @@ class TestOptionalFields(unittest.TestCase):
 
     def test_documents_optional_review_annotations_and_safety_guidance(self):
         root = Path(__file__).resolve().parents[2]
-        schema = " ".join((root / "shared" / "frontmatter-schema.md").read_text().split())
+        schema = " ".join(
+            (root / "shared" / "frontmatter-schema.md").read_text().split()
+        )
         for required_text in (
             "Optional Review Annotations",
             "Optional list of records, each with string `author`, `at`, and `text`",
@@ -97,25 +103,37 @@ class TestFieldTypes(unittest.TestCase):
         for fields in TYPE_SPECIFIC_REQUIRED.values():
             type_specific_fields.update(fields)
         for field in type_specific_fields:
-            self.assertIn(field, FIELD_TYPES, f"Type-specific field '{field}' missing from FIELD_TYPES")
+            self.assertIn(
+                field,
+                FIELD_TYPES,
+                f"Type-specific field '{field}' missing from FIELD_TYPES",
+            )
 
     def test_no_unknown_types(self):
         """Every type value is one of the expected type strings."""
         valid_types = {"string", "date", "list", "integer"}
         for field, ftype in FIELD_TYPES.items():
-            self.assertIn(ftype, valid_types, f"Field '{field}' has unexpected type '{ftype}'")
+            self.assertIn(
+                ftype, valid_types, f"Field '{field}' has unexpected type '{ftype}'"
+            )
 
 
 class TestStatusValues(unittest.TestCase):
     def test_every_document_type_has_entry(self):
         """Every document type from the schema has a STATUS_VALUES entry."""
         for doc_type in SCHEMA_DOCUMENT_TYPES:
-            self.assertIn(doc_type, STATUS_VALUES, f"Document type '{doc_type}' missing from STATUS_VALUES")
+            self.assertIn(
+                doc_type,
+                STATUS_VALUES,
+                f"Document type '{doc_type}' missing from STATUS_VALUES",
+            )
 
     def test_no_empty_status_lists(self):
         """No document type has an empty list of valid status values."""
         for doc_type, values in STATUS_VALUES.items():
-            self.assertGreater(len(values), 0, f"'{doc_type}' has empty status value list")
+            self.assertGreater(
+                len(values), 0, f"'{doc_type}' has empty status value list"
+            )
 
     def test_no_extra_document_types(self):
         """STATUS_VALUES doesn't contain types not in the schema."""
@@ -128,7 +146,9 @@ class TestStatusValues(unittest.TestCase):
     def test_status_values_are_strings(self):
         for doc_type, values in STATUS_VALUES.items():
             for v in values:
-                self.assertIsInstance(v, str, f"Non-string status value in '{doc_type}': {v}")
+                self.assertIsInstance(
+                    v, str, f"Non-string status value in '{doc_type}': {v}"
+                )
 
     def test_all_zones_share_exact_four_lifecycle_values(self):
         expected = ["draft", "approved", "completed", "archived"]
@@ -157,7 +177,7 @@ class TestTypeSpecificRequired(unittest.TestCase):
         self.assertNotIn("source", TYPE_SPECIFIC_REQUIRED["work/notes"])
 
     def test_tasks_has_source_and_sequence(self):
-        """Tasks require 'source' and 'sequence' per the Task-Specific Fields section."""
+        """Tasks require 'source' and 'sequence' per Task-Specific Fields."""
         self.assertIn("work/tasks", TYPE_SPECIFIC_REQUIRED)
         self.assertIn("source", TYPE_SPECIFIC_REQUIRED["work/tasks"])
         self.assertIn("sequence", TYPE_SPECIFIC_REQUIRED["work/tasks"])
