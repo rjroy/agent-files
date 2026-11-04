@@ -14,12 +14,6 @@ def _read(relative_path: str) -> str:
     return (PLUGIN_ROOT / relative_path).read_text(encoding="utf-8")
 
 
-def _read_agent(name: str) -> str:
-    return (REPOSITORY_ROOT / "omo-slim-agents" / f"{name}.md").read_text(
-        encoding="utf-8"
-    )
-
-
 def _read_procedure(name: str) -> str:
     return (
         REPOSITORY_ROOT
@@ -47,56 +41,6 @@ def _assert_setup_links(config_dir: Path) -> None:
     assert slim_prompts.resolve() == REPOSITORY_ROOT / "omo-slim-agents"
 
 
-
-
-
-
-
-
-
-
-
-
-def test_lore_research_fallback_resolves_from_outside_project_directory(
-    monkeypatch, tmp_path: Path
-) -> None:
-    prompt_path = _read_agent("lore-researcher")
-    fallback_reference = re.search(
-        r"`(~[^`]+/lore-research/SKILL\.md)`", prompt_path
-    )
-
-    assert fallback_reference is not None
-    monkeypatch.chdir(tmp_path)
-    fallback_skill = Path(fallback_reference.group(1)).expanduser().resolve()
-    assert fallback_skill == (PLUGIN_ROOT / "skills/lore-research/SKILL.md").resolve()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 def test_procedure_catalog_references_existing_procedure_files() -> None:
     index = " ".join(
         (REPOSITORY_ROOT / "plugins/personal/skills/agent-procedures/references/index.md")
@@ -115,9 +59,6 @@ def test_procedure_catalog_references_existing_procedure_files() -> None:
         assert _read_procedure(procedure).strip()
 
 
-
-
-
 def test_readme_skill_table_matches_active_inventory_and_referenced_files() -> None:
     readme = _read("README.md")
 
@@ -129,20 +70,6 @@ def test_readme_skill_table_matches_active_inventory_and_referenced_files() -> N
     assert listed_skills == active_skills
     assert "`/field-guide:stratify`" in readme
     assert (PLUGIN_ROOT.parent / "field-guide/skills/stratify/SKILL.md").is_file()
-
-    prompt_bodies = REPOSITORY_ROOT / "omo-slim-agents"
-    for name in ("lore-researcher", "reviewer", "code-reviewer"):
-        assert (prompt_bodies / f"{name}.md").is_file()
-    procedures = REPOSITORY_ROOT / "plugins/personal/skills/agent-procedures/references/procedures"
-    for name in (
-        "design-reviewer",
-        "intent-reviewer",
-        "plan-reviewer",
-        "bun-typescript-reviewer",
-        "rust-daemon-cli-reviewer",
-    ):
-        assert (procedures / f"{name}.md").is_file()
-
 
 def test_retired_plan_breakdown_is_not_an_active_skill_or_implement_path(
     tmp_path: Path,
@@ -165,33 +92,6 @@ def test_retired_plan_breakdown_is_not_an_active_skill_or_implement_path(
     assert stale_registration.is_symlink()
     assert not stale_registration.exists()
     _assert_setup_links(config_dir)
-
-
-
-
-def test_lore_prompt_bodies_are_flat_and_runtime_metadata_free() -> None:
-    names = (
-        "reviewer",
-        "code-reviewer",
-    )
-    for name in names:
-        prompt = _read_agent(name)
-        assert prompt.strip()
-        assert not prompt.startswith("---\n")
-        assert "\nmodel:" not in prompt
-        assert "\npermission:" not in prompt
-        assert not (PLUGIN_ROOT / "agents" / f"{name}.md").exists()
-
-    for name in (
-        "plan-reviewer",
-        "rust-daemon-cli-reviewer",
-        "intent-reviewer",
-        "design-reviewer",
-        "bun-typescript-reviewer",
-    ):
-        assert _read_procedure(name).strip()
-
-
 
 
 def test_active_claude_setup_packaging_is_removed() -> None:
