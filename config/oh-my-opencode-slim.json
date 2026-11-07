@@ -27,9 +27,8 @@
           "cpp-quality",
           "research",
           "lore-research",
-          "pi-agent",
           "typesafe-ai",
-          "review-pi-extension-security"
+          "engineering-quality-review"
         ],
         "mcps": []
       },
@@ -53,13 +52,17 @@
         "description": "Visual/UI design and modeling specialist; owns visual direction and can implement assigned design work.",
         "orchestratorPrompt": "Use @designer for visual/UI direction, UX, visual review, and modeling work where visual design judgment is central. @creator can directly produce creative assets and @craftsman can handle complex creative refinement; include @designer when visual direction or review is needed rather than treating it as the sole agent permitted to work on visual artifacts.",
         "skills": [
+          "agent-procedures",
+          "development-standards",
           "asset-workflow",
           "asset-production",
           "impeccable",
           "concept-art",
           "asset-art",
           "blender-model",
-          "blender-visualize"
+          "blender-visualize",
+          "writing-style-rules",
+          "vision"
         ],
         "mcps": []
       },
@@ -69,14 +72,16 @@
         "description": "Catch-all technical builder for clearly scoped implementation, from routine fixes to feature work.",
         "orchestratorPrompt": "Use @fixer as the default technical implementation agent for clear, bounded code work, including feature implementation and multi-file changes; do not reserve it for trivial or mechanical fixes. Route technical review and substantial/high-risk problem solving to @oracle when senior judgment adds value.",
         "skills": [
+          "agent-procedures",
           "development-standards",
+          "engineering-quality-review",
           "rust-quality",
           "typescript-quality",
           "cpp-quality",
           "research",
           "lore-research",
-          "pi-agent",
-          "typesafe-ai"
+          "typesafe-ai",
+          "writing-style-rules"
         ],
         "mcps": []
       }
@@ -99,13 +104,18 @@
         "impeccable",
         "generate-image",
         "research",
+        "story-compiler",
         "story-engine-reference",
         "story-develop-character",
         "story-plan-plot",
+        "story-review-story",
+        "story-write-story",
+        "music-artwork",
         "music-engine-reference",
         "music-image-prompt",
         "music-video-prompt",
         "music-suno-output",
+        "music-write-lyrics",
         "midi-analyzer",
         "midi-lyric-analyzer",
         "writing-style-rules"
@@ -128,15 +138,20 @@
         "impeccable",
         "generate-image",
         "research",
+        "music-artwork",
         "music-engine-reference",
         "music-image-prompt",
         "music-video-prompt",
         "music-suno-output",
+        "music-write-lyrics",
         "midi-analyzer",
         "midi-lyric-analyzer",
+        "story-compiler",
         "story-engine-reference",
         "story-develop-character",
         "story-plan-plot",
+        "story-review-story",
+        "story-write-story",
         "writing-style-rules"
       ],
       "mcps": [],
@@ -146,12 +161,6 @@
     }
   },
   "companion": {
-    "enabled": false,
-    "position": "bottom-right",
-    "size": "medium",
-    "gifPack": "default",
-    "loopStyle": "classic",
-    "speed": 1,
-    "debug": false
+    "enabled": false
   }
 }
