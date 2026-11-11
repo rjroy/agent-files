@@ -95,12 +95,8 @@ For each testable behavior, follow this agent-run red-green cycle:
    relevant regressions, confirming GREEN and reporting commands and behavioral
    evidence. The full suite passing does not substitute for focused evidence
    when needed to prove the requested outcome.
-4. **Optional refactor.** If useful, dispatch a behavior-preserving refactor
-   writer after GREEN. The read-only tester reruns the checks for the changed
-   surface; retain the refactor only if behavior remains verified.
-5. **Review.** Dispatch the read-only reviewer selected during initialization in
-   a fresh child invocation. When its own contract supports both questions, this
-   invocation may also perform the engineering-quality assessment in step 6. If
+4. **Review.** Dispatch the read-only reviewer selected during initialization in
+   a fresh child invocation. If
    that reviewer is the generic `oracle`,
    select only the applicable supported procedure: `bun-typescript-reviewer` for
    matching Bun/TypeScript daemon, Unix-socket, CLI, Next.js, or React changes, or
@@ -129,16 +125,24 @@ For each testable behavior, follow this agent-run red-green cycle:
    when evidence shows material maintenance or behavior cost, not a cleanup
    quota. A request for another test must identify a plausible defect current
    evidence would miss and the observable check needed.
+5. **Assess refactoring opportunities.** Always dispatch a read-only assessment
+   of the changed surface for useful behavior-preserving refactors after the
+   correctness review and before the engineering-quality assessment. Looking for
+   refactors is mandatory; making changes is optional. Record the disposition,
+   including when no refactor is worthwhile. Route selected refactors to a
+   separate writer invocation. The read-only tester reruns checks for the changed
+   surface, followed by a focused read-only correction review; retain refactors
+   only if behavior remains verified.
 6. **Assess engineering quality.** For substantive implementation, load
    `../engineering-quality-review/SKILL.md` relative to this installed skill's
    directory and arrange an independent, read-only assessment using that guidance.
    Give the reviewer the current request, scope, agreed architecture, constraints,
    changed implementation and affected consumers, and functional verification
-   evidence, without an expected verdict. A single invocation may cover correctness
-   and quality only when the selected reviewer's own contract supports both;
-   preserve defects-only procedures and project-selected reviewers in their own
-   correctness invocations, and use a separate quality invocation rather than
-   overriding their contracts. Use an appropriate host-supported reviewer for the
+   evidence, without an expected verdict. Run this assessment after the mandatory
+   refactoring assessment and any selected refactors; do not combine it with the
+   earlier correctness review. Preserve defects-only procedures and
+   project-selected reviewers in their own correctness invocations. Use an
+   appropriate host-supported reviewer for the
    quality assignment; do not invent a procedure. If that reviewer cannot load the
    skill through the host's skill mechanism, provide the resolved absolute leaf
    path as task guidance for a direct read only where host permissions allow it.
