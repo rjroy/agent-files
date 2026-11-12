@@ -13,4 +13,6 @@ description: Always-on writing guidance for clear responses. Covers tone, struct
 
 **Avoid empty jargon and stock phrasing.** Name the action, decision, or tradeoff instead of making it sound impressive. Keep a technical term when it is the most accurate term.
 
-When drafting on Ronald's behalf, use the `profile` skill (`reference/06-communication-style.md`) to calibrate his voice, especially for longer-form writing. For other audiences or genres, adapt the voice to the task without dropping the clarity and no-em-dash rules above.
+**Keep claims defensible.** Cut or qualify what isn't supported. Give readers enough context to follow the reasoning and understand relevant tradeoffs.
+
+This skill owns general writing standards. When drafting on Ronald's behalf, use the `profile` skill (`reference/06-communication-style.md`) for his voice, rhythm, humor, and personal framing, especially for longer-form writing. That reference supplements these standards rather than restating them. For other audiences or genres, adapt the voice to the task without dropping the clarity and no-em-dash rules above.
