@@ -5,7 +5,7 @@ Reusable guidance for authorized visual-asset work: exploratory concepts, produc
 ## Skills
 
 - `asset-workflow`: orchestrates the approval gates, 2D or Blender branch, evidence, source preservation, and handoff.
-- `concept-art`: exploratory concept images through the authorized Codex image-generation route.
+- `concept-art`: exploratory concept images through the built-in image-generation tool.
 - `asset-art`: approved production 2D artwork and exact-version review.
 - `atmospheric-narrative-illustration`: opt-in art-direction overlay for narrative-led cinematic illustration briefs, prompts, and visual reviews; not an execution workflow or authorization.
 - `blender-model`: construction/revision of editable Blender sources under modeling authorization.
@@ -20,7 +20,7 @@ For asset work, consult `<project-root>/docs/asset-direction.md` when it exists.
 
 ## Optional art direction
 
-Load [atmospheric-narrative-illustration](skills/atmospheric-narrative-illustration/SKILL.md) only when the user requests or approves that style for the current work. It adds narrative staging, graphic-novel linework, painterly atmosphere, controlled color, and a visual-review rubric without replacing project identity or becoming a universal style default. Combine it with `asset-workflow` and the relevant execution skill: `concept-art` for exploration or `asset-art` for production 2D work, using their authorized Codex routes. For Blender, it may guide an approved reference but does not authorize modeling or alter read-only, neutral/restrained geometry critique. All description, concept/artwork, model, derivative, integration, and runtime-acceptance gates remain separate.
+Load [atmospheric-narrative-illustration](skills/atmospheric-narrative-illustration/SKILL.md) only when the user requests or approves that style for the current work. It adds narrative staging, graphic-novel linework, painterly atmosphere, controlled color, and a visual-review rubric without replacing project identity or becoming a universal style default. Combine it with `asset-workflow` and the relevant execution skill: `concept-art` for exploration or `asset-art` for production 2D work. Authorized SVG production uses the built-in image-generation tool for a trace-friendly raster, then traces editable vector paths; resolve conflicts between painterly direction and vector constraints with the user. For Blender, it may guide an approved reference but does not authorize modeling or alter read-only, neutral/restrained geometry critique. All description, concept/artwork, model, derivative, integration, and runtime-acceptance gates remain separate.
 
 ## Preserved and extracted workflow
 
@@ -30,7 +30,7 @@ The source `asset-workflow` material is preserved across this package as follows
 | --- | --- |
 | Description approval; branch choice; concept/model/art/runtime gates; bounded iteration; distinct approvals | `skills/asset-workflow/SKILL.md` |
 | Modeling/critique ownership, native-source default, optional generator, scope coverage, source preservation, relocatable package, and authorized acceptance-time cleanup | `skills/asset-workflow/SKILL.md`, `skills/blender-model/SKILL.md`, `skills/blender-visualize/SKILL.md` |
-| Authorized Codex route; native image staging; decode, inspect, copy, checksum, and exact-version approval | `skills/concept-art/SKILL.md`, `skills/asset-art/SKILL.md` |
+| Authorized built-in raster generation and raster-first SVG tracing; native image staging; decode, inspect, copy, checksum, and exact-version approval | `skills/concept-art/SKILL.md`, `skills/asset-art/SKILL.md` |
 | Production artwork-specific framing, alpha, and projected-size checks | `skills/asset-art/SKILL.md` |
 | Blender construction, task-dependent reproducibility, export/consumer caveats, bounded execution and recovery | `skills/blender-model/SKILL.md` |
 | Read-only Blender rendering, source-integrity checks, bounded visual critique and evidence | `skills/blender-visualize/SKILL.md` |
