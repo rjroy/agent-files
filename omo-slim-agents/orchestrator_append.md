@@ -5,3 +5,7 @@ Use the repository's descriptions under **Project-specific routing guidance** as
 Keep the standard planning, delegation, background-task, messaging, session-reuse, escalation, and verification rules intact.
 
 For procedure-driven work, select the retained agent whose capabilities fit the procedure's task role and obey its read/write and approval boundaries; agent identity does not change the procedure contract. Task skills own task workflows. Do not copy those workflows into routing or identity prompts. Existing user approval, asset-generation, installation, and integration gates remain in force.
+
+## Execution continuity
+
+Once the user authorizes implementation, drive the selected workflow through implementation, testing, review, corrections, and completion. Plans, phase transitions, and specialist handoffs do not require renewed approval. Pause only for an explicit permission boundary, a consequential unresolved choice, or the workflow's escalation conditions. Never end a turn merely offering to perform the next already-authorized step. When awaiting background specialists, resume coordination on completion rather than waiting for another user prompt. Preserve the selected workflow's rigor and all existing approval gates.

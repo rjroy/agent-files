@@ -28,7 +28,7 @@ Preserve project identity, approved characters, palettes, dimensions, and refere
 
 ## Priority order
 
-When visual requirements within this style conflict, preserve these priorities in order; they do not override the approved brief or workflow gates:
+When visual requirements within this style conflict, preserve these priorities in order; they do not override the user brief or workflow checkpoints:
 
 1. **Narrative clarity** — the viewer should understand the primary action, relationship, discovery, or tension.
 2. **Composition and silhouettes** — the focal point must read immediately, including at reduced display size.
@@ -131,7 +131,7 @@ When editing an existing image or generating a related variant within authorized
 - Preserve the identity and spatial relationships of established subjects unless the request expressly changes them.
 - Keep the same narrative beat even when shifting the rendering treatment.
 - For a requested localized change, explicitly instruct the model to leave everything else unchanged.
-- Treat exact text and reference-image fidelity as hard constraints when supplied in the approved brief.
+- Treat exact text and reference-image fidelity as hard constraints when supplied in the brief.
 - Preserve approved versions and submit a separate candidate for exact-version approval through the execution workflow; a style correction does not authorize overwriting approved work.
 
 ## Evaluation rubric
@@ -191,8 +191,8 @@ photoreal gloss, excessive ornament, or distracting extra figures.
 
 ## Relationship to execution skills
 
-- [asset-workflow](../asset-workflow/SKILL.md) owns the brief, branch choice, authorization, approval gates, source preservation, and handoff. Use this overlay to inform visual direction, not replace that workflow. Description approval, exact-version concept/artwork approval, model approval, derivative review, integration authorization, and runtime acceptance remain distinct; style selection or a passing review grants none of them.
-- [concept-art](../concept-art/SKILL.md) owns exploratory concept generation and verified exact-version review. [asset-art](../asset-art/SKILL.md) owns production 2D artwork, agreed SVG/raster mode, technical verification, and exact-version artwork approval. Both require their approved brief and task-specific authorization. SVG production generates a trace-friendly raster with the built-in image tool and traces it into editable vector paths. Adapt painterly texture and atmosphere to the approved vector constraints, or resolve conflicts with the user; this overlay does not supply an alternative route. A concept is not production art.
-- [blender-model](../blender-model/SKILL.md) owns separately authorized model construction/revision. An approved illustration may guide composition, silhouette, and mood; it grants no modeling permission and is not a pixel-matching contract unless explicitly requested. Do not turn painterly texture, haze, or presentation effects into geometry requirements without an approved reason.
+- [asset-workflow](../asset-workflow/SKILL.md) owns the brief, branch choice, authorization, visual checkpoints, source preservation, and handoff. Use this overlay to inform visual direction, not replace that workflow. A sufficient brief needs no separate approval turn; style selection or a passing review is not visual acceptance.
+- [concept-art](../concept-art/SKILL.md) owns exploratory concept generation and verified exact-version review. [asset-art](../asset-art/SKILL.md) owns production 2D artwork, SVG/raster mode, technical verification, and exact-version artwork approval. Both require a sufficient brief and an explicit image-creation request. SVG production generates a trace-friendly raster with the built-in image tool and traces it into editable vector paths. Adapt painterly texture and atmosphere to the approved vector constraints, or resolve conflicts with the user; this overlay does not supply an alternative route. A concept is not production art.
+- [blender-model](../blender-model/SKILL.md) owns requested model construction/revision. Exact concept approval releases an already-requested model without another permission turn; a concept-only request does not authorize modeling. An approved illustration may guide composition, silhouette, and mood and is not a pixel-matching contract unless explicitly requested. Do not turn painterly texture, haze, or presentation effects into geometry requirements without an approved reason.
 - [blender-visualize](../blender-visualize/SKILL.md) owns authorized read-only rendering and inspection of actual saved geometry. Preserve neutral/restrained diagnostic views; do not beautify or hide defects to satisfy this style. Separate observed shape issues from lighting/material presentation, and do not replace model-render evidence with generated imagery. A render is not model approval or consumer-fidelity proof.
-- [asset-production](../asset-production/SKILL.md) owns separately authorized derivatives from accepted sources. Neither this overlay nor an attractive source image authorizes export, optimization, integration, or runtime acceptance. Verify appearance in the actual consumer under the separately authorized workflow.
+- [asset-production](../asset-production/SKILL.md) owns requested derivatives, including candidates prepared before source acceptance, without a separate stage permission. Neither this overlay nor an attractive source image authorizes unrequested exports or integration, or constitutes runtime acceptance. Integration must be explicitly requested, possibly at the outset; after source acceptance continue already-requested integration, verify in the actual consumer, and present runtime appearance for acceptance.

@@ -1,6 +1,6 @@
 ---
 name: blender-model
-description: Build or revise an editable Blender asset from an approved brief or concept, with reproducible scripts when the task or consumer requires them, only after explicit modeling authorization.
+description: Build or revise a requested editable Blender asset after exact concept approval, with reproducible scripts when required by the task or consumer.
 ---
 
 # Blender model craft
@@ -9,7 +9,7 @@ Read [asset-workflow](../asset-workflow/SKILL.md) first. This skill owns constru
 
 ## Gate and inputs
 
-- Start only with explicit modeling authorization identifying approved brief/concept, scope, output location, expected consumer and source if revising. Mood imagery or general direction is not authorization.
+- Start with a model request and approval of the selected exact concept version, or established direction for an existing model or approved concept. Concept approval releases already-requested modeling without another authorization turn; a concept-only request does not authorize modeling. Record scope, output, consumer and source if revising; choose routine missing paths rather than blocking.
 - Consult project context/references as relevant, but do not treat project direction as universal style or approval. Ask about material ambiguity rather than promoting guesses.
 - Record references, source, output, consumer, Blender version and uncertainties in concise README/handoff; separate manifest is optional. Model only approved scope; ask before a new focal feature, direction change, or asset-count expansion.
 
@@ -32,9 +32,9 @@ Plan at game/consumer distance: dominant silhouette, proportion landmarks, negat
 
 ## Export, safety and handoff
 
-- Keep `.blend` authoritative. Export GLB/glTF only when specifically authorized for evaluation/delivery. Inspect installed exporter options rather than guessing flags; use explicit selection, modifier/material/transform settings for consumer.
+- Keep `.blend` authoritative. Requested GLB/glTF exports are included in delivery scope, including candidate exports for evaluation; do not ask again. Inspect installed exporter options rather than guessing flags; use explicit selection, modifier/material/transform settings for consumer.
 - Verify orientation, scale, origin and normals after export in intended consumer. Check supported materials, textures, transparency and emissive behavior. An attractive Blender render does not prove consumer appearance; Cycles is not the runtime renderer.
 - Report stable source, optional generator/tools, concept and authorized export paths, measured bounds/scale, useful object counts, tool/version, assumptions, technical caveats and approval status. Keep logs/intermediates bounded and outside the maintained package unless needed to explain failure or substantiate approval.
 - Use Blender background Python for scripted work with bounded timeout; capture stdout/stderr and actual exit code. On failure/timeout, report it, preserve partial outputs for diagnosis, inspect paths before cleanup; clean only specific temporary files/processes started. Never blanket-kill processes. Diagnose before retrying; existing/partial output is not success.
 - Before execution, verify authorization and absolute input/output paths; state reads/writes; ensure new revision cannot replace source; confirm required settings, no unapproved generation, checks and timeout/recovery. A full-scene deterministic generator is a requirement only when specified by task/consumer. If any required authorization or safety condition fails, stop and request direction.
-- Model approval is explicit. No runtime integration or accepted-asset claim without it. Post-acceptance derivatives use [asset-production](../asset-production/SKILL.md) and require separate authorization.
+- Model acceptance is explicit. No runtime integration or accepted-asset claim without it. Use [asset-production](../asset-production/SKILL.md) for requested derivatives without a separate stage permission; keep unaccepted outputs labeled candidates. Integration must be explicitly requested, possibly at the outset, and continues after source acceptance without another permission turn.
