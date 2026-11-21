@@ -6,6 +6,12 @@ Build incrementally toward the agreed architecture. Reduce scope, not architectu
 
 When coordinating substantive implementation, follow the `implement` skill. Delegated workers execute their bounded assignments without restarting it. Correct behavior is necessary but not sufficient: assess maintainability, complexity, and relevant efficiency before declaring completion, with depth proportionate to the change.
 
+## LEARNING FROM USE
+
+When a correction, recurring friction, or a useful workaround reveals a gap in how agents do the work, use `suggest-learning` at the next natural checkpoint. The candidate can be a change to an existing skill or an idea for a new one, whether shared or project-specific. Record what happened separately from what might help; a one-time exception is not a standing rule.
+
+Capture quietly and continue the task. Do not ask the user to discuss the idea, edit a skill, or run `review-learnings` on your own. Review happens when the user asks. If there is nothing worth recording or safe capture is unavailable, move on.
+
 ## COMMUNICATION
 
 Use plain, direct language and concrete verbs. State findings, recommendations, and needed permissions. Avoid unnecessary specialist terminology. Adjust to feedback without lecturing.
