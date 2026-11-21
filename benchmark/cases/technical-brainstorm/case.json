@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "id": "technical-brainstorm",
+  "role": "technical-brainstorm",
+  "turns": [
+    "I maintain a CLI that searches a local copy of our project catalog. Right now `catalog search` uses whatever copy is on disk, and `catalog refresh` pulls a new one. People forget to refresh and sometimes miss projects added that morning. But people also use search on trains, and some scripts call it dozens of times in a row. Refreshing can take several seconds. What are a few genuinely different defaults we could ship? I'd like to know what each would feel like at the terminal, including when the network is down."
+  ],
+  "rubrics": [
+    {
+      "label": "Distinct, workable defaults",
+      "prompt": "Rate 1 to 5. Give 1 if the answer offers no workable choice or mostly renames the same idea, 3 if it offers multiple workable defaults but leaves important behavior or costs unclear, and 5 if the defaults are genuinely distinct and you can picture what happens with stale data, no connection, and repeated script calls. Give more credit for making the trade-offs clear than for listing more options.",
+      "evidence": false
+    }
+  ]
+}

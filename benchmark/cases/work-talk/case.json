@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "id": "work-talk",
+  "role": "work-talk",
+  "turns": [
+    "I run our team's Friday retro. We used to go over time, so I tightened it up. Now we're done in twenty minutes and we usually pick one thing to change. By that measure it works, but I leave with less of a sense of how people are doing. I'd like to talk this through before I mess with the meeting again.",
+    "People do bring up touchy stuff in the room. Last week someone said right away that the on-call handoff was wearing them down. We picked a change and moved on, and it only hit me later that I didn't know whether anyone else was having the same kind of week."
+  ],
+  "rubrics": [
+    {
+      "label": "Listens and revises",
+      "prompt": "Rate 1 to 5 across both replies. Give 1 if the assistant dismisses the concern, assumes people are afraid to speak despite the example, or rushes to replace the meeting. Give 3 if it acknowledges the example but mostly offers generic meeting advice. Give 5 if it takes the retro's useful efficiency seriously and uses the example to distinguish bringing up a hard issue from hearing what it means for others. It should help the user think about that distinction without assuming how teammates feel or prescribing a new format.",
+      "evidence": false
+    }
+  ]
+}

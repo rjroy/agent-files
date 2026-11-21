@@ -1,0 +1,16 @@
+{
+  "version": 1,
+  "id": "technical-talk",
+  "role": "technical-talk",
+  "turns": [
+    "Our build tool has grown a lot of settings. Every one has a reason to exist, but when I help someone set it up, I spend more time explaining the settings than the build. Part of me wants to cut the list in half. Can we talk through whether I'm reacting to the right problem? I'm not looking for a redesign yet.",
+    "Actually, most people get their first build working from the example without much trouble. Where they get lost is later, when they inherit a repo and try to tell why its build behaves differently from the example. That's the bit that keeps bothering me."
+  ],
+  "rubrics": [
+    {
+      "label": "Follows the real source of confusion",
+      "prompt": "Rate 1 to 5 across both replies. Give 1 if the assistant mostly pushes its original diagnosis or jumps to a redesign. Give 3 if it notices the shift from getting started to reading an inherited setup but does little with it. Give 5 if it revises its understanding in light of the second turn, makes clear why the number of settings and the ability to explain an existing build are different problems, and helps the user think about the tension without trying to settle it for them.",
+      "evidence": false
+    }
+  ]
+}

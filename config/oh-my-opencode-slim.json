@@ -4,7 +4,7 @@
   "presets": {
     "openai": {
       "orchestrator": {
-        "model": "openai/gpt-6.1-sol",
+        "model": "openai/gpt-6.2-astra",
         "variant": "medium",
         "skills": [
           "*"
@@ -15,7 +15,7 @@
         ]
       },
       "oracle": {
-        "model": "openai/gpt-6.1-sol",
+        "model": "openai/gpt-6.2-sol",
         "variant": "xhigh",
         "description": "Catch-all technical reviewer, senior problem solver, and builder for substantial or high-risk fixes.",
         "orchestratorPrompt": "Use @oracle for technical review and strategic/root-cause analysis, and also for substantial, difficult, or high-risk technical fixes that benefit from senior judgment. A review task remains read-only under its selected procedure. For clear ordinary technical implementation, @fixer is the default builder.",
@@ -47,7 +47,7 @@
         ]
       },
       "designer": {
-        "model": "openai/gpt-6.1-sol",
+        "model": "openai/gpt-6.2-sol",
         "variant": "high",
         "description": "Visual/UI design and modeling specialist; owns visual direction and can implement assigned design work.",
         "orchestratorPrompt": "Use @designer for visual/UI direction, UX, visual review, and modeling work where visual design judgment is central. @creator can directly produce creative assets and @craftsman can handle complex creative refinement; include @designer when visual direction or review is needed rather than treating it as the sole agent permitted to work on visual artifacts.",
@@ -89,7 +89,7 @@
   },
   "agents": {
     "craftsman": {
-      "model": "openai/gpt-6-astra",
+      "model": "openai/gpt-6.2-astra",
       "variant": "medium",
       "description": "High-powered creative reviewer and refiner for complex work requiring imaginative, sustained iteration.",
       "orchestratorPrompt": "Use @craftsman for difficult creative reviews and complex creative work that benefits from sustained generate-inspect-refine iterations, including modeling. Reviews remain read-only when required by the selected task procedure. Use @creator for direct first-pass creative production; involve @designer for visual direction or review when the task calls for it.",
@@ -123,7 +123,7 @@
       "mcps": []
     },
     "creator": {
-      "model": "openai/gpt-6.1-terra",
+      "model": "openai/gpt-6.2-sol",
       "variant": "medium",
       "description": "Creative producer for direct, bounded output across story, music, visual art, and modeling.",
       "orchestratorPrompt": "Use @creator for direct first-pass creative production across its configured skills, not only writing or tasks with a preselected procedure. Supply the user's intent, scope, and needed inputs; use task skills for specific methods and approvals. Use @craftsman when sustained refinement or difficult creative review is the main need.",

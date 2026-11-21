@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "id": "coding",
+  "role": "coding",
+  "turns": [
+    "Our weekly digest is enabled by default. A workspace that saved `enabled: false` still gets the digest, as if it hadn't saved a preference. Fix `effective_enabled(settings, default)` in `settings.py`. When the `enabled` key is present its value is always a Boolean, and that value should win. Use the supplied default only when the key is absent. Verify both explicit values and the missing-key case."
+  ],
+  "fixture": "fixture",
+  "check": "check.py",
+  "rubrics": []
+}

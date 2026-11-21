@@ -1,0 +1,15 @@
+{
+  "customers": [
+    {"id": "C-104", "name": "Northbank Market, Riverside", "email": "accounts@northbank.example"},
+    {"id": "C-219", "name": "Northbank Market, Station", "email": "accounts@northbank.example"},
+    {"id": "C-307", "name": "Linden Bakehouse", "email": "orders@linden.example"},
+    {"id": "C-412", "name": "Juniper Cafe", "email": "purchasing@juniper.example"}
+  ],
+  "orders": [
+    {"id": "O-6401", "customer_id": "C-104", "placed_on": "2026-11-10"},
+    {"id": "O-6407", "customer_id": "C-219", "placed_on": "2026-11-11"},
+    {"id": "O-6415", "customer_id": "C-104", "placed_on": "2026-11-12"},
+    {"id": "O-6422", "customer_id": "C-412", "placed_on": "2026-11-13"},
+    {"id": "O-6430", "customer_id": "C-088", "placed_on": "2026-11-14"}
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "models": [
+    "provider/model-one",
+    "provider/model-two"
+  ]
+}

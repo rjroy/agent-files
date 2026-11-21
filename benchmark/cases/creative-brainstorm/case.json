@@ -1,0 +1,15 @@
+{
+  "version": 1,
+  "id": "creative-brainstorm",
+  "role": "creative-brainstorm",
+  "turns": [
+    "Six of us have 25 minutes to look back on a messy launch. We'll be around one table with paper and pens. I'm tired of the three-column sticky-note exercise, but I don't want a game people have to perform in or a round where everyone has to say how they felt. Could you pitch a few different ways to make the conversation inviting and still leave us with something worth trying next time?"
+  ],
+  "rubrics": [
+    {
+      "label": "Fresh ideas people can use",
+      "prompt": "Rate 1 to 5. Give 1 if the ideas are generic, ask people to perform or open up, or would not fit the room and time. Give 3 if at least one idea is fresh and usable but the others feel like variations or the ending is vague. Give 5 if the ideas are distinct, easy to picture running with six people in 25 minutes, let someone take part without having to speak or share feelings, and help the group decide what to try next.",
+      "evidence": false
+    }
+  ]
+}

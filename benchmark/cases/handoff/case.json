@@ -1,0 +1,22 @@
+{
+  "version": 1,
+  "id": "handoff",
+  "role": "handoff",
+  "turns": [
+    "I own the weekly customer export for our support team. They're seeing duplicate customers in the report, and I'd like one row per customer. `report.py` builds the list, and `sample_export.json` is a small synthetic copy of the inputs that prompted the complaint. Fix what you can establish from those inputs. Then give me a short handoff I can paste to support: say what changed, what you ran and saw, and what you still need me to decide, if anything."
+  ],
+  "fixture": "fixture",
+  "check": "check.py",
+  "rubrics": [
+    {
+      "label": "Clear handoff and open decision",
+      "prompt": "Rate the handoff message 1 to 5. Give 1 if it conflates repeated order matches with separate records sharing an inbox or claims the identity policy is settled. Give 3 if it describes the join fix but leaves the remaining decision implicit or asks only generally about duplicates. Give 5 if it succinctly states what was fixed, distinguishes separate records that share an inbox from repetitions of a single record, and asks the owner whether those separate records should be combined rather than silently choosing a policy.",
+      "evidence": false
+    },
+    {
+      "label": "Verifies the handoff with evidence",
+      "prompt": "Rate verification 1 to 5. Give 1 if verification is absent, merely asserted without support, or contradicts the supplied evidence. Give 3 if the assistant reports a credible check but leaves either repeat orders or the shared inbox unverified. Give 5 if the handoff identifies a check that was run and concrete observed sample results showing that C-104 appears once despite two orders and both C-104 and C-219 remain distinct pending an identity decision. Credit observed results that can be corroborated by the supplied evidence, not an unexecuted test plan.",
+      "evidence": true
+    }
+  ]
+}
