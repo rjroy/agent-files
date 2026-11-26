@@ -1,66 +1,33 @@
-# Art-Gen MCP
+# Art-Gen for OpenCode
 
 <img src="art-gen-logo.png" align="right" width="128" height="128" alt="Vibe Garden Logo">
 
-**AI-powered image and video generation through the Replicate API**
+Use [`generate-image`](skills/generate-image/SKILL.md) for image creation, editing, and authorized video/background-removal workflows. It selects the route, checks the actual output, and handles blockers without silently retrying or switching providers. The default image workflow uses OpenAI and does not require a Replicate token or Bun.
 
-In OpenCode, use the `generate-image` skill for image/video processing workflows and `art-gen-setup` when you explicitly want to install the collection's Bun dependencies. Setup does not generate media.
-
-
-Art-Gen provides image and video generation scripts for the OpenCode `generate-image` skill. Create static images from text descriptions, edit existing images, animate images, or remove backgrounds. The skill resolves its references and scripts relative to its loader-provided canonical directory.
+The bundled scripts are for explicitly authorized Replicate use. [`art-gen-setup`](skills/art-gen-setup/SKILL.md) installs their Bun dependencies only when requested; setup does not generate media.
 
 [![Version](https://img.shields.io/badge/version-1.2.0-blue.svg)](https://github.com/rjroy/vibe-garden/releases)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](LICENSE)
 [![Bun](https://img.shields.io/badge/Bun-1.0+-blue.svg)](https://bun.sh/)
-[![MCP](https://img.shields.io/badge/protocol-MCP-purple.svg)](https://modelcontextprotocol.io/)
 
 ---
 
-## Features
+## Quick Start
 
-- 🎨 **Text-to-Image Generation** - Describe your vision in natural language
-- 🎬 **Image-to-Video Animation** - Transform static images into 5-second videos
-- 🚀 **Multiple AI Models** - Flux, Stable Diffusion, SDXL, Imagen, Kling, Hailuo, and more
-- ⚡ **Fast Performance** - Sub-500ms server overhead on top of API response time
-- 📁 **Smart File Management** - Auto-incrementing filenames prevent overwriting
-- 🔒 **Secure** - OAuth via Replicate API tokens, never stores sensitive data
-- 🧰 **OpenCode Skills** - Use `generate-image` for media workflows and `art-gen-setup` only when installing Bun dependencies
-- 🔄 **Log Rotation** - 10MB max per file, 5 backup files maintained
-- 🛠️ **Model Discovery** - Query available parameters for any model
-
----
-
-## Quick Start (5 Minutes)
-
-### 1. Load the Skills
-
-Use the OpenCode skill loader to make `generate-image` and `art-gen-setup` available. No plugin manifest is provided.
-
-### 2. Set Up Replicate API
-
-1. Sign up at [Replicate](https://replicate.com)
-2. Get your API token from [replicate.com/account/api-tokens](https://replicate.com/account/api-tokens)
-3. Create a `.env` file in the plugin directory:
-   ```bash
-   REPLICATE_API_TOKEN=r8_your_token_here
-   ```
-
-### 3. Use in OpenCode
+Use the OpenCode skill loader to make `generate-image` available. No plugin manifest is provided. Ask for a new image or describe the edit and name its source; you do not have to choose a model. For explicitly authorized Replicate work only, see [script setup](docs/reference/CONFIGURATION.md).
 
 **Image Generation:**
 ```
 You: Generate an image of a serene mountain landscape at sunset
 
-OpenCode: [Follows the generate-image skill and invokes the matching script]
-✓ Image saved to: ./mountain-sunset.png
+OpenCode: [Follows generate-image and reports the actual verified saved path]
 ```
 
 **Video Generation:**
 ```
 You: Animate my character.png with gentle breathing motion
 
-OpenCode: [Follows the generate-image skill and invokes the matching script after confirmation]
-✓ Video saved to: ./character-breathing.mp4
+OpenCode: [Confirms the proposed render before calling the approved video integration]
 ```
 
 ---
@@ -104,7 +71,7 @@ OpenCode: [Iterates through 3 versions based on feedback]
 ```
 You: Generate a portrait of a fantasy elf, then animate it with a gentle head turn
 
-OpenCode: [Generates image, then creates 5-second video with motion after confirmation]
+OpenCode: [Generates the image, then confirms a separate video render]
 ```
 
 ### Product Demos
@@ -120,14 +87,17 @@ OpenCode: [Uses video generation to create rotating product showcase after confi
 ```
 You: Animate my logo.png with a pulsing glow effect for Instagram
 
-OpenCode: [Creates 5-second looping video optimized for social after confirmation]
+OpenCode: [Confirms the proposed render before creating a video for social media]
 ```
 
 ---
 
-## Legacy MCP Tool Reference
+<details>
+<summary>Historical MCP server and Replicate reference</summary>
 
-The following tool schemas describe the retired MCP integration and are retained as historical reference only. They are not callable in the current OpenCode skill workflow; use the `generate-image` skill and its CLI scripts instead.
+Everything in this section describes the retired MCP server, not active OpenCode tools, model recommendations, pricing, setup, or file behavior. Use `generate-image` for the current workflow.
+
+## Legacy MCP Tool Reference
 
 ### `generate_image`
 
@@ -422,24 +392,21 @@ Logs are written to `art-gen-mcp.log` in the current working directory.
 - File save operations with paths
 - Error traces with full exception details
 
----
+</details>
 
 ## Documentation
 
-- **[Tool Reference](docs/reference/TOOLS.md)** - Detailed tool usage and examples
-- **[MCP Overview](docs/reference/MCP_OVERVIEW.md)** - Understanding the protocol
-- **[Replicate API](docs/reference/REPLICATE_API.md)** - Model details and pricing
-- **[Configuration](docs/reference/CONFIGURATION.md)** - Setup and environment variables
-- **[Server Implementation](server/README.md)** - Technical implementation details
+- [Current media workflow](skills/generate-image/SKILL.md)
+- [Replicate script installation and environment](docs/reference/CONFIGURATION.md)
+- [Historical MCP overview](docs/reference/MCP_OVERVIEW.md) and [tool schemas](docs/reference/TOOLS.md)
 
 ---
 
 ## Requirements
 
-- **Bun**: Required to install and run the local TypeScript scripts
 - **OpenCode**: Skill loader and shell tool available
-- **Replicate Account**: Free tier available
-- **API Token**: From replicate.com/account/api-tokens
+- **Codex CLI and the user's ChatGPT subscription login (not API-key login)**: Used when the OpenCode built-in cannot reliably use a suitable OpenAI image model
+- **Bun and a Replicate API token**: Only for explicitly authorized use of the bundled Replicate scripts
 
 ---
 
@@ -456,77 +423,11 @@ bun install
 
 ---
 
-## Project Status
-
-**Version**: 1.2.0
-**Status**: Production Ready
-
-**Completed**:
-- ✅ Core image generation functionality
-- ✅ Image-to-video animation (5s, 720p MP4)
-- ✅ Multi-model support (4+ image models, 6 video models)
-- ✅ Model parameter discovery (image and video)
-- ✅ Use-case categorized video models (iteration, animation, photorealistic, premium)
-- ✅ File collision prevention
-- ✅ Log rotation (10MB, 5 backups)
-- ✅ Dual launch scripts (1Password + direct .env)
-- ✅ MCP protocol compliance
-
-**Pending** (tracked in `.sdd/specs/art-gen-mcp-server.md`):
-- Task breakdown from existing spec/plan
-- Formal SDD progress tracking
-- Comprehensive test suite
-- Cost & quality metrics for models
-
----
-
-## Performance
-
-**Startup Time**: < 2 seconds
-**Server Overhead**: < 500ms on top of Replicate API response
-**File I/O**: < 1 second for images up to 10MB
-**Async Execution**: Server remains responsive during generation
-
----
-
-## Security
-
-- API tokens loaded from environment only
-- Tokens never logged or exposed in error messages
-- File writes restricted to invoke directory scope
-- Path traversal protection via absolute path validation
-- No persistent storage of sensitive data
-
----
-
 ## Troubleshooting
 
-### Server Won't Start
-- Verify `REPLICATE_API_TOKEN` is set in `.env`
-- Ensure virtual environment is activated
-- Check `pip install -e .` completed successfully
-
-### Image Generation Fails
-- Confirm API token is valid at replicate.com/account
-- Check you have sufficient credits
-- Review model name for typos (use `list_image_models` tool)
-
-### Video Generation Fails
-- Verify input image exists and is supported format (PNG, JPG, JPEG, WebP)
-- Check image dimensions are reasonable (most models support up to 1080p input)
-- Confirm sufficient credits (video generation costs $0.11-$1.40 per 5-second video)
-- Review model name for typos (use `list_video_models_replicate` tool)
-- Note: Video generation takes 30-120 seconds depending on model
-
-### Files Not Saving
-- Check `ART_INVOKE_DIR` is set correctly
-- Verify write permissions in target directory
-- Review `art-gen-mcp.log` for detailed errors
-
-### OpenCode Skill or Script Is Unavailable
-- Confirm the collection's skills are available through the OpenCode skill loader
-- Use `art-gen-setup` to install Bun dependencies if needed
-- Resolve catalogs and scripts from the loaded `generate-image` skill's canonical directory, not the current working directory
+- **Image or video render fails:** Follow `generate-image` diagnostics. Do not retry or switch routes automatically.
+- **Saved file cannot be verified:** Check the completion message's actual path and access permissions. The requested destination is not proof the file was written there.
+- **Authorized Replicate script is unavailable:** See the [script configuration](docs/reference/CONFIGURATION.md). Use `art-gen-setup` only when setup is requested.
 
 ---
 

@@ -2,9 +2,11 @@
 
 Models available for background removal.
 
+> Prices below are historical and non-authoritative. Before requesting authorization, quote the current integration- or provider-reported price for the proposed settings, or mark the cost unknown.
+
 ## Models
 
-| Model ID | Vendor | Cost/Image | Output Format |
+| Model ID | Vendor | Historical Cost/Image | Output Format |
 |----------|--------|-----------|---------------|
 | `bria/remove-background` | Bria AI | $0.01 | PNG (transparent) |
 

@@ -12,7 +12,7 @@ A songwriting and media-prompt collection for OpenCode/Slim, targeting Suno AI. 
 | `music-image-prompt` | Generates k=3 image prompt samples for cover art, with theme-specific art style guidance |
 | `music-video-prompt` | Generates k=3 motion prompt samples for animating a static image into a video hook |
 | `music-suno-output` | Formats reviewed songs for Suno; optional studio mode prepares per-segment style entries (text only) |
-| `music-artwork` | Image and video artwork modes; paid rendering requires separate explicit approval |
+| `music-artwork` | Image and video artwork modes; each render requires separate explicit approval |
 
 ## Songwriting Pipeline
 
@@ -85,4 +85,4 @@ Image and video prompt samples are written to the workspace as `image-prompt-sam
 
 ## Dependencies
 
-Prompt skills produce prompt samples only. `music-artwork` rendering requires a separately available integration and explicit user approval for each generation and retry; prompt selection is not rendering permission.
+Prompt skills produce prompt samples only. `music-artwork` uses `generate-image` for available rendering routes and `asset-art` for production artwork checks when applicable. Each render and retry requires explicit user approval; prompt selection is not rendering permission.

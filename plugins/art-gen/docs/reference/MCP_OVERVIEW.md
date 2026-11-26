@@ -13,7 +13,7 @@ MCP servers provide context, tools, and capabilities to clients. Each server can
 - Send **prompts** to guide LLM behavior
 
 ### Clients
-MCP clients connect to MCP servers and make their capabilities available to LLMs. This is protocol background only; the current art-gen workflow uses OpenCode skills and local scripts, not an MCP server integration.
+MCP clients connect to MCP servers and make their capabilities available to LLMs. This is protocol background only; for the current art-gen workflow see [`generate-image`](../../skills/generate-image/SKILL.md), not an MCP server integration.
 
 ### Transport
 MCP uses stdio (standard input/output) for communication between client and server.

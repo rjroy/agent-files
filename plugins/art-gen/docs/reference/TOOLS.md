@@ -1,5 +1,7 @@
 # Available Tools
 
+Historical schemas for the retired MCP server. They are not callable in the current OpenCode workflow. See [`generate-image`](../../skills/generate-image/SKILL.md) for active routes and instructions.
+
 ## generate_image_replicate
 
 Generate an image using AI models via Replicate.

@@ -2,9 +2,11 @@
 
 Models that accept one or more reference images as input.
 
+> Prices below are historical and non-authoritative. Before requesting authorization, quote the current integration- or provider-reported price for the proposed settings, or mark the cost unknown.
+
 ## Models
 
-| Model ID | Image Param | Param Is Array | Strength Param | Cost | Notes |
+| Model ID | Image Param | Param Is Array | Strength Param | Historical Cost | Notes |
 |----------|-------------|---------------|----------------|------|-------|
 | `black-forest-labs/flux-2-pro` | `input_images` | yes | none | $0.05 | Up to 8 reference images |
 | `google/nano-banana-pro` | `image_input` | yes | none | $0.15 | Up to 14 reference images, accurate text rendering |

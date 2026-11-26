@@ -7,6 +7,8 @@ description: Use when setting up or repairing the local art-gen script dependenc
 
 Use this workflow only when the user asks to set up or repair the art-gen installation. This installs JavaScript dependencies; it does not generate an image or video.
 
+These dependencies are for the bundled Replicate scripts, not the normal OpenAI image route in `generate-image`.
+
 ## Locate the installation
 
 Use the absolute directory supplied by the OpenCode skill loader as the canonical skill base, then resolve the art-gen collection root two directories above it. Do not infer the root from the process working directory, repository layout, or a provider-specific environment variable. Run the install from the resolved collection root so Bun uses its `package.json` and `bun.lock`.

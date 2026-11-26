@@ -2,16 +2,18 @@
 
 Text-to-image models available for generation.
 
+> Prices below are historical and non-authoritative. Before requesting authorization, quote the current integration- or provider-reported price for the proposed settings, or mark the cost unknown.
+
 ## Model Selection Guidance
 
-- Default to `flux-schnell` for iteration and drafts — fastest, cheapest.
-- Use `flux-2-pro` for production-quality output — best balance of quality and cost.
-- Only use `nano-banana-pro` when accurate text rendering is critical — 3x the cost of flux-2-pro.
+- Default to `flux-schnell` for fast iteration and drafts.
+- Consider `flux-2-pro` for production-quality output.
+- Consider `nano-banana-pro` when accurate text rendering is critical.
 - Use `recraft-v3-svg` only when vector output is specifically required.
 
 ## Models
 
-| Model ID | Cost/Image | Speed | Best For |
+| Model ID | Historical Cost/Image | Speed | Best For |
 |----------|-----------|-------|----------|
 | `black-forest-labs/flux-schnell` | $0.003 | Fastest | Rapid iteration, drafts |
 | `black-forest-labs/flux-2-pro` | $0.05 | Medium | Final/polished images, prompt adherence |

@@ -1,5 +1,7 @@
 # Configuration Guide
 
+For normal OpenAI image creation or editing, use [`generate-image`](../../skills/generate-image/SKILL.md). The settings below apply only to explicitly authorized Replicate scripts, not to OpenCode's built-in image tool or the user's existing Codex login.
+
 ## Environment Variables
 
 ### REPLICATE_API_TOKEN (Required)
@@ -29,14 +31,14 @@ echo "REPLICATE_API_TOKEN=r8_your_token_here" > .env
 Use the OpenCode skill loader to discover `generate-image` and
 `art-gen-setup`. The setup skill resolves the collection root from its
 loader-provided canonical skill directory and installs the Bun dependencies
-with `bun install`. The generation skill resolves model catalogs and scripts
-relative to its own canonical skill directory; it does not depend on the
-process working directory, a provider-specific plugin root, or MCP client configuration.
+with `bun install` only when setup is requested. The generation skill resolves
+Replicate catalogs and scripts relative to its own canonical skill directory.
+Media paths still resolve from the user's project working directory.
 
-Generation scripts require `REPLICATE_API_TOKEN` in the environment. Do not
-put a live token in source control or in a skill prompt. Image, edit, and
-background-removal requests use the selected script and model; video
-generation can incur charges and requires user confirmation before execution.
+Replicate scripts require `REPLICATE_API_TOKEN` in the environment. Do not put a
+live token in source control or in a skill prompt. A configured token does not
+authorize a Replicate request. Follow `generate-image` for authorization and
+execution; video always requires confirmation.
 
 ## Troubleshooting
 

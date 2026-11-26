@@ -1,8 +1,10 @@
 # Replicate API Reference
 
+Historical API examples and model/pricing information for the retired server. For explicitly authorized Replicate work, follow [`generate-image`](../../skills/generate-image/SKILL.md) and use current integration information.
+
 ## Overview
 
-Replicate is a platform for running machine learning models in the cloud. This server uses the Replicate API to generate images using a curated set of AI models.
+Replicate is a platform for running machine learning models in the cloud. The retired server used its API to generate images with a curated set of models.
 
 ## Getting Started
 
