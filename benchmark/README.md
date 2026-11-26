@@ -1,7 +1,7 @@
 # Model benchmark
 
 The benchmark runs cases before asking a human to grade responses from 1 to 5.
-By default it does not use a model to grade. An optional post-review pass can
+By default it does not use a model to grade. An optional standalone pass can
 add a local decision-model second opinion, but human grades remain the result.
 Results, including model identities and the anonymous mapping, are private local
 files under `benchmark/results/` by default. Do not inspect those files until
@@ -13,17 +13,29 @@ From the repository root, using Python 3.9 or later:
 
 ```sh
 python -m benchmark run --demo --output-dir benchmark/results/rehearsal
-python -m benchmark resume --output-dir benchmark/results/rehearsal
+# Open benchmark/results/rehearsal/review.html and download benchmark-grades.json.
+python -m benchmark import-grades /path/to/benchmark-grades.json \
+  --output-dir benchmark/results/rehearsal
 ```
 
 The demo has two fake models and synthetic responses. It does not demonstrate
 model quality, tool use, or spend. Fixture checks run in a
 bubblewrap sandbox when available, but the demo makes no changes, so coding
-checks may fail. End input or press Ctrl-C to pause review. Resume reads saved
-grades and the original anonymous mapping, and does not call models or rerun
-checks. If execution itself was
-interrupted, unrecorded runs are marked missing rather than repeated.
-Only one process can run or review a given output directory at a time; a
+checks may fail. Open the generated HTML locally, grade in the browser, then
+download and import the complete grades file. Even a deterministic-only run
+requires its empty grades export to be imported. The scorecard is revealed only
+after import. Import finalizes grades: an identical import may be retried to
+restore reports, but changed grades are rejected.
+
+`python -m benchmark resume --output-dir benchmark/results/rehearsal`
+regenerates the review from saved state without calling models or rerunning
+checks or local grading. Legacy partial grades are prefilled; a completed run
+restores its scorecard instead. Resume also restores a saved machine report,
+including during review; that report reveals identities. If execution
+was interrupted, unrecorded runs are marked missing rather than repeated.
+Browser autosave for `file://` pages depends on the browser and local file
+policy, so do not rely on it across browsers or devices. Download the grades
+file before closing the page. Only one command can use an output directory at a time; a
 concurrent command fails rather than reveal an incomplete scorecard.
 
 ## Live runs
@@ -56,19 +68,22 @@ To start with only the handoff, put a copy of the `handoff` case directory
 in a separate cases directory and pass `--cases-dir /path/to/cases`. Run this
 single comparison first and review its cost before expanding the pilot.
 
-During review each case receives a shuffled anonymous order. For handoffs,
-message-only grades are saved before evidence is shown. Responses, prompts,
-and evidence are redacted for configured model IDs, but model-generated text
-could still identify a model indirectly. Failed checks, check execution errors,
-and missing model runs are separate outcomes. The scorecard is displayed and
-saved only once all available responses have received all required grades.
+During review each case receives a shuffled anonymous order. The page gates
+evidence on message-only grades, but evidence is included in the HTML and can be
+read by inspecting its source. Responses, prompts, and evidence are redacted for
+configured model IDs, but model-generated text could still identify a model
+indirectly. Keep the output directory private: state and machine reports expose
+identities. Failed checks, check execution errors, and missing model runs are
+separate outcomes. Import the downloaded grades to display and save the
+scorecard.
 
 ## Local second opinion (optional)
 
-After review is complete, a local Ollama decision model can compare responses
-pairwise. This is supplementary: it never replaces the human scorecard and
-refuses to run before review finishes, so identities stay hidden while you
-grade.
+Once execution has finished, a local Ollama decision model can compare
+responses pairwise, independently of human review. Run this explicit command
+whenever desired; run and resume do not invoke it. Its report reveals model
+identities, so a human grader should not inspect it before importing grades.
+It is supplementary and never replaces the human scorecard.
 
 ```sh
 python -m benchmark autograde --output-dir benchmark/results/comparison \
@@ -76,14 +91,20 @@ python -m benchmark autograde --output-dir benchmark/results/comparison \
 ```
 
 `d3` is a zero-shot decision model, not a chat model. It answers questions
-about supplied text, so the pass decomposes grading into A/B comparisons and
-runs every pair in both orders. When the orders disagree, the pair is recorded
-as a tie rather than a win. The pass writes `auto_scorecard.md` and stores
-results under `state["auto_grades"]`. Inputs are blinded and truncated to the
-model's context; the report counts truncations. The runner checks the installed
-model list first and refuses to pull a missing model.
+about supplied text, so the pass compares each pair in both orders with choices
+A (first is better), B (second is better), and C (neither is clearly better).
+C in both orders is a tie; inconsistent choices are recorded separately as an
+order disagreement. Neither counts as a win. The pass writes
+`auto_scorecard.md` and stores
+results under `state["auto_grades"]`. Agreement with human grades is separate
+from machine rankings and is refreshed on a successful human import without
+rerunning inference. Inputs are blinded and response text is clipped to a target
+character budget; the report counts truncations. The pass retries with a shorter
+budget on context-length errors, but the character target does not guarantee
+that input fits the model's token context. The runner checks the installed model
+list first and refuses to pull a missing model.
 
-The pilot comparison showed weak rank agreement with human grades (mean
+An earlier pilot comparison showed weak rank agreement with human grades (mean
 Spearman 0.15, negative on both talking cases). Treat this as a screen or a
 sanity check, not a substitute for human judgment. Use `--max-chars` to lower
 the input budget and `--ollama-bin` to point at a different Ollama executable.
@@ -93,7 +114,8 @@ the input budget and `--ollama-bin` to point at a different Ollama executable.
 Each `cases/<id>/case.json` is a version 1 JSON object with `id` matching the
 directory, `role`, ordered `turns`, and a `rubrics` list. A rubric has a
 `label`, a human-facing `prompt`, and a Boolean `evidence`. Put evidence
-rubrics after all message-only rubrics. An empty list makes a case
+rubrics after all message-only rubrics. An optional nonblank `decision_prompt`
+provides wording for the local decision model. An empty list makes a case
 deterministic-only. Optional `fixture` names a directory copied into a fresh
 workspace. Optional `check` names a Python script invoked independently as
 `python check.py <workspace>`, from outside that workspace. Exit zero means

@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import random
 import re
+import secrets
 import shutil
 import stat
 import subprocess
@@ -75,7 +76,10 @@ def load_cases(root):
         for rubric in case["rubrics"]:
             if (not isinstance(rubric, dict) or not isinstance(rubric.get("label"), str)
                     or not isinstance(rubric.get("prompt"), str)
-                    or not isinstance(rubric.get("evidence"), bool)):
+                    or not isinstance(rubric.get("evidence"), bool)
+                    or ("decision_prompt" in rubric and
+                        (not isinstance(rubric["decision_prompt"], str)
+                         or not rubric["decision_prompt"].strip()))):
                 raise ValueError(f"invalid rubric: {manifest}")
         # Evidence must never appear before all message-only judgments for a response.
         flags = [r["evidence"] for r in case["rubrics"]]
@@ -426,37 +430,114 @@ def scorecard(state):
 def review(output, state):
     if state.get("phase") == "executing":
         prepare_review(state)
-        save_state(output, state)
-    cases = {case["id"]: case for case in state["cases"]}
+    if not state.get("review_id"):
+        state["review_id"] = secrets.token_urlsafe(24)
     for item in state["review"]:
-        key = json.dumps([item["case"], item["model"], item["rubric"]])
-        if key in state["grades"]:
-            continue
-        case = cases[item["case"]]
-        rubric = case["rubrics"][item["rubric"]]
-        run = state["runs"][item["case"]][item["model"]]
-        print("\n" + blind(f"GRADING {case['id']} / {item['label']}", state["models"]))
-        for i, turn in enumerate(case["turns"]):
-            print(f"\nPrompt {i + 1}:\n{blind(turn, state['models'])}")
-            print(f"\nResponse {i + 1}:\n{blind(run['answers'][i], state['models'])}")
-        if rubric["evidence"]:
-            print("\nEVIDENCE\n" + blind(run["evidence"], state["models"]))
-        print("\n" + blind(rubric["prompt"], state["models"]))
-        while True:
-            try:
-                grade = input("Grade 1-5: ").strip()
-            except EOFError:
-                print("\nReview paused. Resume with the resume command.")
-                return
-            if grade in ("1", "2", "3", "4", "5"):
-                break
-            print("Enter a whole number from 1 to 5.")
-        state["grades"][key] = int(grade)
-        save_state(output, state)
-    state["phase"] = "complete"
+        if not item.get("id"):
+            item["id"] = secrets.token_urlsafe(24)
     save_state(output, state)
+    if state["phase"] == "complete":
+        publish_reports(output, state)
+        print("Review complete. Reports saved in the output directory.")
+        return
+    data = review_data(state)
+    template = (Path(__file__).resolve().parent / "review.html").read_text(encoding="utf-8")
+    marker = '<script type="application/json" id="review-data">__REVIEW_DATA__</script>'
+    if template.count(marker) != 1:
+        raise ValueError("review template has an invalid data placeholder")
+    encoded = json.dumps(data, ensure_ascii=True).replace("<", "\\u003c").replace(
+        ">", "\\u003e").replace("&", "\\u0026")
+    atomic_write(output / "review.html", template.replace(
+        marker, '<script type="application/json" id="review-data">' + encoded + "</script>"))
+    publish_machine_report(output, state)
+    print(f"Open {output / 'review.html'} to grade, then import the downloaded grades.")
+
+
+def review_data(state):
+    redact = lambda value: blind(value, state["models"])
+    cases = []
+    for case in state["cases"]:
+        responses = []
+        grouped = {}
+        for item in state["review"]:
+            if item["case"] != case["id"]:
+                continue
+            model = item["model"]
+            if model not in grouped:
+                run = state["runs"][case["id"]][model]
+                response = {"label": redact(item["label"]),
+                            "answers": [redact(answer) for answer in run["answers"]],
+                            "evidence": redact(run["evidence"]), "rubrics": []}
+                grouped[model] = response
+                responses.append(response)
+            rubric = case["rubrics"][item["rubric"]]
+            displayed = {"id": item["id"], "label": redact(rubric["label"]),
+                         "prompt": redact(rubric["prompt"]), "evidence": rubric["evidence"]}
+            key = json.dumps([item["case"], model, item["rubric"]])
+            if key in state["grades"]:
+                displayed["grade"] = state["grades"][key]
+            grouped[model]["rubrics"].append(displayed)
+        cases.append({"id": redact(case["id"]), "role": redact(case["role"]),
+                      "turns": [redact(turn) for turn in case["turns"]],
+                      "responses": responses, "deterministic_only": not case["rubrics"]})
+    return {"version": 1, "review_id": state["review_id"],
+            "demo": state["demo"], "cases": cases}
+
+
+def unique_object(pairs):
+    result = {}
+    for key, value in pairs:
+        if key in result:
+            raise ValueError("duplicate JSON key")
+        result[key] = value
+    return result
+
+
+def publish_machine_report(output, state):
+    if state.get("auto_grades"):
+        from .local_grader import auto_scorecard
+        atomic_write(output / "auto_scorecard.md", auto_scorecard(state["auto_grades"], state))
+
+
+def publish_reports(output, state):
+    """Rebuild derived reports from persisted state without running inference."""
     result = scorecard(state)
     atomic_write(output / "scorecard.md", result)
+    publish_machine_report(output, state)
+    return result
+
+
+def import_grades(output, path):
+    state = json.loads((output / "state.json").read_text(encoding="utf-8"))
+    payload = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_object)
+    if (not isinstance(payload, dict) or type(payload.get("version")) is not int
+            or payload["version"] != 1 or not isinstance(payload.get("review_id"), str)
+            or not state.get("review_id") or payload["review_id"] != state["review_id"]
+            or not isinstance(payload.get("grades"), dict)
+            or state.get("phase") not in ("review", "complete")):
+        raise ValueError("invalid grades file or review identity")
+    items = state["review"]
+    ids = [item.get("id") for item in items]
+    grades = payload["grades"]
+    if (any(not isinstance(key, str) or not key for key in ids)
+            or len(set(ids)) != len(ids) or set(grades) != set(ids)
+            or any(type(value) is not int or not 1 <= value <= 5
+                   for value in grades.values())):
+        raise ValueError("grades must contain exactly one integer from 1 to 5 per rubric")
+    imported = {json.dumps([item["case"], item["model"], item["rubric"]]):
+                grades[item["id"]] for item in items}
+    if state["phase"] == "complete":
+        if imported != state["grades"]:
+            raise ValueError("review is complete; finalized grades cannot be changed")
+        print("\n" + publish_reports(output, state))
+        return
+    state["grades"].update(imported)
+    state["phase"] = "complete"
+    if "auto_grades" in state:
+        from .local_grader import refresh_agreement
+        refresh_agreement(state)
+    save_state(output, state)
+    result = publish_reports(output, state)
     print("\n" + result)
 
 
@@ -471,6 +552,9 @@ def main():
     run.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     resume = sub.add_parser("resume", help="continue a saved review without rerunning")
     resume.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
+    grades = sub.add_parser("import-grades", help="import downloaded review grades")
+    grades.add_argument("path", type=Path)
+    grades.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     auto = sub.add_parser("autograde", help="add a local decision-model second opinion")
     auto.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     auto.add_argument("--grader", default="d3:latest")
@@ -490,6 +574,10 @@ def main():
             with output_lock(output):
                 state = json.loads((output / "state.json").read_text(encoding="utf-8"))
                 review(output, state)
+        elif args.command == "import-grades":
+            output = args.output_dir.resolve()
+            with output_lock(output):
+                import_grades(output, args.path)
         elif args.command == "autograde":
             output = args.output_dir.resolve()
             with output_lock(output):

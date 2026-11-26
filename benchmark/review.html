@@ -1,0 +1,698 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Benchmark review</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #20243b;
+      --muted: #545c76;
+      --shell: #232746;
+      --shell-muted: #d3d8f4;
+      --ground: #eef0f8;
+      --paper: #fcfcff;
+      --tint: #f1f2fc;
+      --selected: #e2e6fc;
+      --line: #d9ddec;
+      --control-line: #8088a4;
+      --accent: #3f4baf;
+      --accent-hover: #303a8c;
+      --focus: #4b59d4;
+      --warning: #674712;
+      --warning-ground: #fbf1dd;
+      --success: #27624a;
+      font-family: "Avenir Next", Aptos, "Segoe UI", system-ui, sans-serif;
+      color: var(--ink);
+      background: var(--ground);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    [hidden] { display: none !important; }
+    body { margin: 0; line-height: 1.5; }
+    h1, h2, h3, h4, h5, p { margin: 0; }
+    h1, h2, h3 { letter-spacing: -.025em; line-height: 1.2; }
+    button, select { font: inherit; }
+    button { cursor: pointer; }
+    button:disabled { cursor: default; }
+    ::selection { background: #ccd3ff; color: var(--ink); }
+    :focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
+
+    .container { width: min(100% - 3rem, 90rem); margin-inline: auto; }
+    .skip-link {
+      position: fixed;
+      z-index: 3;
+      top: .5rem;
+      left: .5rem;
+      padding: .6rem 1rem;
+      background: var(--paper);
+      color: var(--ink);
+      transform: translateY(-150%);
+    }
+    .skip-link:focus { transform: none; }
+    .masthead { background: var(--shell); color: white; }
+    .masthead-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.5rem;
+      min-height: 6rem;
+      padding-block: 1rem;
+    }
+    .masthead h1 { font-size: 1.5rem; font-weight: 700; }
+    .masthead :focus-visible { outline-color: #bac3ff; }
+    .brand, .toolbar { display: flex; align-items: center; gap: .85rem; }
+    .brand-icon { flex: none; width: 1.75rem; height: 1.75rem; color: #bac3ff; }
+    .subtitle, .save-status { color: var(--shell-muted); font-size: .875rem; }
+    .subtitle { margin-top: .2rem; }
+    .save-status { max-width: 14rem; text-align: right; }
+    .save-status[data-state="unavailable"] { color: #ffdfa1; }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: .55rem;
+      min-height: 2.75rem;
+      padding: .48rem .95rem;
+      border: 1px solid transparent;
+      border-radius: .5rem;
+      background: var(--accent);
+      color: white;
+      font-size: .875rem;
+      font-weight: 700;
+      line-height: 1.3;
+      text-align: center;
+    }
+    .button:hover:not(:disabled) { background: var(--accent-hover); }
+    .button.export { flex: none; background: #e6e9ff; color: #262f77; }
+    .button.export:hover:not(:disabled) { background: white; }
+    .button.export:disabled { border-color: #71789e; background: #383e65; color: #e3e6f9; }
+    .button.secondary { border-color: var(--control-line); background: transparent; color: var(--ink); }
+    .button.secondary:hover:not(:disabled) { background: var(--selected); }
+    .icon { flex: none; width: 1.125rem; height: 1.125rem; }
+
+    .workspace {
+      display: grid;
+      grid-template-columns: 15rem minmax(0, 1fr);
+      gap: 2rem;
+      align-items: start;
+      padding-block: 2rem 3rem;
+    }
+    .rail { position: sticky; top: 1.5rem; max-height: calc(100vh - 3rem); overflow: auto; padding: 4px; margin: -4px; }
+    .rail h2, .mobile-label { font-size: .9375rem; font-weight: 720; }
+    .progress-panel { margin-bottom: 1.75rem; }
+    .progress-copy { margin: .4rem 0 .45rem; color: var(--muted); font-size: .875rem; }
+    progress {
+      display: block;
+      width: 100%;
+      height: .4rem;
+      border: 0;
+      border-radius: 1rem;
+      background: #d8ddf0;
+      color: var(--accent);
+      accent-color: var(--accent);
+    }
+    progress::-webkit-progress-bar { background: #d8ddf0; border-radius: 1rem; }
+    progress::-webkit-progress-value { background: var(--accent); border-radius: 1rem; }
+    progress::-moz-progress-bar { background: var(--accent); border-radius: 1rem; }
+    .cases { list-style: none; margin: .55rem 0 0; padding: 0; display: grid; gap: .3rem; }
+    .case-link {
+      width: 100%;
+      min-height: 3.25rem;
+      display: grid;
+      grid-template-columns: 1.65rem minmax(0, 1fr);
+      column-gap: .48rem;
+      align-items: baseline;
+      padding: .55rem .65rem;
+      border: 1px solid transparent;
+      border-radius: .5rem;
+      color: var(--ink);
+      background: transparent;
+      text-align: left;
+    }
+    .case-link:hover { background: var(--tint); }
+    .case-link[aria-current="true"] { border-color: #a1aadd; background: var(--selected); }
+    .case-index, .case-status, .case-meta { font-size: .8125rem; color: var(--muted); }
+    .case-name { font-size: .9rem; font-weight: 680; overflow-wrap: anywhere; }
+    .case-status { grid-column: 2; }
+    .case-status[data-complete="true"] { color: var(--success); }
+    .mobile-nav { display: none; }
+
+    .main { min-width: 0; }
+    .case-intro { margin-bottom: 1.6rem; }
+    .case-intro h2 { margin-bottom: .4rem; font-size: 2rem; overflow-wrap: anywhere; scroll-margin-top: 1rem; }
+    .case-meta { display: flex; align-items: center; flex-wrap: wrap; gap: .2rem .8rem; }
+    .case-role { padding-inline-start: .8rem; border-inline-start: 1px solid var(--control-line); overflow-wrap: anywhere; }
+    .demo {
+      display: inline-block;
+      margin-bottom: .65rem;
+      padding: .2rem .55rem;
+      border-radius: .25rem;
+      background: var(--warning-ground);
+      color: var(--warning);
+      font-size: .8125rem;
+      font-weight: 700;
+    }
+    .panel { border: 1px solid var(--line); border-radius: .9rem; background: var(--paper); }
+    .reading-panel { padding: 1.45rem; }
+    .reading-panel > h3, .verification h3 { font-size: 1.25rem; }
+    .section-note { margin-top: .4rem; max-width: 68ch; font-size: .9rem; color: var(--muted); }
+    .turn { margin-top: 1.35rem; }
+    .turn + .turn { padding-top: 1.35rem; border-top: 1px solid var(--line); }
+    .prompt {
+      margin: 0 0 .85rem;
+      padding: .95rem 1.05rem;
+      border-radius: .55rem;
+      background: var(--tint);
+    }
+    .label, .response-title { font-weight: 720; font-size: .875rem; }
+    .label { color: #384482; }
+    .copy {
+      max-width: 72ch;
+      margin-top: .5rem;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+    }
+    .comparison { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem 1.5rem; }
+    .response { min-width: 0; padding-top: .65rem; border-top: 1px solid var(--line); }
+    .response-title { overflow-wrap: anywhere; }
+    .response .copy { font-size: .95rem; }
+    .response .copy.missing { color: var(--muted); font-style: italic; }
+
+    .ratings { margin-top: 1.75rem; padding-top: 1.3rem; border-top: 1px solid var(--line); }
+    .ratings > h4 { font-size: 1.0625rem; }
+    .ratings > .comparison { margin-top: 1rem; }
+    .score-group { margin: .9rem 0 0; padding: 0; border: 0; min-inline-size: 0; }
+    .score-group + .score-group { margin-top: 1.1rem; }
+    .score-group legend { width: 100%; padding: 0; font-size: .875rem; font-weight: 690; overflow-wrap: anywhere; }
+    .score-question { margin-top: .2rem; color: var(--muted); font-size: .875rem; white-space: pre-wrap; overflow-wrap: anywhere; }
+    .score-options {
+      display: grid;
+      grid-template-columns: repeat(5, minmax(0, 1fr));
+      max-width: 19rem;
+      gap: .3rem;
+      margin-top: .55rem;
+    }
+    .score-option { display: block; position: relative; }
+    .score-option input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      margin: -1px;
+      padding: 0;
+      clip-path: inset(50%);
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .score-option span {
+      display: grid;
+      place-items: center;
+      min-height: 2.75rem;
+      border: 1px solid var(--control-line);
+      border-radius: .4rem;
+      font-size: .9375rem;
+      font-weight: 650;
+      cursor: pointer;
+    }
+    .score-option:hover span { background: var(--tint); }
+    .score-option input:checked + span { border-color: var(--accent); background: var(--accent); color: white; }
+    .score-option input:focus-visible + span { outline: 3px solid var(--focus); outline-offset: 2px; }
+    @media (forced-colors: active) {
+      .score-option input:checked + span { border: 3px solid SelectedItem; background: SelectedItem; color: SelectedItemText; forced-color-adjust: none; }
+    }
+
+    .verification { margin-top: 1rem; padding: 1.4rem; }
+    .verification-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; }
+    .verification-state { flex: none; margin-top: .05rem; font-size: .8125rem; font-weight: 650; color: var(--muted); }
+    .verification .button { margin-top: .9rem; }
+    .verification .caution { color: var(--warning); background: var(--warning-ground); padding: .55rem .7rem; border-radius: .35rem; }
+    .verification .comparison { margin-top: 1rem; }
+    .response .evidence-copy { font-family: ui-monospace, "Cascadia Mono", "Liberation Mono", monospace; font-size: .8125rem; line-height: 1.6; }
+    .new-evidence { animation: evidence-in 220ms cubic-bezier(.16, 1, .3, 1); }
+    @keyframes evidence-in { from { transform: translateY(.25rem); } to { transform: none; } }
+    @media (prefers-reduced-motion: reduce) { .new-evidence { animation: none; } }
+    .case-footer { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem; margin-top: 1rem; }
+    .case-footer .next { margin-inline-start: auto; }
+    .finish-panel { margin-top: 1rem; padding: 1rem 1.4rem; }
+    .finish-panel h3 { font-size: 1.0625rem; }
+    .finish-panel .button { margin-top: .85rem; }
+    .finish-note { margin-top: .4rem; color: var(--muted); font-size: .875rem; overflow-wrap: anywhere; }
+    .finish-note code { color: var(--ink); }
+    .empty { margin-block: 2rem; padding: 1.5rem; }
+    .empty p { color: var(--muted); margin-top: .45rem; }
+
+    @media (max-width: 60rem) {
+      .workspace { grid-template-columns: 12rem minmax(0, 1fr); gap: 1.25rem; }
+      .container { width: calc(100% - 2rem); }
+    }
+    @media (max-width: 48rem) {
+      .workspace { grid-template-columns: minmax(0, 1fr); gap: 1.35rem; padding-top: 1.25rem; }
+      .rail { position: static; max-height: none; overflow: visible; padding: 0; margin: 0; }
+      .progress-panel { margin-bottom: 1rem; }
+      .desktop-nav { display: none; }
+      .mobile-nav { display: grid; gap: .3rem; }
+      .mobile-nav select {
+        width: 100%;
+        min-height: 2.75rem;
+        padding: .4rem .55rem;
+        border: 1px solid var(--control-line);
+        border-radius: .45rem;
+        background: var(--paper);
+        color: var(--ink);
+      }
+    }
+    @media (max-width: 36rem) {
+      .masthead-inner { align-items: stretch; flex-direction: column; gap: .75rem; }
+      .toolbar { justify-content: space-between; }
+      .save-status { text-align: left; }
+      .comparison { grid-template-columns: minmax(0, 1fr); }
+      .case-intro { margin-bottom: 1.05rem; }
+      .case-intro h2 { font-size: 1.65rem; }
+      .reading-panel, .verification, .finish-panel { padding: 1rem; }
+      .verification-header { flex-wrap: wrap; gap: .4rem; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#case-title" hidden>Skip to the current case</a>
+  <header class="masthead">
+    <div class="container masthead-inner">
+      <div class="brand">
+        <svg class="brand-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.55" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M3.5 5.5h17v13h-17zM12 5.5v13M6.5 9h2.5M6.5 12.5h2.5M15 9h2.5M15 12.5h2.5"/>
+        </svg>
+        <div>
+          <h1>Benchmark review</h1>
+          <p class="subtitle">Compare and score anonymous answers.</p>
+        </div>
+      </div>
+      <div class="toolbar" id="toolbar" hidden>
+        <p id="save-status" class="save-status" role="status"></p>
+        <button class="button export" id="export" type="button" aria-describedby="export-help" disabled>
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M12 3v12m-4-4 4 4 4-4M5 16v4h14v-4"/>
+          </svg>
+          Export grades
+        </button>
+      </div>
+    </div>
+  </header>
+  <noscript>
+    <div class="container panel empty">
+      <h2>JavaScript is needed</h2>
+      <p>Open this file in a browser with JavaScript enabled to enter and export grades.</p>
+    </div>
+  </noscript>
+  <main class="container panel empty" id="error" hidden>
+    <h2 id="error-title">This review could not open</h2>
+    <p id="error-detail">Open a review file exported by the benchmark instead of this template.</p>
+  </main>
+
+  <div class="container workspace" id="workspace" hidden>
+    <aside class="rail">
+      <section class="progress-panel" aria-labelledby="progress-title">
+        <h2 id="progress-title">Review progress</h2>
+        <p class="progress-copy" id="progress-copy" role="status"></p>
+        <progress id="progress" aria-labelledby="progress-title"></progress>
+        <p id="export-help" class="progress-copy"></p>
+      </section>
+      <nav class="desktop-nav" aria-labelledby="case-list-title">
+        <h2 id="case-list-title">Cases</h2>
+        <ol class="cases" id="case-list"></ol>
+      </nav>
+      <div class="mobile-nav">
+        <label class="mobile-label" for="case-picker">Jump to case</label>
+        <select id="case-picker"></select>
+      </div>
+    </aside>
+    <main class="main" id="case-view">
+      <header class="case-intro">
+        <p id="demo" class="demo" hidden>Demo review</p>
+        <h2 id="case-title" tabindex="-1"></h2>
+        <div class="case-meta">
+          <span id="case-count"></span>
+          <span class="case-role" id="case-role"></span>
+        </div>
+      </header>
+      <div id="case-body"></div>
+      <footer class="case-footer">
+        <button id="previous-case" class="button secondary" type="button">Previous case</button>
+        <button id="next-case" class="button secondary next" type="button">Next case</button>
+      </footer>
+      <section class="panel finish-panel" id="finish" aria-labelledby="finish-title" hidden>
+        <h3 id="finish-title">Review complete</h3>
+        <p class="finish-note">
+          After downloading <code>benchmark-grades.json</code>, import it from your terminal:
+          <code>python -m benchmark import-grades PATH --output-dir RUN_DIR</code>.
+        </p>
+        <button class="button" id="export-finish" type="button" disabled>Export grades</button>
+      </section>
+    </main>
+  </div>
+
+  <script type="application/json" id="review-data">__REVIEW_DATA__</script>
+  <script>
+    (() => {
+      "use strict";
+
+      const byId = (id) => document.getElementById(id);
+      const el = (tag, className, text) => {
+        const node = document.createElement(tag);
+        if (className) node.className = className;
+        if (text !== undefined) node.textContent = text;
+        return node;
+      };
+      const isGrade = (value) => Number.isInteger(value) && value >= 1 && value <= 5;
+      const formatCount = (count, noun) => `${count} ${noun}${count === 1 ? "" : "s"}`;
+
+      let review;
+      try {
+        review = JSON.parse(byId("review-data").textContent);
+        if (review.version !== 1 || typeof review.review_id !== "string" || !Array.isArray(review.cases)) {
+          throw new Error("Unsupported review format");
+        }
+      } catch {
+        byId("error").hidden = false;
+        return;
+      }
+      if (!review.cases.length) {
+        byId("error-title").textContent = "No cases to review";
+        byId("error-detail").textContent = "Export a benchmark run that contains cases.";
+        byId("error").hidden = false;
+        return;
+      }
+
+      const cases = review.cases.map((source) => {
+        const rubrics = source.responses.flatMap((response) => response.rubrics);
+        return {
+          ...source,
+          title: source.id.replace(/[-_]+/g, " ").replace(/^./u, (first) => first.toUpperCase()),
+          rubrics,
+          messageRubrics: rubrics.filter((rubric) => !rubric.evidence),
+          hasEvidence: source.responses.some((response) => response.evidence || response.rubrics.some((rubric) => rubric.evidence)),
+        };
+      });
+      const allRubrics = cases.flatMap((entry) => entry.rubrics);
+      const grades = new Map();
+      for (const rubric of allRubrics) {
+        if (isGrade(rubric.grade)) grades.set(rubric.id, rubric.grade);
+      }
+      const openedEvidence = new Set();
+      const storageKey = `benchmark-review:v1:${review.review_id}`;
+      const saveStatus = byId("save-status");
+      let activeIndex = 0;
+      let updateGate = null;
+      let fieldNumber = 0;
+      let groupNumber = 0;
+      let exportUrl;
+
+      function storageStatus(state, text) {
+        saveStatus.dataset.state = state;
+        if (saveStatus.textContent !== text) saveStatus.textContent = text;
+      }
+
+      function readSavedReview() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(storageKey) || "null");
+          if (!saved) return;
+          const savedGrades = new Map(Object.entries(saved.grades || {}));
+          for (const rubric of allRubrics) {
+            const value = savedGrades.get(rubric.id);
+            if (isGrade(value)) grades.set(rubric.id, value);
+          }
+          // Display IDs can collide after redaction; use positions in this review instead.
+          const savedCases = new Set(Array.isArray(saved.openedEvidenceIndices) ? saved.openedEvidenceIndices : []);
+          for (const [index, entry] of cases.entries()) {
+            if (entry.hasEvidence && savedCases.has(index) && remaining(entry.messageRubrics) === 0) {
+              openedEvidence.add(index);
+            }
+          }
+          if (Number.isInteger(saved.activeIndex) && saved.activeIndex >= 0 && saved.activeIndex < cases.length) {
+            activeIndex = saved.activeIndex;
+          }
+        } catch {
+          // A blocked store or unreadable draft does not prevent grading.
+        }
+      }
+
+      function saveReview() {
+        try {
+          localStorage.setItem(storageKey, JSON.stringify({
+            grades: Object.fromEntries(grades),
+            openedEvidenceIndices: [...openedEvidence],
+            activeIndex,
+          }));
+          storageStatus("saved", "Autosave on · this browser");
+        } catch {
+          storageStatus("unavailable", "Autosave unavailable. Keep this tab open until you export.");
+        }
+      }
+
+      function remaining(rubrics) {
+        return rubrics.reduce((count, rubric) => count + Number(!grades.has(rubric.id)), 0);
+      }
+
+      const caseControls = cases.map((entry, index) => {
+        const number = el("span", "case-index", String(index + 1).padStart(2, "0"));
+        number.setAttribute("aria-hidden", "true");
+        const name = el("span", "case-name", entry.title);
+        const status = el("span", "case-status");
+        const button = el("button", "case-link");
+        button.type = "button";
+        button.append(number, name, status);
+        button.addEventListener("click", () => showCase(index, true));
+        const row = el("li");
+        row.append(button);
+        byId("case-list").append(row);
+        const option = el("option");
+        option.value = index;
+        byId("case-picker").append(option);
+        return { button, status, option };
+      });
+
+      function updateProgress() {
+        let completedCases = 0;
+        cases.forEach((entry, index) => {
+          const total = entry.rubrics.length;
+          const scored = total - remaining(entry.rubrics);
+          const complete = scored === total;
+          if (complete) completedCases++;
+          const { button, status, option } = caseControls[index];
+          const text = !total ? "No grades required" : complete ? "Complete" : `${scored} of ${total} graded`;
+          status.textContent = text;
+          status.dataset.complete = String(complete);
+          option.textContent = `${entry.title} (${text})`;
+          if (index === activeIndex) button.setAttribute("aria-current", "true");
+          else button.removeAttribute("aria-current");
+        });
+        byId("case-picker").value = activeIndex;
+        const total = allRubrics.length;
+        const left = remaining(allRubrics);
+        const progress = byId("progress");
+        progress.max = total || 1;
+        progress.value = total ? total - left : 1;
+        const summary = `${total - left} of ${total} grades · ${completedCases} of ${cases.length} cases complete`;
+        const copy = byId("progress-copy");
+        if (copy.textContent !== summary) copy.textContent = summary;
+        byId("export-help").textContent = left ? "Finish all grades to export." : "Ready to download.";
+        byId("export").disabled = left > 0;
+        byId("export-finish").disabled = left > 0;
+        byId("finish").hidden = left > 0;
+      }
+
+      function scoreField(rubric, answerHeading) {
+        const name = `score-${++fieldNumber}`;
+        const field = el("fieldset", "score-group");
+        const legend = el("legend", "", rubric.label);
+        legend.id = `${name}-legend`;
+        const question = el("p", "score-question", rubric.prompt);
+        question.id = `${name}-question`;
+        field.setAttribute("aria-labelledby", `${answerHeading.id} ${legend.id}`);
+        field.setAttribute("aria-describedby", question.id);
+        const options = el("div", "score-options");
+        for (let value = 1; value <= 5; value++) {
+          const label = el("label", "score-option");
+          const radio = el("input");
+          radio.type = "radio";
+          radio.name = name;
+          radio.value = value;
+          radio.checked = grades.get(rubric.id) === value;
+          radio.addEventListener("change", () => {
+            grades.set(rubric.id, value);
+            saveReview();
+            updateProgress();
+            if (updateGate) updateGate();
+          });
+          label.append(radio, el("span", "", String(value)));
+          options.append(label);
+        }
+        field.append(legend, question, options);
+        return field;
+      }
+
+      function responsePanel(label, headingTag = "h4") {
+        const panel = el("section", "response");
+        const heading = el(headingTag, "response-title", label);
+        heading.id = `answer-heading-${++groupNumber}`;
+        panel.append(heading);
+        return panel;
+      }
+
+      function renderMessages(entry) {
+        const section = el("section", "panel reading-panel");
+        const automatic = entry.deterministic_only === true;
+        const heading = el("h3", "", automatic ? "Automatic checks only" : "1. Prompts and answers");
+        heading.id = "message-heading";
+        section.setAttribute("aria-labelledby", heading.id);
+        section.append(heading, el("p", "section-note", automatic
+          ? "No human grading is needed for this case."
+          : "Read the original prompts and compare the anonymous answers in order."));
+        entry.turns.forEach((prompt, index) => {
+          const turn = el("div", "turn");
+          const promptPanel = el("div", "prompt");
+          const label = entry.turns.length > 1 ? `Original prompt · Turn ${index + 1}` : "Original prompt";
+          promptPanel.append(el("h4", "label", label), el("p", "copy", prompt));
+          turn.append(promptPanel);
+          section.append(turn);
+          if (automatic) return;
+          const answers = el("div", "comparison");
+          for (const response of entry.responses) {
+            const answer = response.answers[index];
+            const panel = responsePanel(response.label);
+            panel.append(el("p", answer ? "copy" : "copy missing", answer || "No answer was included for this turn."));
+            answers.append(panel);
+          }
+          if (!entry.responses.length) answers.append(el("p", "section-note", "No answers were included for this case."));
+          turn.append(answers);
+        });
+        if (!entry.turns.length) section.append(el("p", "section-note", "No original prompts were included for this case."));
+        if (automatic) return section;
+        if (entry.messageRubrics.length) {
+          const ratings = el("section", "ratings");
+          ratings.append(el("h4", "", "Message-only grades"), el("p", "section-note", "Use only the answers above. Rate each criterion from 1 (lowest) to 5 (highest)."));
+          const groups = el("div", "comparison");
+          for (const response of entry.responses) {
+            const rubrics = response.rubrics.filter((rubric) => !rubric.evidence);
+            if (!rubrics.length) continue;
+            const panel = responsePanel(response.label, "h5");
+            for (const rubric of rubrics) panel.append(scoreField(rubric, panel.firstElementChild));
+            groups.append(panel);
+          }
+          ratings.append(groups);
+          section.append(ratings);
+        } else {
+          section.append(el("p", "section-note", "No message-only grades are required for this case."));
+        }
+        return section;
+      }
+
+      function renderVerification(entry, index) {
+        const section = el("section", "panel verification");
+        const header = el("div", "verification-header");
+        const title = el("h3", "", "2. Verification evidence");
+        title.id = "verification-heading";
+        section.setAttribute("aria-labelledby", title.id);
+        const state = el("span", "verification-state");
+        state.setAttribute("role", "status");
+        header.append(title, state);
+        const detail = el("p", "section-note");
+        const reveal = el("button", "button", "Reveal evidence");
+        reveal.type = "button";
+        section.append(header, detail, reveal);
+
+        function openEvidence(moveFocus) {
+          state.textContent = "Revealed";
+          detail.textContent = "Evidence can’t be unseen. You can still edit your message-only grades above.";
+          detail.classList.add("caution");
+          detail.tabIndex = -1;
+          reveal.remove();
+          const groups = el("div", moveFocus ? "comparison new-evidence" : "comparison");
+          for (const response of entry.responses) {
+            const rubrics = response.rubrics.filter((rubric) => rubric.evidence);
+            if (!response.evidence && !rubrics.length) continue;
+            const panel = responsePanel(response.label);
+            panel.append(el("p", response.evidence ? "copy evidence-copy" : "copy missing",
+              response.evidence || "No verification evidence was included for this answer."));
+            for (const rubric of rubrics) panel.append(scoreField(rubric, panel.firstElementChild));
+            groups.append(panel);
+          }
+          section.append(groups);
+          if (moveFocus) detail.focus();
+        }
+
+        updateGate = () => {
+          if (openedEvidence.has(index)) return;
+          const left = remaining(entry.messageRubrics);
+          const status = left ? "Locked" : "Ready to reveal";
+          if (state.textContent !== status) state.textContent = status;
+          detail.textContent = left
+            ? `Enter ${formatCount(left, "more message-only grade")} for this case to unlock the evidence.`
+            : "All message-only grades are entered. Once you reveal the evidence, you can’t unsee it.";
+          reveal.hidden = left > 0;
+        };
+        reveal.addEventListener("click", () => {
+          if (remaining(entry.messageRubrics) > 0 || openedEvidence.has(index)) return;
+          openedEvidence.add(index);
+          saveReview();
+          openEvidence(true);
+        });
+        if (openedEvidence.has(index)) openEvidence(false);
+        else updateGate();
+        return section;
+      }
+
+      function showCase(index, moveFocus = false) {
+        activeIndex = index;
+        const entry = cases[index];
+        byId("case-count").textContent = `Case ${index + 1} of ${cases.length}`;
+        byId("case-role").textContent = entry.role;
+        byId("case-role").hidden = !entry.role;
+        const title = byId("case-title");
+        title.textContent = entry.title;
+        const body = byId("case-body");
+        updateGate = null;
+        body.replaceChildren(renderMessages(entry));
+        if (entry.hasEvidence) body.append(renderVerification(entry, index));
+        byId("previous-case").hidden = index === 0;
+        byId("next-case").hidden = index === cases.length - 1;
+        updateProgress();
+        saveReview();
+        if (moveFocus) {
+          title.focus({ preventScroll: true });
+          title.scrollIntoView({ block: "nearest" });
+        }
+      }
+
+      function downloadGrades() {
+        if (remaining(allRubrics) > 0) return;
+        const file = new Blob([JSON.stringify({
+          version: 1,
+          review_id: review.review_id,
+          grades: Object.fromEntries(allRubrics.map(({ id }) => [id, grades.get(id)])),
+        }, null, 2) + "\n"], { type: "application/json" });
+        if (exportUrl) URL.revokeObjectURL(exportUrl);
+        exportUrl = URL.createObjectURL(file);
+        const link = el("a");
+        link.href = exportUrl;
+        link.download = "benchmark-grades.json";
+        document.body.append(link);
+        link.click();
+        link.remove();
+      }
+
+      byId("case-picker").addEventListener("change", (event) => showCase(Number(event.target.value)));
+      byId("previous-case").addEventListener("click", () => showCase(activeIndex - 1, true));
+      byId("next-case").addEventListener("click", () => showCase(activeIndex + 1, true));
+      byId("export").addEventListener("click", downloadGrades);
+      byId("export-finish").addEventListener("click", downloadGrades);
+      byId("demo").hidden = !review.demo;
+      readSavedReview();
+      byId("toolbar").hidden = false;
+      byId("workspace").hidden = false;
+      document.querySelector(".skip-link").hidden = false;
+      showCase(activeIndex);
+    })();
+  </script>
+</body>
+</html>

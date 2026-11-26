@@ -9,6 +9,7 @@
   "rubrics": [
     {
       "label": "Follows the real source of confusion",
+      "decision_prompt": "Which response better revises its understanding of inherited build confusion without rushing to a redesign?",
       "prompt": "Rate 1 to 5 across both replies. Give 1 if the assistant mostly pushes its original diagnosis or jumps to a redesign. Give 3 if it notices the shift from getting started to reading an inherited setup but does little with it. Give 5 if it revises its understanding in light of the second turn, makes clear why the number of settings and the ability to explain an existing build are different problems, and helps the user think about the tension without trying to settle it for them.",
       "evidence": false
     }

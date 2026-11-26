@@ -97,7 +97,8 @@ class CheckBoundaryTests(unittest.TestCase):
             self.assertEqual(later["status"], "ok")
             self.assertEqual(later["check"], "pass")
             self.assertIn("later check completed", later["check_detail"])
-        self.assertTrue((output / "scorecard.md").is_file())
+        self.assertTrue((output / "review.html").is_file())
+        self.assertFalse((output / "scorecard.md").exists())
 
     def test_checker_cannot_consume_grader_stdin(self):
         case = self.make_case(
@@ -126,6 +127,41 @@ class CheckBoundaryTests(unittest.TestCase):
         self.assertEqual(observed["remaining"], "synthetic-grader-input\n")
         self.assertEqual(observed["result"]["check"], "pass")
         self.assertNotIn("synthetic-grader-input", observed["result"]["check_detail"])
+
+    def test_resume_after_execution_interrupt_preserves_completed_work_without_reruns(self):
+        self.make_case("interrupted", "print('check completed')\n")
+        output = self.root / "results"
+        args = argparse.Namespace(
+            output_dir=output, cases_dir=self.cases, demo=True,
+            config=None, allow_live=False,
+        )
+        original = runner.run_one
+        calls = []
+
+        def interrupt_after_first(*args):
+            calls.append(args[1])
+            if len(calls) == 2:
+                raise KeyboardInterrupt
+            return original(*args)
+
+        with patch.object(runner, "run_one", side_effect=interrupt_after_first):
+            with self.assertRaises(KeyboardInterrupt):
+                runner.execute_run(args)
+        before = json.loads((output / "state.json").read_text(encoding="utf-8"))
+        completed_model = calls[0]
+        completed = before["runs"]["interrupted"][completed_model]
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path(runner.__file__).resolve().parent.parent)
+        resumed = subprocess.run(
+            [sys.executable, "-m", "benchmark", "resume", "--output-dir", str(output)],
+            input="", text=True, capture_output=True, env=env, timeout=30, check=False,
+        )
+        self.assertEqual(resumed.returncode, 0, resumed.stdout + resumed.stderr)
+        after = json.loads((output / "state.json").read_text(encoding="utf-8"))
+        self.assertEqual(after["runs"]["interrupted"][completed_model], completed)
+        self.assertEqual(after["runs"]["interrupted"][calls[1]]["status"], "error")
+        self.assertTrue((output / "review.html").is_file())
+        self.assertFalse((output / "scorecard.md").exists())
 
     def test_post_adapter_snapshot_error_does_not_skip_independent_check(self):
         case = self.make_case(

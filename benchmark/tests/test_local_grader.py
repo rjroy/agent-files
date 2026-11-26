@@ -103,12 +103,46 @@ class LocalGraderTests(unittest.TestCase):
         self.assertAlmostEqual(grader._spearman([1, 2, 3], [30, 20, 10]), -1.0)
         self.assertIsNone(grader._spearman([1, 1, 1], [1, 2, 3]))
 
-    def test_autograde_requires_completed_review(self):
+    def test_autograde_accepts_review_without_changing_human_state(self):
         state = make_state()
         state["phase"] = "review"
+        state["grades"] = {json.dumps(["case1", "a/m1", 0]): 4}
+        grades = state["grades"].copy()
+        with tempfile.TemporaryDirectory() as temp:
+            record, _ = grader.autograde(
+                Path(temp), state, model="d3", decide=FakeDecide(["A", "B"] * 3))
+            saved = json.loads((Path(temp) / "state.json").read_text(encoding="utf-8"))
+        self.assertEqual(len(record["comparisons"]), 3)
+        self.assertEqual(state["phase"], "review")
+        self.assertEqual(saved["phase"], "review")
+        self.assertEqual(state["grades"], grades)
+        self.assertEqual(saved["grades"], grades)
+
+    def test_autograde_rejects_executing_runs(self):
+        state = make_state()
+        state["phase"] = "executing"
+        decide = mock.Mock()
         with tempfile.TemporaryDirectory() as temp:
             with self.assertRaises(grader.GraderError):
-                grader.autograde(Path(temp), state, model="d3", decide=FakeDecide([]))
+                grader.autograde(Path(temp), state, model="d3", decide=decide)
+        decide.assert_not_called()
+
+    def test_question_uses_rubric_decision_prompt_and_blinds_identities(self):
+        rubric = {"label": "message", "prompt": "Rate 1-5.",
+                  "decision_prompt": "Which answer by a/m1 is more helpful?",
+                  "evidence": False}
+        question = grader.question_for(rubric, MODELS)
+        self.assertIn("more helpful", question)
+        self.assertNotIn("a/m1", question)
+        self.assertNotIn("1-5", question)
+
+    def test_question_for_legacy_rubric_does_not_embed_human_scale(self):
+        rubric = {"label": "message", "prompt": "Score 1-5: 1 is poor, 5 is best.",
+                  "evidence": False}
+        question = grader.question_for(rubric, MODELS)
+        self.assertIn("response", question.lower())
+        self.assertNotIn("1-5", question)
+        self.assertNotIn("1 is poor", question)
 
     def test_autograde_records_ranking_and_preserves_human_grades(self):
         state = make_state()
@@ -119,7 +153,7 @@ class LocalGraderTests(unittest.TestCase):
         }
         decide = FakeDecide([
             "A", "B",   # m1 beats m2 in both orders
-            "A", "A",   # m1 vs m3: both orders pick first position -> tie
+            "A", "A",   # m1 vs m3: orders disagree
             "B", "A",   # m3 beats m2 in both orders
         ])
         with tempfile.TemporaryDirectory() as temp:
@@ -131,18 +165,89 @@ class LocalGraderTests(unittest.TestCase):
 
         stats = record["standings"]["case1"]
         self.assertEqual((stats["a/m1"]["wins"], stats["a/m1"]["losses"],
-                          stats["a/m1"]["ties"]), (1, 0, 1))
+                          stats["a/m1"]["ties"], stats["a/m1"]["disagreements"]),
+                         (1, 0, 0, 1))
         self.assertEqual((stats["c/m3"]["wins"], stats["c/m3"]["losses"],
-                          stats["c/m3"]["ties"]), (1, 0, 1))
+                          stats["c/m3"]["ties"], stats["c/m3"]["disagreements"]),
+                         (1, 0, 0, 1))
         self.assertEqual((stats["b/m2"]["wins"], stats["b/m2"]["losses"]), (0, 2))
         self.assertEqual(stats["a/m1"]["rank"], 1)
-        self.assertEqual(stats["c/m3"]["rank"], 2)
+        self.assertEqual(stats["c/m3"]["rank"], 1)
         self.assertEqual(stats["b/m2"]["rank"], 3)
         outcomes = [entry["outcome"] for entry in record["comparisons"]]
-        self.assertEqual(outcomes, ["a", "tie", "b"])
+        self.assertEqual(outcomes, ["a", "disagreement", "b"])
         self.assertEqual(saved["grades"], state["grades"])
         self.assertIn("Local second opinion", report)
         self.assertIn("Spearman vs human mean", report)
+        self.assertIn("disagreement", report.lower())
+
+    def test_no_clear_winner_and_order_disagreement_are_distinct(self):
+        for choices, outcome, ties, disagreements in [
+            (["C", "C"], "tie", 1, 0),
+            (["A", "A"], "disagreement", 0, 1),
+            (["A", "C"], "disagreement", 0, 1),
+            (["C", "B"], "disagreement", 0, 1),
+        ]:
+            with self.subTest(choices=choices), tempfile.TemporaryDirectory() as temp:
+                state = make_state()
+                state["models"] = MODELS[:2]
+                decide = FakeDecide(choices)
+                record, report = grader.autograde(
+                    Path(temp), state, model="d3", decide=decide)
+                self.assertEqual(record["comparisons"][0]["outcome"], outcome)
+                for model in state["models"]:
+                    stats = record["standings"]["case1"][model]
+                    self.assertEqual((stats["wins"], stats["losses"]), (0, 0))
+                    self.assertEqual(stats["ties"], ties)
+                    self.assertEqual(stats["disagreements"], disagreements)
+                for _, _, options in decide.calls:
+                    self.assertIn("C", [label for label, _ in options])
+                    description = dict(options)["C"].lower()
+                    self.assertTrue("clear" in description or "tie" in description)
+                self.assertIn("disagreement", report.lower())
+
+    def test_equal_scores_share_rank_for_ties_and_disagreements(self):
+        for choices in (["C", "C"], ["A", "A"]):
+            with self.subTest(choices=choices), tempfile.TemporaryDirectory() as temp:
+                record, report = grader.autograde(
+                    Path(temp), make_state(), model="d3",
+                    decide=FakeDecide(choices * 3))
+                stats = record["standings"]["case1"]
+                self.assertEqual([stats[model]["rank"] for model in MODELS], [1, 1, 1])
+                rows = [line for line in report.splitlines()
+                        if any(f"| {model} |" in line for model in MODELS)]
+                self.assertEqual(len(rows), 3)
+                self.assertEqual(
+                    [next(model for model in MODELS if f"| {model} |" in row)
+                     for row in rows], MODELS)
+
+    def test_agreement_excludes_models_with_incomplete_human_grades(self):
+        case = {**CASE, "rubrics": [
+            CASE["rubrics"][0],
+            {"label": "clarity", "prompt": "Rate clarity.", "evidence": False},
+        ]}
+        state = make_state(case)
+        state["grades"] = {
+            json.dumps(["case1", "a/m1", 0]): 5,
+            json.dumps(["case1", "a/m1", 1]): 5,
+            json.dumps(["case1", "b/m2", 0]): 1,
+            json.dumps(["case1", "b/m2", 1]): 1,
+            json.dumps(["case1", "c/m3", 0]): 3,
+        }
+        with tempfile.TemporaryDirectory() as temp:
+            record, report = grader.autograde(
+                Path(temp), state, model="d3", decide=FakeDecide(["A", "B"] * 6))
+        agreement = record["agreement"]["cases"]["case1"]
+        self.assertLessEqual(agreement["n"], 2)
+        self.assertNotIn("(n=3)", report)
+
+    def test_no_agreement_claim_without_human_grades(self):
+        with tempfile.TemporaryDirectory() as temp:
+            record, report = grader.autograde(
+                Path(temp), make_state(), model="d3", decide=FakeDecide(["A", "B"] * 3))
+        self.assertIsNone(record["agreement"]["cases"]["case1"]["rho"])
+        self.assertIsNone(record["agreement"]["overall"]["mean_rho"])
+        self.assertNotIn("Spearman vs human mean:", report)
 
     def test_autograde_skips_cases_without_rubrics(self):
         case = {"id": "case1", "role": "coding", "turns": ["Fix it."], "rubrics": []}

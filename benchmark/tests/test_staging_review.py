@@ -1,7 +1,9 @@
 """Regression tests for fixture staging and blind review presentation."""
 
-from contextlib import redirect_stdout
-import io
+import json
+import os
+import subprocess
+import sys
 from pathlib import Path
 import shutil
 import tempfile
@@ -89,32 +91,41 @@ class StagingAndReviewTests(unittest.TestCase):
         output = self.root / "review"
         output.mkdir()
 
-        first = io.StringIO()
-        with redirect_stdout(first), patch("builtins.input", side_effect=EOFError):
-            runner.review(output, state)
-        self.assertFalse((output / "scorecard.md").exists())
+        (output / "state.json").write_text(json.dumps(state), encoding="utf-8")
+        env = os.environ.copy()
+        env["PYTHONPATH"] = str(Path(runner.__file__).resolve().parent.parent)
 
-        second = io.StringIO()
-        with redirect_stdout(second), patch("builtins.input", side_effect=["4", EOFError]):
-            runner.review(output, state)
-        self.assertIn("EVIDENCE", second.getvalue())
-        self.assertFalse((output / "scorecard.md").exists())
+        def cli(*args):
+            return subprocess.run([sys.executable, "-m", "benchmark", *map(str, args)],
+                                  input="", text=True, capture_output=True, env=env,
+                                  timeout=30, check=False)
 
-        final = io.StringIO()
-        with redirect_stdout(final), patch("builtins.input", side_effect=["2", "3", "5"]):
-            runner.review(output, state)
-        displayed = final.getvalue()
-        self.assertIn("# Benchmark scorecard", displayed)
-        before_reveal = first.getvalue() + second.getvalue() + displayed.split(
-            "# Benchmark scorecard", 1
-        )[0]
-        self.assertIn("open discussion", before_reveal)
+        result = cli("resume", "--output-dir", output)
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        html = (output / "review.html").read_text(encoding="utf-8")
+        self.assertIn("open discussion", html)
         for alias in ("openai/gpt-example", "gpt-example", "acme/othermodel", "othermodel"):
-            self.assertNotIn(alias, before_reveal.casefold(), f"Leaked model alias {alias}")
+            self.assertNotIn(alias, (html + result.stdout + result.stderr).casefold(),
+                             f"Leaked model alias {alias}")
+        self.assertFalse((output / "scorecard.md").exists())
+
+        # Reuse the black-box review-data parser shared by the CLI rehearsal.
+        from benchmark.tests.test_cli_rehearsal import ReviewDataParser
+        parser = ReviewDataParser()
+        parser.feed(html)
+        data = json.loads("".join(parser.parts))
+        ids = [rubric["id"] for case in data["cases"]
+               for response in case["responses"] for rubric in response["rubrics"]]
+        self.assertEqual(len(ids), 4)
+        grades = self.root / "grades.json"
+        grades.write_text(json.dumps({"version": 1, "review_id": data["review_id"],
+                                      "grades": dict.fromkeys(ids, 4)}), encoding="utf-8")
+        imported = cli("import-grades", grades, "--output-dir", output)
+        self.assertEqual(imported.returncode, 0, imported.stdout + imported.stderr)
         scorecard = (output / "scorecard.md").read_text(encoding="utf-8")
         for model in models:
             self.assertIn(model, scorecard)
-            self.assertIn(model, displayed.split("# Benchmark scorecard", 1)[1])
+
 
 
 if __name__ == "__main__":

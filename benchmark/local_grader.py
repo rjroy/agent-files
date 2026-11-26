@@ -6,8 +6,8 @@ levels. It cannot write a prose analysis. This pass therefore compares pairs of
 responses and aggregates the choices into a ranking.
 
 Machine results live under ``state["auto_grades"]`` and ``auto_scorecard.md``.
-They never replace human grades and are only generated after human review is
-complete, so model identities stay hidden while a person is grading.
+They never replace human grades. The report reveals model identities, including
+when generated during human review.
 """
 
 import datetime
@@ -23,7 +23,8 @@ from .runner import atomic_write, blind, save_state
 
 DEFAULT_GRADER = "d3:latest"
 DEFAULT_MAX_CHARS = 14000
-CHOICES = [("A", "the first response"), ("B", "the second response")]
+CHOICES = [("A", "the first response is better"), ("B", "the second response is better"),
+           ("C", "neither response is clearly better")]
 ANSI = re.compile(r"\x1b\[[0-9;?]*[a-zA-Z]")
 
 
@@ -168,17 +169,19 @@ def _side(run, rubric, models):
 
 
 def question_for(rubric, models):
-    prompt = blind(rubric["prompt"], models)
-    if len(prompt) > 600:
-        prompt = prompt[:597] + "..."
-    return "Which response better satisfies this rubric: " + prompt
+    prompt = rubric.get("decision_prompt")
+    if prompt:
+        return blind(prompt, models)
+    label = blind(rubric.get("label", "rubric"), models)
+    return f"Which response better satisfies the rubric for {label}?"
 
 
 def pair_text(case, run_a, run_b, rubric, models, max_chars=DEFAULT_MAX_CHARS):
-    """Build a blinded A/B comparison within a character budget.
+    """Build a blinded A/B comparison using a target character budget.
 
     The rubric is always kept intact. Each response side gets an equal share of
-    the remaining budget, and evidence appears only for evidence rubrics.
+    the remaining budget, and evidence appears only for evidence rubrics. Long
+    prompts or rubrics and truncation markers can push text over the target.
     """
     shared = "\n\n".join(f"PROMPT {index + 1}:\n{blind(turn, models)}"
                          for index, turn in enumerate(case["turns"]))
@@ -197,10 +200,10 @@ def _human_means(state, case, models):
     grades = state.get("grades", {})
     means = {}
     for model in models:
-        values = [grades[json.dumps([case["id"], model, index])]
-                  for index in range(len(case["rubrics"]))
-                  if json.dumps([case["id"], model, index]) in grades]
-        if values:
+        keys = [json.dumps([case["id"], model, index])
+                for index in range(len(case["rubrics"]))]
+        if keys and all(key in grades for key in keys):
+            values = [grades[key] for key in keys]
             means[model] = sum(values) / len(values)
     return means
 
@@ -238,7 +241,8 @@ def _agreement(state, standings):
     for case in state["cases"]:
         stats = standings.get(case["id"], {})
         means = _human_means(state, case, stats)
-        common = [model for model in stats if model in means]
+        common = [model for model in stats
+                  if model in means and stats[model].get("games", 0) > 0]
         rho = _spearman([stats[model]["score"] for model in common],
                         [means[model] for model in common]) if len(common) >= 2 else None
         cases[case["id"]] = {"n": len(common), "rho": rho}
@@ -255,12 +259,14 @@ def _compare(decide, case, runs, first, second, rubric, models, budget):
     text, reverse_truncated = pair_text(
         case, runs[second], runs[first], rubric, models, budget)
     reverse = decide(question, text, CHOICES)
-    forward_winner = first if forward["choice"] == "A" else second
-    reverse_winner = second if reverse["choice"] == "A" else first
-    if forward_winner == reverse_winner:
+    forward_winner = {"A": first, "B": second, "C": None}[forward["choice"]]
+    reverse_winner = {"A": second, "B": first, "C": None}[reverse["choice"]]
+    if forward_winner is None and reverse_winner is None:
+        outcome = "tie"
+    elif forward_winner is not None and forward_winner == reverse_winner:
         outcome = "a" if forward_winner == first else "b"
     else:
-        outcome = "tie"
+        outcome = "disagreement"
     return {
         "case": case["id"], "rubric": rubric["label"], "a": first, "b": second,
         "outcome": outcome, "forward": forward, "reverse": reverse,
@@ -271,9 +277,8 @@ def _compare(decide, case, runs, first, second, rubric, models, budget):
 def autograde(output, state, model=DEFAULT_GRADER, binary=None,
               decide=None, max_chars=DEFAULT_MAX_CHARS):
     """Compare completed runs pairwise and save a separate machine report."""
-    if state.get("phase") != "complete":
-        raise GraderError("human review must be complete before autograde reveals identities; "
-                          "run `resume` first")
+    if state.get("phase") not in ("review", "complete"):
+        raise GraderError("runs must finish before autograding; run `resume` first")
     if max_chars < 600:
         raise GraderError("max_chars must be at least 600")
 
@@ -301,7 +306,7 @@ def autograde(output, state, model=DEFAULT_GRADER, binary=None,
         if len(available) < 2:
             standings[case["id"]] = {}
             continue
-        stats = {name: {"wins": 0, "losses": 0, "ties": 0, "games": 0}
+        stats = {name: {"wins": 0, "losses": 0, "ties": 0, "disagreements": 0, "games": 0}
                  for name in available}
         case_budget = max_chars
         for rubric in case["rubrics"]:
@@ -328,22 +333,28 @@ def autograde(output, state, model=DEFAULT_GRADER, binary=None,
                         stats[winner]["wins"] += 1
                         stats[loser]["losses"] += 1
                     else:
-                        stats[first]["ties"] += 1
-                        stats[second]["ties"] += 1
+                        field = "ties" if entry["outcome"] == "tie" else "disagreements"
+                        stats[first][field] += 1
+                        stats[second][field] += 1
                     stats[first]["games"] += 1
                     stats[second]["games"] += 1
                     comparisons.append(entry)
         budgets[case["id"]] = case_budget
         for entry in stats.values():
             entry["score"] = entry["wins"] - entry["losses"]
-        ranked = sorted(stats, key=lambda name: (
-            -stats[name]["score"], -stats[name]["wins"], stats[name]["losses"], name))
+        ranked = sorted(stats, key=lambda name: (-stats[name]["score"], name))
+        previous_score = None
+        rank = 0
         for position, name in enumerate(ranked, 1):
-            stats[name]["rank"] = position
+            score = stats[name]["score"]
+            if score != previous_score:
+                rank = position
+                previous_score = score
+            stats[name]["rank"] = rank
         standings[case["id"]] = stats
 
     record = {
-        "version": 1,
+        "version": 2,
         "grader": {"model": resolved, "ollama": version},
         "generated_at": datetime.datetime.now(datetime.timezone.utc).isoformat(
             timespec="seconds"),
@@ -361,6 +372,14 @@ def autograde(output, state, model=DEFAULT_GRADER, binary=None,
     report = auto_scorecard(record, state)
     atomic_write(output / "auto_scorecard.md", report)
     return record, report
+
+
+def refresh_agreement(state):
+    """Update agreement in memory after human grades change."""
+    record = state.get("auto_grades")
+    if not record:
+        return
+    record["agreement"] = _agreement(state, record["standings"])
 
 
 def auto_scorecard(record, state):
@@ -385,13 +404,17 @@ def auto_scorecard(record, state):
                       "Not enough completed runs to compare.", ""]
             continue
         human = _human_means(state, case, stats)
-        header = "| Rank | Model | W | L | T | Score |" + (" Human mean |" if human else "")
-        separator = "|---:|---|---:|---:|---:|---:|" + ("---:|" if human else "")
+        legacy = record.get("version", 1) == 1
+        header = "| Rank | Model | W | L | T |" + ("" if legacy else " D |") + " Score |" + (" Human mean |" if human else "")
+        separator = "|---:|---|---:|---:|---:|" + ("" if legacy else "---:|") + "---:|" + ("---:|" if human else "")
         lines += [header, separator]
-        for name in sorted(stats, key=lambda item: stats[item]["rank"]):
+        for name in sorted(stats, key=lambda item: (stats[item]["rank"], item)):
             entry = stats[name]
             row = (f"| {entry['rank']} | {name} | {entry['wins']} | {entry['losses']} "
-                   f"| {entry['ties']} | {entry['score']} |")
+                    f"| {entry['ties']} |")
+            if not legacy:
+                row += f" {entry['disagreements']} |"
+            row += f" {entry['score']} |"
             if human:
                 mean = human.get(name)
                 row += f" {mean:.1f} |" if mean is not None else " - |"
@@ -412,12 +435,15 @@ def auto_scorecard(record, state):
         "",
         "- d3 is a 4.8B zero-shot decision model, not a chat model. It makes "
         "pairwise choices, not prose analysis.",
-        "- Both orders are run; when the orders disagree, the pair is recorded as "
-        "a tie (position bias).",
+        ("- Both orders are run; in this legacy report, order disagreements are "
+         "recorded as ties." if record.get("version", 1) == 1 else
+         "- Both orders are run. T means both found no clear winner; D means "
+         "an order disagreement. Neither counts as a win."),
         "- Absolute 1-5 machine scores are deliberately not produced; probes "
         "showed upward miscalibration.",
-        "- Inputs are blinded and truncated to the model's 4096-token context; "
-        "truncation is counted above.",
+        "- Inputs are blinded. Response sides use a target character budget; "
+        "prompts and rubrics are retained and may exceed it. The character budget "
+        "does not guarantee a token context limit. Truncation is counted above.",
         "",
     ]
     return "\n".join(lines)

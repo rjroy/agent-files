@@ -9,6 +9,7 @@
   "rubrics": [
     {
       "label": "Listens and revises",
+      "decision_prompt": "Which response better distinguishes raising a hard issue from hearing its effect on others while respecting the retro's efficiency?",
       "prompt": "Rate 1 to 5 across both replies. Give 1 if the assistant dismisses the concern, assumes people are afraid to speak despite the example, or rushes to replace the meeting. Give 3 if it acknowledges the example but mostly offers generic meeting advice. Give 5 if it takes the retro's useful efficiency seriously and uses the example to distinguish bringing up a hard issue from hearing what it means for others. It should help the user think about that distinction without assuming how teammates feel or prescribing a new format.",
       "evidence": false
     }
