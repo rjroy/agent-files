@@ -1,9 +1,11 @@
 # Model benchmark
 
 The benchmark runs cases before asking a human to grade responses from 1 to 5.
-It does not use a model to grade. Results, including model identities and the
-anonymous mapping, are private local files under `benchmark/results/` by default.
-Do not inspect those files until review is complete if you are the grader.
+By default it does not use a model to grade. An optional post-review pass can
+add a local decision-model second opinion, but human grades remain the result.
+Results, including model identities and the anonymous mapping, are private local
+files under `benchmark/results/` by default. Do not inspect those files until
+review is complete if you are the grader.
 
 ## Offline rehearsal
 
@@ -61,6 +63,31 @@ could still identify a model indirectly. Failed checks, check execution errors,
 and missing model runs are separate outcomes. The scorecard is displayed and
 saved only once all available responses have received all required grades.
 
+## Local second opinion (optional)
+
+After review is complete, a local Ollama decision model can compare responses
+pairwise. This is supplementary: it never replaces the human scorecard and
+refuses to run before review finishes, so identities stay hidden while you
+grade.
+
+```sh
+python -m benchmark autograde --output-dir benchmark/results/comparison \
+  --grader d3:latest
+```
+
+`d3` is a zero-shot decision model, not a chat model. It answers questions
+about supplied text, so the pass decomposes grading into A/B comparisons and
+runs every pair in both orders. When the orders disagree, the pair is recorded
+as a tie rather than a win. The pass writes `auto_scorecard.md` and stores
+results under `state["auto_grades"]`. Inputs are blinded and truncated to the
+model's context; the report counts truncations. The runner checks the installed
+model list first and refuses to pull a missing model.
+
+The pilot comparison showed weak rank agreement with human grades (mean
+Spearman 0.15, negative on both talking cases). Treat this as a screen or a
+sanity check, not a substitute for human judgment. Use `--max-chars` to lower
+the input budget and `--ollama-bin` to point at a different Ollama executable.
+
 ## Case format
 
 Each `cases/<id>/case.json` is a version 1 JSON object with `id` matching the
@@ -87,4 +114,5 @@ Run the offline CLI acceptance and checker boundary tests with:
 ```sh
 python -m unittest benchmark.tests.test_cli_rehearsal
 python -m unittest benchmark.tests.test_check_boundary
+python -m unittest benchmark.tests.test_local_grader
 ```

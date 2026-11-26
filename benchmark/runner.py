@@ -471,6 +471,12 @@ def main():
     run.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     resume = sub.add_parser("resume", help="continue a saved review without rerunning")
     resume.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
+    auto = sub.add_parser("autograde", help="add a local decision-model second opinion")
+    auto.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
+    auto.add_argument("--grader", default="d3:latest")
+    auto.add_argument("--ollama-bin", help="path to the Ollama executable")
+    auto.add_argument("--max-chars", type=int, default=12000,
+                      help="input budget per comparison; shrinks on context errors")
     doc = sub.add_parser("doctor", help="verify OpenCode execution")
     doc.add_argument("--model", required=True)
     doc.add_argument("--profile", choices=["talking", "coding"], default="talking")
@@ -484,6 +490,15 @@ def main():
             with output_lock(output):
                 state = json.loads((output / "state.json").read_text(encoding="utf-8"))
                 review(output, state)
+        elif args.command == "autograde":
+            output = args.output_dir.resolve()
+            with output_lock(output):
+                state = json.loads((output / "state.json").read_text(encoding="utf-8"))
+                from .local_grader import autograde
+                _record, report = autograde(
+                    output, state, model=args.grader, binary=args.ollama_bin,
+                    max_chars=args.max_chars)
+                print("\n" + report)
         else:
             from .opencode_adapter import doctor
             result = doctor(args.model, profile=args.profile)
