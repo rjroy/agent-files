@@ -1,12 +1,11 @@
 {
   "models": [
     "ollama-cloud/minimax-m3",
-    "ollama-cloud/clef",
     "ollama-cloud/beam",
     "ollama-cloud/inkling-2-small",
     "ollama-cloud/kimi-k3.1-pro",
     "ollama-cloud/glm-5.3",
-    "ollama-cloud/deepskee-v4.1-flash",
+    "ollama-cloud/deepseek-v4.1-flash",
     "ollama-cloud/hy4"
   ]
 }

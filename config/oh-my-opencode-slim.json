@@ -85,8 +85,16 @@
           "writing-style-rules"
         ],
         "mcps": []
-      }
-    },
+      },
+      "craftsman": {
+        "model": "openai/gpt-6.2-astra",
+        "variant": "medium"
+       },
+      "creator": {
+        "model": "openai/gpt-6.2-sol",
+        "variant": "medium"
+       }
+     },
     "ollama": {
       "orchestrator": {
         "model": "ollama-cloud/glm-5.3",
@@ -170,13 +178,19 @@
           "writing-style-rules"
         ],
         "mcps": []
-      }
+      },
+      "craftsman": {
+        "model": "ollama-cloud/glm-5.3",
+        "variant": "high"
+       },
+      "creator": {
+        "model": "ollama-cloud/glm-5.3",
+        "variant": "high"
+       }
     }
   },
   "agents": {
     "craftsman": {
-      "model": "openai/gpt-6.2-astra",
-      "variant": "medium",
       "description": "High-powered creative reviewer and refiner for complex work requiring imaginative, sustained iteration.",
       "orchestratorPrompt": "Use @craftsman for difficult creative reviews and complex creative work that benefits from sustained generate-inspect-refine iterations, including modeling. Reviews remain read-only when required by the selected task procedure. Use @creator for direct first-pass creative production; involve @designer for visual direction or review when the task calls for it.",
       "skills": [
@@ -209,8 +223,6 @@
       "mcps": []
     },
     "creator": {
-      "model": "openai/gpt-6.2-sol",
-      "variant": "medium",
       "description": "Creative producer for direct, bounded output across story, music, visual art, and modeling.",
       "orchestratorPrompt": "Use @creator for direct first-pass creative production across its configured skills, not only writing or tasks with a preselected procedure. Supply the user's intent, scope, and needed inputs; use task skills for specific methods and approvals. Use @craftsman when sustained refinement or difficult creative review is the main need.",
       "skills": [

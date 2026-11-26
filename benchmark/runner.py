@@ -471,7 +471,7 @@ def main():
     run.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     resume = sub.add_parser("resume", help="continue a saved review without rerunning")
     resume.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
-    doc = sub.add_parser("doctor", help="verify isolated OpenCode execution")
+    doc = sub.add_parser("doctor", help="verify OpenCode execution")
     doc.add_argument("--model", required=True)
     doc.add_argument("--profile", choices=["talking", "coding"], default="talking")
     doc.add_argument("--json", action="store_true")

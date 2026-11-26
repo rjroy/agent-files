@@ -15,7 +15,7 @@ python -m benchmark resume --output-dir benchmark/results/rehearsal
 ```
 
 The demo has two fake models and synthetic responses. It does not demonstrate
-model quality, tool use, model isolation, or spend. Fixture checks run in a
+model quality, tool use, or spend. Fixture checks run in a
 bubblewrap sandbox when available, but the demo makes no changes, so coding
 checks may fail. End input or press Ctrl-C to pause review. Resume reads saved
 grades and the original anonymous mapping, and does not call models or rerun
@@ -26,15 +26,17 @@ concurrent command fails rather than reveal an incomplete scorecard.
 
 ## Live runs
 
-Install OpenCode and supply explicit provider API keys as described in
-[OPENCODE.md](OPENCODE.md). The isolated runtime does not use your ambient
-OpenCode setup. Copy `benchmark/models.example.json` to a private file, replace
+Install OpenCode and authenticate your providers as described in
+[OPENCODE.md](OPENCODE.md). The benchmark runs through your real OpenCode
+setup, using your logins, agents, and configuration as-is. Copy
+`benchmark/models.example.json` to a private file, replace
 the placeholders with actual provider/model IDs, and agree on a spend limit
 before running. The benchmark does not enforce a spend limit; provider billing
 and limits remain your responsibility.
 
-`doctor` checks runtime metadata without sending a prompt or running inference.
-It does not verify that authentication works or that the account has usable funds.
+`doctor` checks the installed CLI and model catalog without sending a prompt
+or running inference. It does not verify that authentication works or that
+the account has usable funds.
 
 ```sh
 python -m benchmark doctor --model provider/model-one --profile talking --json
@@ -46,7 +48,8 @@ python -m benchmark resume --output-dir benchmark/results/comparison
 
 The runner requires both explicit configuration and `--allow-live`. It runs
 doctor for every model and applicable profile before execution, and refuses to
-proceed if isolation is not established. Use a fresh output directory per run.
+proceed if a model is not available in the installed OpenCode. Use a fresh
+output directory per run.
 To start with only the handoff, put a copy of the `handoff` case directory
 in a separate cases directory and pass `--cases-dir /path/to/cases`. Run this
 single comparison first and review its cost before expanding the pilot.
