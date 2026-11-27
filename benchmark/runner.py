@@ -561,6 +561,8 @@ def main():
     auto.add_argument("--ollama-bin", help="path to the Ollama executable")
     auto.add_argument("--max-chars", type=int, default=12000,
                       help="input budget per comparison; shrinks on context errors")
+    graphs = sub.add_parser("graphs", help="render graphs for a completed run")
+    graphs.add_argument("--output-dir", type=Path, default=DEFAULT_OUTPUT)
     doc = sub.add_parser("doctor", help="verify OpenCode execution")
     doc.add_argument("--model", required=True)
     doc.add_argument("--profile", choices=["talking", "coding"], default="talking")
@@ -587,6 +589,15 @@ def main():
                     output, state, model=args.grader, binary=args.ollama_bin,
                     max_chars=args.max_chars)
                 print("\n" + report)
+        elif args.command == "graphs":
+            output = args.output_dir.resolve()
+            with output_lock(output):
+                state = json.loads((output / "state.json").read_text(encoding="utf-8"))
+                if state.get("phase") != "complete":
+                    raise ValueError("graphs require a completed review")
+                from .graphs import render_graphs
+                atomic_write(output / "graphs.html", render_graphs(state))
+                print(f"Wrote {output / 'graphs.html'}")
         else:
             from .opencode_adapter import doctor
             result = doctor(args.model, profile=args.profile)

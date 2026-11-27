@@ -38,6 +38,24 @@ policy, so do not rely on it across browsers or devices. Download the grades
 file before closing the page. Only one command can use an output directory at a time; a
 concurrent command fails rather than reveal an incomplete scorecard.
 
+## Graphs
+
+After importing grades, generate a standalone report with:
+
+```sh
+python -m benchmark graphs --output-dir benchmark/results/rehearsal
+```
+
+Open `graphs.html` locally to compare human rubric grades as bars on a shared
+scale. Missing grades have no bar. If saved local grader results are available,
+separate per-case charts show pairwise wins minus losses. Ties and order
+disagreements are listed separately; neither counts as a loss. The run and check
+matrix also includes cases with no human rubrics.
+
+The command reads saved state without running models or changing the review.
+The report reveals model identities and grades, so keep it private. The default
+output directory is `benchmark/results/latest`.
+
 ## Live runs
 
 Install OpenCode and authenticate your providers as described in
